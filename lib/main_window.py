@@ -1,10 +1,12 @@
 import os
 import tkinter as tk
 from tkinter import ttk
-from lib.aircraft_loader import load_aircraft_config
+
+from lib.aircraft_loader import AircraftLoader
 from lib.loop_controller import LoopController
 
-CONFIG_DIR = "config/aircraft"
+CONFIG_AIRCRAFT_DIR = "config/aircraft"
+CONFIG_DIR = "config"
 
 class MainWindow:
     def __init__(self, root):
@@ -14,14 +16,16 @@ class MainWindow:
         self.root.resizable(False, False)
 
         self.current_config = None
-        self.aircraft_files = self._scan_aircraft_files()
+        self.current_cpflight_config = None
 
-        self.loop_controller = LoopController(self._get_interval)
+        self.aircraft_files = self._scan_aircraft_files()
+        self.aircraft = AircraftLoader()
+        self.loop_controller = LoopController(self._get_interval, self.aircraft)
 
         self._build_gui()
 
     def _scan_aircraft_files(self):
-        return [f for f in os.listdir(CONFIG_DIR) if f.endswith(".json")]
+        return [f for f in os.listdir(CONFIG_AIRCRAFT_DIR) if f.endswith(".json")]
 
     def _format_filename(self, filename):
         return filename.replace("_", " ").replace(".json", "")
@@ -87,6 +91,8 @@ class MainWindow:
         self.heading_label_val = ttk.Label(self.values_frame, text="Heading: N/A")
         self.heading_label_val.pack(anchor="w", padx=5, pady=5)
 
+        self.status_bar = ttk.Label(self.root, text="Ready", anchor="w", relief="sunken")
+        self.status_bar.pack(side="bottom", fill="x")
 
         if options:
             self.file_var.set(options[0])
@@ -111,8 +117,10 @@ class MainWindow:
         if not filename:
             return
 
-        filepath = os.path.join(CONFIG_DIR, filename)
-        self.current_config = load_aircraft_config(filepath)
+        filepath = os.path.join(CONFIG_AIRCRAFT_DIR, filename)
+        self.current_config = self.aircraft.load_json_config(filepath)
+        filepathcpflight = os.path.join(CONFIG_DIR, "cpflight.json")
+        self.current_cpflight_config = self.aircraft.load_json_config(filepathcpflight)
 
         tx_val = self.current_config.get("speed", {}).get("tx", None)
         self.speed_label_var.config(text=f"Speed: {tx_val}" if tx_val else "Speed: N/A")
@@ -121,10 +129,14 @@ class MainWindow:
         self.load_button.config(state="disabled")  # disable after loading
 
     def _on_start(self):
-        if not self.current_config:
+        if not self.current_config or not self.current_cpflight_config:
             return
 
-        self.loop_controller.start()
+        success, msg_err = self.loop_controller.start(self.current_config, self.current_cpflight_config)
+        if not success:
+            self.status_bar.config(text=msg_err)
+            return
+        self.status_bar.config(text="Sim connected")
 
         # Disable controls
         self.file_menu.config(state="disabled")
