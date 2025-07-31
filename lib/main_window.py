@@ -73,17 +73,20 @@ class MainWindow:
         self.vars_frame.pack(fill="both", pady=(0, 10))
 
 
-        self.speed_label = ttk.Label(self.vars_frame, text="Speed: N/A")
-        self.speed_label.pack(anchor="w", padx=5, pady=5)
+        self.speed_label_var = ttk.Label(self.vars_frame, text="Speed: N/A")
+        self.speed_label_var.pack(anchor="w", padx=5, pady=5)
 
         # INFO frame (placeholder)
         self.values_frame = ttk.LabelFrame(right_frame, text="Aircraft VALUES", width=aircraft_frame_width, height=aircraft_frame_height)
         self.values_frame.pack_propagate(False)  # Fix size
-        # self.values_frame.pack(fill="both", expand=True)
         self.values_frame.pack_forget()
 
-        self.info_text = tk.Text(self.values_frame, height=6, state="disabled", bg="#f0f0f0", borderwidth=0)
-        self.info_text.pack(fill="both", expand=True, padx=5, pady=5)
+        # values labels aircraft
+        self.speed_label_val = ttk.Label(self.values_frame, text="Speed: N/A")
+        self.speed_label_val.pack(anchor="w", padx=5, pady=5)
+        self.heading_label_val = ttk.Label(self.values_frame, text="Heading: N/A")
+        self.heading_label_val.pack(anchor="w", padx=5, pady=5)
+
 
         if options:
             self.file_var.set(options[0])
@@ -112,7 +115,7 @@ class MainWindow:
         self.current_config = load_aircraft_config(filepath)
 
         tx_val = self.current_config.get("speed", {}).get("tx", None)
-        self.speed_label.config(text=f"Speed: {tx_val}" if tx_val else "Speed: N/A")
+        self.speed_label_var.config(text=f"Speed: {tx_val}" if tx_val else "Speed: N/A")
 
         self.start_button.config(state="normal")
         self.load_button.config(state="disabled")  # disable after loading
