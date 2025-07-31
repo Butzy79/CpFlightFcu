@@ -85,6 +85,12 @@ class LoopController:
                     self.sock
                 )
 
+                self.aircraft.set_heading_fcu(
+                    int(self.vr.get(self.current_config.get('heading').get("rx"))),
+                    self.cpflight.get('heading').get('tx'),
+                    self.sock
+                )
+
                 time.sleep(interval)
             except Exception as e:
                 time.sleep(1)
