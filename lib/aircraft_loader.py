@@ -26,6 +26,21 @@ class AircraftLoader:
         sock.sendall((cpflight_comd.format(value=heading_value) + "\n").encode())
         return True
 
+    def set_qnh_cp_fcu(self, qnh_cp_value: int, cpflight_comd:str, sock) -> bool:
+        if self.qnh_cp["op"]:
+            return False
+        self.qnh_cp["value"] = qnh_cp_value
+        sock.sendall((cpflight_comd.format(value=qnh_cp_value) + "\n").encode())
+        return True
+
+    def set_qnh_fo_fcu(self, qnh_fo_value: int, cpflight_comd:str, sock) -> bool:
+        if self.qnh_fo["op"]:
+            return False
+        self.qnh_fo["value"] = qnh_fo_value
+        sock.sendall((cpflight_comd.format(value=qnh_fo_value) + "\n").encode())
+        return True
+
+    # Blocker
     def set_opblocker(self, what:str, value:bool) -> bool:
         try:
             getattr(self, what)["op"] = value

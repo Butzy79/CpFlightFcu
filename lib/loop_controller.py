@@ -91,6 +91,19 @@ class LoopController:
                     self.sock
                 )
 
+                self.aircraft.set_qnh_cp_fcu(
+                    int(self.vr.get(self.current_config.get('qnh_cp').get("rx"))),
+                    self.cpflight.get('qnh_cp').get('tx'),
+                    self.sock
+                )
+
+                self.aircraft.set_qnh_fo_fcu(
+                    int(self.vr.get(self.current_config.get('qnh_fo').get("rx"))),
+                    self.cpflight.get('qnh_fo').get('tx'),
+                    self.sock
+                )
+
+
                 time.sleep(interval)
             except Exception as e:
                 time.sleep(1)
