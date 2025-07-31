@@ -2,5 +2,9 @@
   "speed": {
     "rx" : "L:E_FCU_SPEED",
     "tx": ["L:N_FCU_SPEED", "L:E_FCU_SPEED"]
+  },
+  "heading": {
+    "rx" : "L:E_FCU_HEADING",
+    "tx": ["L:N_FCU_HEADING", "L:E_FCU_HEADING"]
   }
 }

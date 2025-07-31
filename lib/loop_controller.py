@@ -1,3 +1,4 @@
+import re
 import threading
 import time
 import socket
@@ -25,6 +26,14 @@ class LoopController:
         self.sm = None
         self.vr = None
         self.sock = None
+
+    def find_matching_block(self, s):
+        for key, value in self.cpflight.items():
+            if isinstance(value, dict) and "rx" in value:
+                pattern = value["rx"]
+                if re.match(pattern, s):
+                    return key
+        return None
 
     def start(self, config, cpflight) -> tuple[bool, Optional[str]]:
         if self.running:
@@ -70,7 +79,7 @@ class LoopController:
             try:
                 interval = self.get_interval()
                 # Read from SimConnect and send to hardware
-                self.aircraft.set_speed(
+                self.aircraft.set_speed_fcu(
                     int(self.vr.get(self.current_config.get('speed').get("rx"))),
                     self.cpflight.get('speed').get('tx'),
                     self.sock
@@ -91,6 +100,13 @@ class LoopController:
                             self.stop()
                             break
                         value_from_fcu = data.decode(errors="ignore")
+                        what = self.find_matching_block(value_from_fcu)
+                        if self.aircraft.set_opblocker(what, True):
+                            match = re.match(rf"{self.cpflight.get(what).get('rx')}", value_from_fcu)
+                            value = match.group(1) if match else None
+                            if value:
+                                method_name = f"set_{what}_aircraft"
+                                getattr(self.aircraft, method_name)(value, self.current_config, self.vr)
                     except BlockingIOError:
                         pass
                     except Exception:
