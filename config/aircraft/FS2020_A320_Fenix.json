@@ -1,0 +1,6 @@
+{
+  "speed": {
+    "rx" : "L:E_FCU_SPEED",
+    "tx": ["L:N_FCU_SPEED", "L:E_FCU_SPEED"]
+  }
+}

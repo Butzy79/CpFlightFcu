@@ -32,6 +32,7 @@ Contributions, testing, and bug reports are welcome.
    ```bash
    git clone https://github.com/Butzy79/CpFlightFcu.git
     ```
+   
 2. Install dependencies:
    ```bash
     pip install -r requirements.txt
@@ -41,6 +42,7 @@ Contributions, testing, and bug reports are welcome.
    ```bash
    python main.py
    ```
+   
 ## Project Structure
 - main.py — Main execution script
 - modules/ — Hardware and simulator interface logic
