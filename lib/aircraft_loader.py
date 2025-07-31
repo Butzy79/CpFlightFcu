@@ -1,5 +1,5 @@
 import json
-from typing import re
+import re
 
 
 class AircraftLoader:
