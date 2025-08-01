@@ -4,6 +4,7 @@ from lib.settings_manager import SettingsManager
 
 def on_close(root, settings):
     # Save geometry before exit
+    app._on_stop()
     geo = root.geometry()  # Format: "400x400+100+100"
     parts = geo.split("+")
     size = parts[0].split("x")

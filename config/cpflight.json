@@ -3,18 +3,26 @@
   "PORT": 4500,
   "speed": {
     "rx" : "^V02 ([0-9]{3})$",
-    "tx": "V02 {value}"
+    "tx": "V02 {value}",
+    "dash_on" : "X1002",
+    "dash_off" : "X1102",
+    "dot_on" : "L0183",
+    "dot_off" : "L1183"
   },
   "heading": {
     "rx" : "^V03 ([0-9]{3})$",
-    "tx": "V03 {value}"
+    "tx": "V03 {value}",
+    "dash_on" : "X1003",
+    "dash_off" : "X1103",
+    "dot_on" : "L0127",
+    "dot_off" : "L1127"
   },
   "qnh_cp": {
-    "rx" : "^V0012([0-9]{4})$",
+    "rx" : "^V101([0-9]{3})$",
     "tx": "E0V11{value}"
   },
   "qnh_fo": {
-    "rx" : "^V0013([0-9]{4})$",
+    "rx" : "^V131([0-9]{3})$",
     "tx": "E0V13{value}"
   }
 }

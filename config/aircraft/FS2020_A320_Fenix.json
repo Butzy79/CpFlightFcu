@@ -1,18 +1,27 @@
 {
   "speed": {
-    "rx" : "L:E_FCU_SPEED",
+	"in" : "L:N_FCU_SPEED",
+    "rx" : "L:N_FCU_SPEED",
+    "extra_dash": "L:B_FCU_SPEED_DASHED",
+    "extra_dot": "L:I_FCU_SPEED_MANAGED",
     "tx": ["L:N_FCU_SPEED", "L:E_FCU_SPEED"]
   },
   "heading": {
-    "rx" : "L:E_FCU_HEADING",
-    "tx": ["L:N_FCU_HEADING", "L:E_FCU_HEADING"]
+	"in" : "L:N_FCU_HEADING",
+    "extra_dash": "L:B_FCU_HEADING_DASHED",
+    "extra_dot": "L:I_FCU_HEADING_MANAGED",
+
+    "rx" : "L:N_FCU_HEADING",
+    "tx": ["L:E_FCU_HEADING"]
   },
   "qnh_cp": {
-    "rx" : "L:E_FCU_QNH_CP",
+	"in" : "L:N_FCU_QNH_CP",
+    "rx" : "L:N_FCU_QNH_CP",
     "tx": ["L:N_FCU_QNH_CP", "L:E_FCU_QNH_CP"]
   },
   "qnh_fo": {
-    "rx" : "L:E_FCU_QNH_FO",
+	"in" : "L:N_FCU_QNH_FO",
+    "rx" : "L:N_FCU_QNH_FO",
     "tx": ["L:N_FCU_QNH_FO", "L:E_FCU_QNH_FO"]
   }
 }

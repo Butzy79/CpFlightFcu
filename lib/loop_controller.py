@@ -26,6 +26,8 @@ class LoopController:
         self.sm = None
         self.vr = None
         self.sock = None
+        
+        self.pause_loop_until = 0
 
     def find_matching_block(self, s):
         for key, value in self.cpflight.items():
@@ -68,6 +70,7 @@ class LoopController:
         self.vr = None
         if self.sock:
             try:
+                self.sock.sendall(("INT1000\n").encode())
                 self.sock.shutdown(socket.SHUT_RDWR)
                 self.sock.close()
             except Exception:
@@ -77,33 +80,41 @@ class LoopController:
     def _run_loop(self):
         while self.running:
             try:
+                # Dash and Dot Control need to be here
+                self.aircraft.set_dash_fcu( self.current_config, self.cpflight, self.sock, self.vr)
+                self.aircraft.set_dot_fcu( self.current_config, self.cpflight, self.sock, self.vr)
+
+                now = time.time()
+                if now < self.pause_loop_until:
+                    time.sleep(0.1)
+                    continue
                 interval = self.get_interval()
                 # Read from SimConnect and send to hardware
+                
                 self.aircraft.set_speed_fcu(
-                    int(self.vr.get(self.current_config.get('speed').get("rx"))),
-                    self.cpflight.get('speed').get('tx'),
-                    self.sock
+                    self.current_config.get('speed'),
+                    self.cpflight.get('speed'),
+                    self.sock,
+                    self.vr
                 )
-
                 self.aircraft.set_heading_fcu(
-                    int(self.vr.get(self.current_config.get('heading').get("rx"))),
-                    self.cpflight.get('heading').get('tx'),
-                    self.sock
+                    self.current_config.get('heading'),
+                    self.cpflight.get('heading'),
+                    self.sock,
+                    self.vr
                 )
-
                 self.aircraft.set_qnh_cp_fcu(
-                    int(self.vr.get(self.current_config.get('qnh_cp').get("rx"))),
-                    self.cpflight.get('qnh_cp').get('tx'),
-                    self.sock
+                    self.current_config.get('qnh_cp'),
+                    self.cpflight.get('qnh_cp'),
+                    self.sock,
+                    self.vr
                 )
-
                 self.aircraft.set_qnh_fo_fcu(
-                    int(self.vr.get(self.current_config.get('qnh_fo').get("rx"))),
-                    self.cpflight.get('qnh_fo').get('tx'),
-                    self.sock
+                    self.current_config.get('qnh_fo'),
+                    self.cpflight.get('qnh_fo'),
+                    self.sock,
+                    self.vr
                 )
-
-
                 time.sleep(interval)
             except Exception as e:
                 time.sleep(1)
@@ -118,14 +129,16 @@ class LoopController:
                         if not data:
                             self.stop()
                             break
-                        value_from_fcu = data.decode(errors="ignore")
+                        value_from_fcu = re.sub(r'[\x00-\x1F\x7F]', '', data.decode(errors="ignore")).strip()
                         what = self.find_matching_block(value_from_fcu)
                         if self.aircraft.set_opblocker(what, True):
-                            match = re.match(rf"{self.cpflight.get(what).get('rx')}", value_from_fcu)
+                            pattern = self.cpflight.get(what).get('rx')
+                            match = re.match(fr"{pattern}", value_from_fcu)
                             value = match.group(1) if match else None
                             if value:
                                 method_name = f"set_{what}_aircraft"
                                 getattr(self.aircraft, method_name)(value, self.current_config, self.vr)
+                                self.pause_loop_until = time.time() + 2
                     except BlockingIOError:
                         pass
                     except Exception:
