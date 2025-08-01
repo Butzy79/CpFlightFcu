@@ -63,7 +63,7 @@ class MainWindow:
 
         # FPS selection
         ttk.Label(left_frame, text="Frame per second (s)").pack(anchor="w", pady=(10, 0))
-        self.fps_var = tk.StringVar(value="0.5")
+        self.fps_var = tk.StringVar(value="5")
         self.fps_menu = ttk.Combobox(left_frame, textvariable=self.fps_var, values=["0.5", "1", "2", "5", "10", "30", "60"], state="readonly", width=5)
         self.fps_menu.pack(anchor="w")
 

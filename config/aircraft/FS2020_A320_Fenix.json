@@ -10,7 +10,6 @@
 	"in" : "L:N_FCU_HEADING",
     "extra_dash": "L:B_FCU_HEADING_DASHED",
     "extra_dot": "L:I_FCU_HEADING_MANAGED",
-
     "rx" : "L:N_FCU_HEADING",
     "tx": ["L:E_FCU_HEADING"]
   },
@@ -23,5 +22,44 @@
 	"in" : "L:N_FCU_QNH_FO",
     "rx" : "L:N_FCU_QNH_FO",
     "tx": ["L:N_FCU_QNH_FO", "L:E_FCU_QNH_FO"]
+  },
+  "altitude": {
+    "in" : "L:N_FCU_ALTITUDE",
+    "rx" : "L:N_FCU_ALTITUDE",
+    "extra_dot": "L:I_FCU_ALTITUDE_MANAGED",
+    "tx": ["L:N_FCU_ALTITUDE"]
+  },
+  "btn_mach": {
+    "tx": ["L:S_FCU_SPD_MACH"]
+  },
+  "btn_loc": {
+    "tx": ["L:S_FCU_LOC"]
+  },
+  "btn_hdgtrk": {
+    "tx": ["L:S_FCU_HDGVS_TRKFPA"]
+  },
+  "btn_ap1": {
+    "tx": ["L:S_FCU_AP1"]
+  },
+  "btn_ap2": {
+    "tx": ["L:S_FCU_AP2"]
+  },
+  "btn_athr": {
+    "tx": ["L:S_FCU_ATHR"]
+  },
+  "btn_metric": {
+    "tx": ["L:S_FCU_METRIC_ALT"]
+  },
+  "btn_exped": {
+    "tx": ["L:S_FCU_EXPED"]
+  },
+  "btn_appr": {
+    "tx": ["L:S_FCU_APPR"]
+  },
+  "btn_int100": {
+    "tx": ["L:S_FCU_ALTITUDE_SCALE"]
+  },
+  "btn_int1000": {
+    "tx": ["L:S_FCU_ALTITUDE_SCALE"]
   }
 }

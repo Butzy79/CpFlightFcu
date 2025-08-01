@@ -70,7 +70,6 @@ class LoopController:
         self.vr = None
         if self.sock:
             try:
-                self.sock.sendall(("INT1000\n").encode())
                 self.sock.shutdown(socket.SHUT_RDWR)
                 self.sock.close()
             except Exception:

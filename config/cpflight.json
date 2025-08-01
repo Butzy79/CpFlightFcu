@@ -17,6 +17,12 @@
     "dot_on" : "L0127",
     "dot_off" : "L1127"
   },
+  "altitude": {
+    "rx" : "^V04([0-9]{5})$",
+    "tx": "V04{value}",
+    "dot_on" : "L0126",
+    "dot_off" : "L1126"
+  },
   "qnh_cp": {
     "rx" : "^V101([0-9]{3})$",
     "tx": "E0V11{value}"
@@ -24,5 +30,63 @@
   "qnh_fo": {
     "rx" : "^V131([0-9]{3})$",
     "tx": "E0V13{value}"
+  },
+  "btn_mach": {
+    "rx" : "(K023)"
+  },
+  "btn_loc": {
+    "rx" : "(K028)"
+  },
+  "btn_hdgtrk": {
+    "rx" : "(K061)"
+  },
+  "btn_ap1": {
+    "rx" : "(K032)"
+  },
+  "btn_ap2": {
+    "rx" : "(K033)"
+  },
+  "btn_athr": {
+    "rx" : "(K019)"
+  },
+  "btn_metric": {
+    "rx" : "(K045)"
+  },
+  "btn_exped": {
+    "rx" : "(K060)"
+  },
+  "btn_appr": {
+    "rx" : "(K029)"
+  },
+  "btn_int100": {
+    "rx" : "(INT100)$"
+  },
+  "btn_int1000": {
+    "rx" : "(INT1000)$"
+  },
+  "btn_push_speed": {
+    "rx" : "(K052)"
+  },
+  "btn_pull_speed": {
+    "rx" : "(K053)"
+  },
+  "btn_push_heading": {
+    "rx" : "(K054)"
+  },
+  "btn_pull_heading": {
+    "rx" : "(K055)"
+  },
+  "btn_push_altitude": {
+    "rx" : "(K056)"
+  },
+  "btn_pull_altitude": {
+    "rx" : "(K057)"
+  },
+  "btn_push_vd": {
+    "rx" : "(K058)"
+  },
+  "btn_pull_vs": {
+    "rx" : "(K059)"
   }
+
 }
