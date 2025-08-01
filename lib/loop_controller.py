@@ -82,6 +82,7 @@ class LoopController:
                 # Dash and Dot Control need to be here
                 self.aircraft.set_dash_fcu( self.current_config, self.cpflight, self.sock, self.vr)
                 self.aircraft.set_dot_fcu( self.current_config, self.cpflight, self.sock, self.vr)
+                self.aircraft.set_type_fcu( self.current_config, self.cpflight, self.sock, self.vr)
 
                 now = time.time()
                 if now < self.pause_loop_until:

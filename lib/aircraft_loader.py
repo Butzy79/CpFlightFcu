@@ -3,8 +3,8 @@ import re
 
 
 class AircraftLoader:
-    speed = {"op": False, "value": 100, "init": False, "dash": False, "dot": False}
-    heading = {"op": False, "value": 100, "init": False, "dash": False, "dot": False}
+    speed = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "mach": False}
+    heading = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "trk": False}
     qnh_cp = {"op": False, "value": 1015, "init": False}
     qnh_fo = {"op": False, "value": 1015, "init": False}
     altitude = {"op": False, "value": 1000, "init": False, "dot": False}
@@ -25,17 +25,17 @@ class AircraftLoader:
         altitude_dot_value = bool(vr.get(f"({altitude_var_dot})"))
 
         if speed_dot_value != self.speed["dot"]:
-            self.speed["dash"] = speed_dot_value
+            self.speed["dot"] = speed_dot_value
             sock.sendall((cpflight_cmds.get("speed").get("dot_on") + "\n" if speed_dot_value else
                           cpflight_cmds.get("speed").get("dot_off") + "\n").encode())
 
-        if heading_dot_value != self.heading["dash"]:
-            self.heading["dash"] = heading_dot_value
+        if heading_dot_value != self.heading["dot"]:
+            self.heading["dot"] = heading_dot_value
             sock.sendall((cpflight_cmds.get("heading").get("dot_on") + "\n" if heading_dot_value else
                           cpflight_cmds.get("heading").get("dot_off") + "\n").encode())
 
-        if altitude_dot_value != self.altitude["dash"]:
-            self.altitude["dash"] = altitude_dot_value
+        if altitude_dot_value != self.altitude["dot"]:
+            self.altitude["dot"] = altitude_dot_value
             sock.sendall((cpflight_cmds.get("altitude").get("dot_on") + "\n" if altitude_dot_value else
                           cpflight_cmds.get("altitude").get("dot_off") + "\n").encode())
         return True
@@ -56,12 +56,29 @@ class AircraftLoader:
                       cpflight_cmds.get("heading").get("dash_off") + "\n").encode())
         return True
 
+    def set_type_fcu(self, aircraft_array: int, cpflight_cmds:dict, sock, vr) -> bool:
+        speed_mach_var = aircraft_array.get("speed").get('extra_mach')
+        heading_var_trk = aircraft_array.get("heading").get('extra_trk')
+
+        speed_mach_value = bool(vr.get(f"({speed_mach_var})"))
+        heading_trk_value = bool(vr.get(f"({heading_var_trk})"))
+
+        self.speed["mach"] = speed_mach_value
+        sock.sendall((cpflight_cmds.get("speed").get("mach_on") + "\n" if speed_mach_value else
+                      cpflight_cmds.get("speed").get("mach_off") + "\n").encode())
+
+        self.heading["trk"] = heading_trk_value
+        sock.sendall((cpflight_cmds.get("heading").get("trk_on") + "\n" if heading_trk_value else
+                      cpflight_cmds.get("heading").get("trk_off") + "\n").encode())
+        return True
+
     def set_speed_fcu(self, speed_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         if self.speed["op"]:
             return False
         speed_var = speed_array.get('rx') if self.speed["init"] else speed_array.get('in')
         speed_value = int(vr.get(f"({speed_var})"))
         self.speed["value"] = speed_value
+        speed_value = f".{speed_value}" if speed_value< 100 else speed_value
         sock.sendall((cpflight_cmds.get("tx").format(value=speed_value) + "\n").encode())
         return True
     
@@ -108,7 +125,11 @@ class AircraftLoader:
     def set_speed_aircraft(self, value:str, config, vr):
         cl_val = int(re.sub(r'\D', '', value))
         for el in config['speed']['tx']:
+            speed_abs = vr.get(f"({config['speed']['tx_inc']})")
+            speed = vr.get(f"({el})")
+            new_speed = cl_val - speed
             vr.set(f"{cl_val} (>{el})")
+            vr.set(f"{new_speed + speed_abs} (>{config['speed']['tx_inc']})")
         self.speed["value"] = cl_val
         self.speed["init"] = True
         self.speed["op"] = False
@@ -117,7 +138,8 @@ class AircraftLoader:
         cl_val = int(re.sub(r'\D', '', value))
         for el in config['heading']['tx']:
             incr = cl_val - self.heading["value"]
-            vr.set(f"({el}) + {incr} +  (>{el})")
+            current = vr.get(f"({el})")
+            vr.set(f"{current+incr} +  (>{el})")
         self.heading["value"] = cl_val
         self.heading["init"] = True
         self.heading["op"] = False

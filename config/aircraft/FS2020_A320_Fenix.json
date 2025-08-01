@@ -3,13 +3,16 @@
 	"in" : "L:N_FCU_SPEED",
     "rx" : "L:N_FCU_SPEED",
     "extra_dash": "L:B_FCU_SPEED_DASHED",
+    "extra_mach": "L:I_FCU_MACH_MODE",
     "extra_dot": "L:I_FCU_SPEED_MANAGED",
-    "tx": ["L:N_FCU_SPEED", "L:E_FCU_SPEED"]
+    "tx": ["L:N_FCU_SPEED"],
+    "tx_inc": "L:E_FCU_SPEED"
   },
   "heading": {
 	"in" : "L:N_FCU_HEADING",
     "extra_dash": "L:B_FCU_HEADING_DASHED",
     "extra_dot": "L:I_FCU_HEADING_MANAGED",
+    "extra_trk": "L:I_FCU_TRACK_FPA_MODE",
     "rx" : "L:N_FCU_HEADING",
     "tx": ["L:E_FCU_HEADING"]
   },
