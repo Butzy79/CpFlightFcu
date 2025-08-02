@@ -103,6 +103,12 @@ class LoopController:
                     self.sock,
                     self.vr
                 )
+                self.aircraft.set_altitude_fcu(
+                    self.current_config.get('altitude'),
+                    self.cpflight.get('altitude'),
+                    self.sock,
+                    self.vr
+                )
                 self.aircraft.set_qnh_cp_fcu(
                     self.current_config.get('qnh_cp'),
                     self.cpflight.get('qnh_cp'),

@@ -82,6 +82,15 @@ class AircraftLoader:
         speed_value = f".{speed_value}" if speed_value< 100 else speed_value
         sock.sendall((cpflight_cmds.get("tx").format(value=speed_value) + "\n").encode())
         return True
+
+    def set_altitude_fcu(self, altitude_array: int, cpflight_cmds:dict, sock, vr) -> bool:
+        if self.altitude["op"]:
+            return False
+        altitude_var = altitude_array.get('rx') if self.speed["init"] else altitude_array.get('in')
+        altitude_value = int(vr.get(f"({altitude_var})"))
+        self.speed["value"] = altitude_value
+        sock.sendall((cpflight_cmds.get("tx").format(value=altitude_value) + "\n").encode())
+        return True
     
     def set_heading_fcu(self, heading_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         if self.heading["op"]:
@@ -137,7 +146,6 @@ class AircraftLoader:
 
     def set_heading_aircraft(self, value:str, config, vr):
         cl_val = int(re.sub(r'\D', '', value))
-
         for x in range(2):
             for el in config['heading']['tx']:
                 incr = cl_val - vr.get(f"({config['heading']['rx']})")
@@ -151,6 +159,11 @@ class AircraftLoader:
     def set_altitude_aircraft(self, value:str, config, vr):
         cl_val = int(re.sub(r'\D', '', value))
         for el in config['altitude']['tx']:
+            altitude_abs = vr.get(f"({config['altitude']['tx_inc']})")
+            altitude = vr.get(f"({el})")
+            is_1000 = vr.get(f"({config['altitude']['scale']})")
+            new_altitude = (cl_val - altitude) / (1000 if is_1000 else 100)
+            vr.set(f"{altitude_abs+new_altitude} (>{config['altitude']['tx_inc']})")
             vr.set(f"{cl_val} (>{el})")
         self.altitude["value"] = cl_val
         self.altitude["init"] = True
@@ -282,5 +295,25 @@ class AircraftLoader:
 
     def set_btn_pull_heading_aircraft(self, value: str, config, vr):
         for el in config['btn_pull_heading']['tx']:
+            vr.set(f"({el}) ++ (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_push_altitude_aircraft(self, value: str, config, vr):
+        for el in config['btn_push_altitude']['tx']:
+            vr.set(f"({el}) -- (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_pull_altitude_aircraft(self, value: str, config, vr):
+        for el in config['btn_pull_altitude']['tx']:
+            vr.set(f"({el}) ++ (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_push_vs_aircraft(self, value: str, config, vr):
+        for el in config['btn_push_vs']['tx']:
+            vr.set(f"({el}) -- (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_pull_vs_aircraft(self, value: str, config, vr):
+        for el in config['btn_pull_vs']['tx']:
             vr.set(f"({el}) ++ (>{el})")
         self.btn_gen["op"] = False

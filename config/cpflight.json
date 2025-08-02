@@ -86,7 +86,7 @@
   "btn_pull_altitude": {
     "rx" : "(K057)"
   },
-  "btn_push_vd": {
+  "btn_push_vs": {
     "rx" : "(K058)"
   },
   "btn_pull_vs": {
