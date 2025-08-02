@@ -162,6 +162,7 @@ class AircraftLoader:
 
     def set_heading_aircraft(self, value:str, config, vr, sock, cpfligh):
         cl_val = int(re.sub(r'\D', '', value))
+        sock.sendall((cpfligh.get("heading").get("tx").format(value=value) + "\n").encode())
         for x in range(2):
             for el in config['heading']['tx']:
                 incr = cl_val - vr.get(f"({config['heading']['rx']})")
