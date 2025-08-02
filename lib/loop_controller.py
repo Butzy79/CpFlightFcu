@@ -22,6 +22,7 @@ class LoopController:
 
         self.aircraft = obj_aircraft
         self.current_config = None
+        self.cpflight = None
 
         self.sm = None
         self.vr = None
@@ -109,6 +110,12 @@ class LoopController:
                     self.sock,
                     self.vr
                 )
+                self.aircraft.set_vs_fcu(
+                    self.current_config.get('vs'),
+                    self.cpflight.get('vs'),
+                    self.sock,
+                    self.vr
+                )
                 self.aircraft.set_qnh_cp_fcu(
                     self.current_config.get('qnh_cp'),
                     self.cpflight.get('qnh_cp'),
@@ -143,7 +150,7 @@ class LoopController:
                             value = match.group(1) if match else None
                             if value:
                                 method_name = f"set_{what}_aircraft"
-                                getattr(self.aircraft, method_name)(value, self.current_config, self.vr)
+                                getattr(self.aircraft, method_name)(value, self.current_config, self.vr, self.sock, self.cpflight)
                                 self.pause_loop_until = time.time() + 2
                     except BlockingIOError:
                         pass

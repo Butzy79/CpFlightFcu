@@ -16,6 +16,21 @@
     "rx" : "L:N_FCU_HEADING",
     "tx": ["L:E_FCU_HEADING"]
   },
+  "altitude": {
+    "in" : "L:N_FCU_ALTITUDE",
+    "rx" : "L:N_FCU_ALTITUDE",
+    "extra_dot": "L:I_FCU_ALTITUDE_MANAGED",
+    "tx": ["L:N_FCU_ALTITUDE"],
+    "tx_inc": "L:E_FCU_ALTITUDE",
+    "scale": "L:S_FCU_ALTITUDE_SCALE"
+  },
+  "vs": {
+    "in" : "L:N_FCU_VS",
+    "rx" : "L:N_FCU_VS",
+    "extra_dash": "L:B_FCU_VERTICALSPEED_DASHED",
+    "tx": ["L:N_FCU_VS"],
+    "tx_inc": "L:E_FCU_VS"
+  },
   "qnh_cp": {
 	"in" : "L:N_FCU_QNH_CP",
     "rx" : "L:N_FCU_QNH_CP",
@@ -25,14 +40,6 @@
 	"in" : "L:N_FCU_QNH_FO",
     "rx" : "L:N_FCU_QNH_FO",
     "tx": ["L:N_FCU_QNH_FO", "L:E_FCU_QNH_FO"]
-  },
-  "altitude": {
-    "in" : "L:N_FCU_ALTITUDE",
-    "rx" : "L:N_FCU_ALTITUDE",
-    "extra_dot": "L:I_FCU_ALTITUDE_MANAGED",
-    "tx": ["L:N_FCU_ALTITUDE"],
-    "tx_inc": "L:E_FCU_ALTITUDE",
-    "scale": "L:S_FCU_ALTITUDE_SCALE"
   },
   "btn_mach": {
     "tx": ["L:S_FCU_SPD_MACH"]
