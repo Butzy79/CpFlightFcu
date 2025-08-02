@@ -167,7 +167,7 @@ class AircraftLoader:
                 incr = cl_val - vr.get(f"({config['heading']['rx']})")
                 current = vr.get(f"({el})")
                 vr.set(f"{current+incr} +  (>{el})")
-                time.sleep(0.3)
+                time.sleep(0.4)
         self.heading["value"] = cl_val
         self.heading["init"] = True
         self.heading["op"] = False
