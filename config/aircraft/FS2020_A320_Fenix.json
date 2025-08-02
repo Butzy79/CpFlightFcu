@@ -64,5 +64,17 @@
   },
   "btn_int1000": {
     "tx": ["L:S_FCU_ALTITUDE_SCALE"]
+  },
+  "btn_push_speed": {
+    "tx": ["L:S_FCU_SPEED"]
+  },
+  "btn_pull_speed": {
+    "tx": ["L:S_FCU_SPEED"]
+  },
+  "btn_push_heading": {
+    "tx": ["L:S_FCU_HEADING"]
+  },
+  "btn_pull_heading": {
+    "tx": ["L:S_FCU_HEADING"]
   }
 }
