@@ -188,6 +188,7 @@ class AircraftLoader:
 
     def set_vs_aircraft(self, value:str, config, vr, sock, cpfligh):
         cl_val = int(value)
+        sock.sendall((cpfligh.get("vs").get("tx").format(value=value) + "\n").encode())
         for el in config['vs']['tx']:
             vs_abs = vr.get(f"({config['vs']['tx_inc']})")
             vs = vr.get(f"({el})")
