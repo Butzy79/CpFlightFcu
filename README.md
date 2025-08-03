@@ -42,6 +42,16 @@ Contributions, testing, and bug reports are welcome.
    ```bash
    python main.py
    ```
+
+## Test commands and listener:
+1. Send commands to unit:
+   ```bash
+   python ./tests/send_commands.py
+   ```
+2. Sniffing commands sent to unit:
+   ```bash
+   python ./tests/sniff_commands.py
+   ```
    
 ## Project Structure
 - main.py — Main execution script
