@@ -357,3 +357,58 @@ class AircraftLoader:
         for el in config['btn_pull_vs']['tx']:
             vr.set(f"({el}) ++ (>{el})")
         self.btn_gen["op"] = False
+
+    def set_btn_cp_ils_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_ils']['tx']:
+            vr.set(f"0 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_vor_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_vor']['tx']:
+            vr.set(f"1 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_nav_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_nav']['tx']:
+            vr.set(f"2 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_arc_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_arc']['tx']:
+            vr.set(f"3 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_plan_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_plan']['tx']:
+            vr.set(f"4 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_1_adf_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_1_adf']['tx']:
+            vr.set(f"0 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_1_off_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_1_off']['tx']:
+            vr.set(f"1 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_1_vor_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_1_vor']['tx']:
+            vr.set(f"2 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_2_adf_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_2_adf']['tx']:
+            vr.set(f"0 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_2_off_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_2_off']['tx']:
+            vr.set(f"1 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_2_vor_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_2_vor']['tx']:
+            vr.set(f"2 (>{el})")
+        self.btn_gen["op"] = False

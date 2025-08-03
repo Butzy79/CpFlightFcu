@@ -98,6 +98,38 @@
   },
   "btn_pull_vs": {
     "tx": ["L:S_FCU_VERTICAL_SPEED"]
+  },
+  "btn_cp_ils": {
+    "tx": ["L:S_FCU_EFIS1_ND_MODE"]
+  },
+  "btn_cp_vor": {
+    "tx": ["L:S_FCU_EFIS1_ND_MODE"]
+  },
+  "btn_cp_nav": {
+    "tx": ["L:S_FCU_EFIS1_ND_MODE"]
+  },
+  "btn_cp_arc": {
+    "tx": ["L:S_FCU_EFIS1_ND_MODE"]
+  },
+  "btn_cp_plan": {
+    "tx": ["L:S_FCU_EFIS1_ND_MODE"]
+  },
+  "btn_cp_1_adf": {
+    "tx": ["L:S_FCU_EFIS1_NAV1"]
+  },
+  "btn_cp_1_off": {
+    "tx": ["L:S_FCU_EFIS1_NAV1"]
+  },
+  "btn_cp_1_vor": {
+    "tx": ["L:S_FCU_EFIS1_NAV1"]
+  },
+  "btn_cp_2_adf": {
+    "tx": ["L:S_FCU_EFIS1_NAV2"]
+  },
+  "btn_cp_2_off": {
+    "tx": ["L:S_FCU_EFIS1_NAV2"]
+  },
+  "btn_cp_2_vor": {
+    "tx": ["L:S_FCU_EFIS1_NAV2"]
   }
-
 }
