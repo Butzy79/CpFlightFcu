@@ -11,11 +11,20 @@ class AircraftLoader:
     altitude = {"op": False, "value": 1000, "init": False, "dot": False, "dash": False}
     vs = {"op": False, "value": 0, "init": False, "dash": False}
     btn_gen = {"op": False}
+    led_gen = {"op": False}
+    led_fcu = {"led_loc": False, "led_ap1": False, "led_ap2": False, "led_athr": False, "led_exped": False, "led_appr": False}
+    led_cp_efis = {"led_cp_fd": False, "led_cp_ls": False, "led_cp_cstr": False, "led_cp_wpt": False, "led_cp_vord": False, "led_cp_ndb": False, "led_cp_arpt": False}
 
     @staticmethod
     def load_json_config(filepath):
         with open(filepath, 'r') as f:
             return json.load(f)
+
+    def set_initial_values(self, aircraft_array: int, cpflight_cmds:dict, sock, vr):
+        self.led_fcu = {k: not bool(vr.get(f"({v.get('rx')})")) for k, v in aircraft_array.items() if
+                        k in self.led_fcu and v.get("rx")}
+        self.led_cp_efis = {k: not bool(vr.get(f"({v.get('rx')})")) for k, v in aircraft_array.items() if
+                        k in self.led_cp_efis and v.get("rx")}
 
     def set_dot_fcu(self, aircraft_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         speed_var_dot = aircraft_array.get("speed").get('extra_dot')
@@ -53,21 +62,25 @@ class AircraftLoader:
         altitude_value = bool(vr.get(f"({altitude_var_dash})"))
         vs_dash_value = bool(vr.get(f"({vs_var_dash})"))
 
-        self.speed["dash"] = speed_dash_value
-        sock.sendall((cpflight_cmds.get("speed").get("dash_on") + "\n" if speed_dash_value else
-                      cpflight_cmds.get("speed").get("dash_off") + "\n").encode())
+        if speed_dash_value != self.speed["dash"]:
+            self.speed["dash"] = speed_dash_value
+            sock.sendall((cpflight_cmds.get("speed").get("dash_on") + "\n" if speed_dash_value else
+                          cpflight_cmds.get("speed").get("dash_off") + "\n").encode())
 
-        self.heading["dash"] = heading_dash_value
-        sock.sendall((cpflight_cmds.get("heading").get("dash_on") + "\n" if heading_dash_value else
-                      cpflight_cmds.get("heading").get("dash_off") + "\n").encode())
+        if heading_dash_value != self.heading["dash"]:
+            self.heading["dash"] = heading_dash_value
+            sock.sendall((cpflight_cmds.get("heading").get("dash_on") + "\n" if heading_dash_value else
+                          cpflight_cmds.get("heading").get("dash_off") + "\n").encode())
 
-        self.altitude["dash"] = altitude_value
-        sock.sendall((cpflight_cmds.get("altitude").get("dash_on") + "\n" if altitude_value else
-                      cpflight_cmds.get("altitude").get("dash_off") + "\n").encode())
+        if altitude_value != self.altitude["dash"]:
+            self.altitude["dash"] = altitude_value
+            sock.sendall((cpflight_cmds.get("altitude").get("dash_on") + "\n" if altitude_value else
+                          cpflight_cmds.get("altitude").get("dash_off") + "\n").encode())
 
-        self.vs["dash"] = vs_dash_value
-        sock.sendall((cpflight_cmds.get("vs").get("dash_on") + "\n" if vs_dash_value else
-                      cpflight_cmds.get("vs").get("dash_off") + "\n").encode())
+        if vs_dash_value != self.vs["dash"]:
+            self.vs["dash"] = vs_dash_value
+            sock.sendall((cpflight_cmds.get("vs").get("dash_on") + "\n" if vs_dash_value else
+                          cpflight_cmds.get("vs").get("dash_off") + "\n").encode())
         return True
 
     def set_type_fcu(self, aircraft_array: int, cpflight_cmds:dict, sock, vr) -> bool:
@@ -76,24 +89,53 @@ class AircraftLoader:
 
         speed_mach_value = bool(vr.get(f"({speed_mach_var})"))
         heading_trk_value = bool(vr.get(f"({heading_var_trk})"))
+        if speed_mach_value != self.speed["mach"]:
+            self.speed["mach"] = speed_mach_value
+            sock.sendall((cpflight_cmds.get("speed").get("mach_on") + "\n" if speed_mach_value else
+                          cpflight_cmds.get("speed").get("mach_off") + "\n").encode())
 
-        self.speed["mach"] = speed_mach_value
-        sock.sendall((cpflight_cmds.get("speed").get("mach_on") + "\n" if speed_mach_value else
-                      cpflight_cmds.get("speed").get("mach_off") + "\n").encode())
-
-        self.heading["trk"] = heading_trk_value
-        sock.sendall((cpflight_cmds.get("heading").get("trk_on") + "\n" if heading_trk_value else
-                      cpflight_cmds.get("heading").get("trk_off") + "\n").encode())
+        if heading_trk_value != self.heading["trk"]:
+            self.heading["trk"] = heading_trk_value
+            sock.sendall((cpflight_cmds.get("heading").get("trk_on") + "\n" if heading_trk_value else
+                          cpflight_cmds.get("heading").get("trk_off") + "\n").encode())
         return True
 
+    def set_led_fcu(self, aircraft_array: int, cpflight_cmds:dict, sock, vr) -> bool:
+        for key in self.led_fcu.keys():
+            rx_expr = aircraft_array.get(key, {}).get("rx")
+            if rx_expr is None:
+                continue
+            value = bool(vr.get(f"({rx_expr})"))
+            if self.led_fcu[key] != value:
+                self.led_fcu[key] = value
+                cmd = cpflight_cmds.get(key, {}).get("led_on" if value else "led_off")
+                if cmd:
+                    sock.sendall((cmd + "\n").encode())
+        return True
+
+    def set_led_efis_cp(self, aircraft_array: int, cpflight_cmds:dict, sock, vr) -> bool:
+        for key in self.led_cp_efis.keys():
+            rx_expr = aircraft_array.get(key, {}).get("rx")
+            if rx_expr is None:
+                continue
+            value = bool(vr.get(f"({rx_expr})"))
+            if self.led_cp_efis[key] != value:
+                self.led_cp_efis[key] = value
+                cmd = cpflight_cmds.get(key, {}).get("led_on" if value else "led_off")
+                if cmd:
+                    sock.sendall((cmd + "\n").encode())
+        return True
+
+    #next functions need to respect interval timer
     def set_speed_fcu(self, speed_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         if self.speed["op"]:
             return False
         speed_var = speed_array.get('rx') if self.speed["init"] else speed_array.get('in')
         speed_value = int(vr.get(f"({speed_var})"))
-        self.speed["value"] = speed_value
-        speed_value = f".{speed_value}" if speed_value< 100 else speed_value
-        sock.sendall((cpflight_cmds.get("tx").format(value=speed_value) + "\n").encode())
+        if speed_value != self.speed["value"]:
+            self.speed["value"] = speed_value
+            speed_value = f".{speed_value}" if speed_value< 100 else speed_value
+            sock.sendall((cpflight_cmds.get("tx").format(value=speed_value) + "\n").encode())
         return True
 
     def set_heading_fcu(self, heading_array: int, cpflight_cmds:dict, sock, vr) -> bool:
@@ -101,8 +143,9 @@ class AircraftLoader:
             return False
         heading_var = heading_array.get('rx') if self.heading["init"] else heading_array.get('in')
         heading_value = int(vr.get(f"({heading_var})"))
-        self.heading["value"] = heading_value
-        sock.sendall((cpflight_cmds.get("tx").format(value=str(heading_value).zfill(3)) + "\n").encode())
+        if heading_value != self.heading["value"]:
+            self.heading["value"] = heading_value
+            sock.sendall((cpflight_cmds.get("tx").format(value=str(heading_value).zfill(3)) + "\n").encode())
         return True
 
     def set_altitude_fcu(self, altitude_array: int, cpflight_cmds:dict, sock, vr) -> bool:
@@ -110,8 +153,9 @@ class AircraftLoader:
             return False
         altitude_var = altitude_array.get('rx') if self.altitude["init"] else altitude_array.get('in')
         altitude_value = int(vr.get(f"({altitude_var})"))
-        self.altitude["value"] = altitude_value
-        sock.sendall((cpflight_cmds.get("tx").format(value=f"{altitude_value:05d}") + "\n").encode())
+        if altitude_value != self.altitude["value"]:
+            self.altitude["value"] = altitude_value
+            sock.sendall((cpflight_cmds.get("tx").format(value=f"{altitude_value:05d}") + "\n").encode())
         return True
 
     def set_vs_fcu(self, vs_array: int, cpflight_cmds:dict, sock, vr) -> bool:
@@ -119,8 +163,9 @@ class AircraftLoader:
             return False
         vs_var = vs_array.get('rx') if self.vs["init"] else vs_array.get('in')
         vs_value = int(vr.get(f"({vs_var})"))
-        self.vs["value"] = vs_value
-        sock.sendall((cpflight_cmds.get("tx").format(value=f"{vs_value:+05d}") + "\n").encode())
+        if vs_value != self.vs["value"]:
+            self.vs["value"] = vs_value
+            sock.sendall((cpflight_cmds.get("tx").format(value=f"{vs_value:+05d}") + "\n").encode())
         return True
 
     def set_qnh_cp_fcu(self, qnh_cp_array: int, cpflight_cmds:dict, sock, vr) -> bool:
@@ -128,8 +173,9 @@ class AircraftLoader:
             return False
         qnh_cp_var = qnh_cp_array.get('rx') if self.qnh_cp["init"] else qnh_cp_array.get('in')
         qnh_cp_value = int(vr.get(f"({qnh_cp_var})"))
-        self.qnh_cp["value"] = qnh_cp_value
-        sock.sendall((cpflight_cmds.get("tx").format(value=qnh_cp_value) + "\n").encode())
+        if qnh_cp_value != self.qnh_cp["value"]:
+            self.qnh_cp["value"] = qnh_cp_value
+            sock.sendall((cpflight_cmds.get("tx").format(value=qnh_cp_value) + "\n").encode())
         return True
     
     def set_qnh_fo_fcu(self, qnh_fo_array: int, cpflight_cmds:dict, sock, vr) -> bool:
@@ -137,8 +183,9 @@ class AircraftLoader:
             return False
         qnh_fo_var = qnh_fo_array.get('rx') if self.qnh_cp["init"] else qnh_fo_array.get('in')
         qnh_fo_value = int(vr.get(f"({qnh_fo_var})"))
-        self.qnh_cp["value"] = qnh_fo_value
-        sock.sendall((cpflight_cmds.get("tx").format(value=qnh_fo_value) + "\n").encode())
+        if self.qnh_cp["value"] != qnh_fo_value:
+            self.qnh_cp["value"] = qnh_fo_value
+            sock.sendall((cpflight_cmds.get("tx").format(value=qnh_fo_value) + "\n").encode())
         return True  
 
     # Blocker
@@ -146,7 +193,9 @@ class AircraftLoader:
     def set_opblocker(self, what:str, value:bool) -> bool:
         try:
             if what.startswith('btn_'):
-                self.btn_gen["value"] = value
+                self.btn_gen["op"] = value
+            elif what.startswith('led_'):
+                self.led_gen["op"] = value
             else:
                 getattr(self, what)["op"] = value
             return True
@@ -441,4 +490,73 @@ class AircraftLoader:
     def set_btn_cp_range_320_aircraft(self, value: str, config, vr, sock, cpfligh):
         for el in config['btn_cp_range_320']['tx']:
             vr.set(f"5 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_fd_aircraft(self, value: str, config, vr, sock, cpfligh):
+        new_value = not self.led_cp_efis['led_cp_fd']
+        for el in config['btn_cp_fd']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((cpfligh["led_cp_fd"]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_cp_efis["led_cp_fd"] = new_value
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_ls_aircraft(self, value: str, config, vr, sock, cpfligh):
+        which_led = 'led_cp_ls'
+        new_value = not self.led_cp_efis[which_led]
+        for el in config['btn_cp_ls']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_cp_efis[which_led] = new_value
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_cstr_aircraft(self, value: str, config, vr, sock, cpfligh):
+        which_led = 'led_cp_cstr'
+        new_value = not self.led_cp_efis[which_led]
+        for el in config['btn_cp_cstr']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_cp_efis[which_led] = new_value
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_wpt_aircraft(self, value: str, config, vr, sock, cpfligh):
+        which_led = 'led_cp_wpt'
+        new_value = not self.led_cp_efis[which_led]
+        for el in config['btn_cp_wpt']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_cp_efis[which_led] = new_value
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_vord_aircraft(self, value: str, config, vr, sock, cpfligh):
+        which_led = 'led_cp_vord'
+        new_value = not self.led_cp_efis[which_led]
+        for el in config['btn_cp_vord']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_cp_efis[which_led] = new_value
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_ndb_aircraft(self, value: str, config, vr, sock, cpfligh):
+        which_led = 'led_cp_ndb'
+        new_value = not self.led_cp_efis[which_led]
+        for el in config['btn_cp_ndb']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_cp_efis[which_led] = new_value
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_arpt_aircraft(self, value: str, config, vr, sock, cpfligh):
+        which_led = 'led_cp_arpt'
+        new_value = not self.led_cp_efis[which_led]
+        for el in config['btn_cp_arpt']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_cp_efis[which_led] = new_value
         self.btn_gen["op"] = False

@@ -1,6 +1,7 @@
 {
   "IP": "10.2.0.2",
   "PORT": 4500,
+  "POWER_ON" : "Q001",
   "POWER_OFF" : "K999",
   "LED_ALL_ON": "E0BKL\\x08\\x00",
   "speed": {
@@ -103,28 +104,28 @@
     "rx" : "(K059)"
   },
   "led_ap1": {
-    "tx_on": "L0132",
-    "tx_off": "L1132"
+    "led_on": "L0132",
+    "led_off": "L1132"
   },
   "led_ap2": {
-    "tx_on": "L0133",
-    "tx_off": "L1133"
+    "led_on": "L0133",
+    "led_off": "L1133"
   },
   "led_athr": {
-    "tx_on": "L0119",
-    "tx_off": "L1119"
+    "led_on": "L0119",
+    "led_off": "L1119"
   },
   "led_loc": {
-    "tx_on": "L0128",
-    "tx_off": "L1128"
+    "led_on": "L0128",
+    "led_off": "L1128"
   },
   "led_exped": {
-    "tx_on": "L0160",
-    "tx_off": "L1160"
+    "led_on": "L0160",
+    "led_off": "L1160"
   },
   "led_appr": {
-    "tx_on": "L0129",
-    "tx_off": "L1129"
+    "led_on": "L0129",
+    "led_off": "L1129"
   },
   "btn_cp_ils": {
     "rx" : "(M001)"
@@ -177,32 +178,53 @@
   "btn_cp_range_320": {
     "rx" : "(S006)"
   },
+  "btn_cp_fd": {
+    "rx" : "(K037)"
+  },
+  "btn_cp_ls": {
+    "rx" : "(K049)"
+  },
+  "btn_cp_cstr": {
+    "rx" : "(B005)"
+  },
+  "btn_cp_wpt": {
+    "rx" : "(B003)"
+  },
+  "btn_cp_vord": {
+    "rx" : "(B001)"
+  },
+  "btn_cp_ndb": {
+    "rx" : "(B002)"
+  },
+  "btn_cp_arpt": {
+    "rx" : "(B004)"
+  },
   "led_cp_fd": {
-    "tx_on": "E0L0137",
-    "tx_off": "E0L1137"
+    "led_on": "E0L0137",
+    "led_off": "E0L1137"
   },
   "led_cp_ls": {
-    "tx_on": "E0L0149",
-    "tx_off": "E0L1149"
+    "led_on": "E0L0149",
+    "led_off": "E0L1149"
   },
   "led_cp_cstr": {
-    "tx_on": "E0L0195",
-    "tx_off": "E0L1195"
+    "led_on": "E0L0195",
+    "led_off": "E0L1195"
   },
   "led_cp_wpt": {
-    "tx_on": "E0L0193",
-    "tx_off": "E0L1193"
+    "led_on": "E0L0193",
+    "led_off": "E0L1193"
   },
-  "led_cp_world": {
-    "tx_on": "E0L0191",
-    "tx_off": "E0L1191"
+  "led_cp_vord": {
+    "led_on": "E0L0191",
+    "led_off": "E0L1191"
   },
   "led_cp_ndb": {
-    "tx_on": "E0L0192",
-    "tx_off": "E0L1192"
+    "led_on": "E0L0192",
+    "led_off": "E0L1192"
   },
   "led_cp_arpt": {
-    "tx_on": "E0L0194",
-    "tx_off": "E0L1194"
+    "led_on": "E0L0194",
+    "led_off": "E0L1194"
   }
 }

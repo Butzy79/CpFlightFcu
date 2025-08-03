@@ -57,6 +57,7 @@ class LoopController:
             self.sock.setblocking(False)
 
             # turn led on:
+            self.sock.sendall((self.cpflight.get("POWER_ON") + "\n").encode())
             self.sock.sendall((self.cpflight.get("LED_ALL_ON") + "\n").encode())
 
             self.running = True
@@ -85,20 +86,20 @@ class LoopController:
             self.sock = None
 
     def _run_loop(self):
+        self.aircraft.set_initial_values(self.current_config, self.cpflight, self.sock, self.vr)
         while self.running:
             try:
                 # Dash and Dot Control need to be here
                 self.aircraft.set_dash_fcu( self.current_config, self.cpflight, self.sock, self.vr)
                 self.aircraft.set_dot_fcu( self.current_config, self.cpflight, self.sock, self.vr)
                 self.aircraft.set_type_fcu( self.current_config, self.cpflight, self.sock, self.vr)
-
                 now = time.time()
                 if now < self.pause_loop_until:
                     time.sleep(0.1)
                     continue
                 interval = self.get_interval()
                 # Read from SimConnect and send to hardware
-                
+
                 self.aircraft.set_speed_fcu(
                     self.current_config.get('speed'),
                     self.cpflight.get('speed'),
@@ -135,6 +136,8 @@ class LoopController:
                     self.sock,
                     self.vr
                 )
+                self.aircraft.set_led_fcu( self.current_config, self.cpflight, self.sock, self.vr)
+                self.aircraft.set_led_efis_cp( self.current_config, self.cpflight, self.sock, self.vr)
                 time.sleep(interval)
             except Exception as e:
                 time.sleep(1)

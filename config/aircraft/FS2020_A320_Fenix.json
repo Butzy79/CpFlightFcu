@@ -93,6 +93,24 @@
   "btn_pull_altitude": {
     "tx": ["L:S_FCU_ALTITUDE"]
   },
+  "led_loc": {
+    "rx": "L:I_FCU_LOC"
+  },
+  "led_ap1": {
+    "rx": "L:I_FCU_AP1"
+  },
+  "led_ap2": {
+    "rx": "L:I_FCU_AP2"
+  },
+  "led_athr": {
+    "rx": "L:I_FCU_ATHR"
+  },
+  "led_exped": {
+    "rx": "L:I_FCU_EXPED"
+  },
+  "led_appr": {
+    "rx": "L:I_FCU_APPR"
+  },
   "btn_push_vs": {
     "tx": ["L:S_FCU_VERTICAL_SPEED"]
   },
@@ -149,5 +167,47 @@
   },
   "btn_cp_range_320": {
     "tx": ["L:S_FCU_EFIS1_ND_ZOOM"]
+  },
+  "btn_cp_fd": {
+    "tx": ["L:S_FCU_EFIS1_FD"]
+  },
+  "btn_cp_ls": {
+    "tx": ["L:S_FCU_EFIS1_LS"]
+  },
+  "btn_cp_cstr": {
+    "tx": ["L:S_FCU_EFIS1_CSTR"]
+  },
+  "btn_cp_wpt": {
+    "tx": ["L:S_FCU_EFIS1_WPT"]
+  },
+  "btn_cp_vord": {
+    "tx": ["L:S_FCU_EFIS1_VORD"]
+  },
+  "btn_cp_ndb": {
+    "tx": ["L:S_FCU_EFIS1_NDB"]
+  },
+  "btn_cp_arpt": {
+    "tx": ["L:S_FCU_EFIS1_ARPT"]
+  },
+  "led_cp_fd": {
+    "rx": "L:I_FCU_EFIS1_FD"
+  },
+  "led_cp_ls": {
+    "rx": "L:I_FCU_EFIS1_LS"
+  },
+  "led_cp_cstr": {
+    "rx": "L:I_FCU_EFIS1_CSTR"
+  },
+  "led_cp_wpt": {
+    "rx": "L:I_FCU_EFIS1_WPT"
+  },
+  "led_cp_vord": {
+    "rx": "L:I_FCU_EFIS1_VORD"
+  },
+  "led_cp_ndb": {
+    "rx": "L:I_FCU_EFIS1_NDB"
+  },
+  "led_cp_arpt": {
+    "rx": "L:I_FCU_EFIS1_ARPT"
   }
 }
