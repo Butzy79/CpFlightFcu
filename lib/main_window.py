@@ -31,7 +31,6 @@ class MainWindow:
         return filename.replace("_", " ").replace(".json", "")
 
     def _update_status_labels(self):
-        print("Updating status labels", self.loop_controller.sim_status)
         if self.loop_controller.sim_status:
             self.aircraft_ready_label.config(text="Aircraft ready!", foreground="green")
         else:
@@ -153,6 +152,7 @@ class MainWindow:
 
     def _on_stop(self):
         self.loop_controller.stop()
+        self._update_status_labels()
         if hasattr(self, "status_update_job"):
             self.root.after_cancel(self.status_update_job)
 
