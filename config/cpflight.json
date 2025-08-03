@@ -159,6 +159,24 @@
   "btn_cp_2_vor": {
     "rx" : "(K073)"
   },
+  "btn_cp_range_10": {
+    "rx" : "(S001)"
+  },
+  "btn_cp_range_20": {
+    "rx" : "(S002)"
+  },
+  "btn_cp_range_40": {
+    "rx" : "(S003)"
+  },
+  "btn_cp_range_80": {
+    "rx" : "(S004)"
+  },
+  "btn_cp_range_160": {
+    "rx" : "(S005)"
+  },
+  "btn_cp_range_320": {
+    "rx" : "(S006)"
+  },
   "led_cp_fd": {
     "tx_on": "E0L0137",
     "tx_off": "E0L1137"

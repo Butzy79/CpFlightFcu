@@ -131,5 +131,23 @@
   },
   "btn_cp_2_vor": {
     "tx": ["L:S_FCU_EFIS1_NAV2"]
+  },
+  "btn_cp_range_10": {
+    "tx": ["L:S_FCU_EFIS1_ND_ZOOM"]
+  },
+  "btn_cp_range_20": {
+    "tx": ["L:S_FCU_EFIS1_ND_ZOOM"]
+  },
+  "btn_cp_range_40": {
+    "tx": ["L:S_FCU_EFIS1_ND_ZOOM"]
+  },
+  "btn_cp_range_80": {
+    "tx": ["L:S_FCU_EFIS1_ND_ZOOM"]
+  },
+  "btn_cp_range_160": {
+    "tx": ["L:S_FCU_EFIS1_ND_ZOOM"]
+  },
+  "btn_cp_range_320": {
+    "tx": ["L:S_FCU_EFIS1_ND_ZOOM"]
   }
 }
