@@ -30,6 +30,19 @@ class MainWindow:
     def _format_filename(self, filename):
         return filename.replace("_", " ").replace(".json", "")
 
+    def _update_status_labels(self):
+        print("Updating status labels", self.loop_controller.sim_status)
+        if self.loop_controller.sim_status:
+            self.aircraft_ready_label.config(text="Aircraft ready!", foreground="green")
+        else:
+            self.aircraft_ready_label.config(text="Aircraft NOT ready", foreground="red")
+
+        if self.loop_controller.fcu_status:
+            self.fcu_ready_label.config(text="FCU ready!", foreground="green")
+        else:
+            self.fcu_ready_label.config(text="FCU NOT ready", foreground="red")
+
+
     def _build_gui(self):
         # Main layout frames
         main_frame = ttk.Frame(self.root)
@@ -69,27 +82,19 @@ class MainWindow:
 
         # Right Panel - Aircraft data boxes
         # VARS frame
-        aircraft_frame_width = 220
-        aircraft_frame_height = 300
+        # Right Panel - Aircraft status display
+        self.status_frame = ttk.LabelFrame(right_frame, text="Aircraft Status", width=220, height=300)
+        self.status_frame.pack_propagate(False)
+        self.status_frame.pack(fill="both", pady=(0, 10))
 
-        self.vars_frame = ttk.LabelFrame(right_frame, text="Aircraft VARs", width=aircraft_frame_width, height=aircraft_frame_height)
-        self.vars_frame.pack_propagate(False)  # Fix size
-        self.vars_frame.pack(fill="both", pady=(0, 10))
+        self.aircraft_ready_label = ttk.Label(self.status_frame, text="Aircraft NOT ready", foreground="red",
+                                              font=("Helvetica", 16, "bold"))
+        self.aircraft_ready_label.pack(anchor="center", pady=10)
 
+        self.fcu_ready_label = ttk.Label(self.status_frame, text="FCU NOT ready", foreground="red",
+                                         font=("Helvetica", 16, "bold"))
+        self.fcu_ready_label.pack(anchor="center", pady=10)
 
-        self.speed_label_var = ttk.Label(self.vars_frame, text="Speed: N/A")
-        self.speed_label_var.pack(anchor="w", padx=5, pady=5)
-
-        # INFO frame (placeholder)
-        self.values_frame = ttk.LabelFrame(right_frame, text="Aircraft VALUES", width=aircraft_frame_width, height=aircraft_frame_height)
-        self.values_frame.pack_propagate(False)  # Fix size
-        self.values_frame.pack_forget()
-
-        # values labels aircraft
-        self.speed_label_val = ttk.Label(self.values_frame, text="Speed: N/A")
-        self.speed_label_val.pack(anchor="w", padx=5, pady=5)
-        self.heading_label_val = ttk.Label(self.values_frame, text="Heading: N/A")
-        self.heading_label_val.pack(anchor="w", padx=5, pady=5)
 
         self.status_bar = ttk.Label(self.root, text="Ready", anchor="w", relief="sunken")
         self.status_bar.pack(side="bottom", fill="x")
@@ -97,6 +102,10 @@ class MainWindow:
         if options:
             self.file_var.set(options[0])
             self._on_load()
+
+    def _schedule_status_update(self):
+        self._update_status_labels()
+        self.root.after(5000, self._schedule_status_update)
 
     def _get_interval(self):
         # transform FPS in interval seconds
@@ -122,9 +131,6 @@ class MainWindow:
         filepathcpflight = os.path.join(CONFIG_DIR, "cpflight.json")
         self.current_cpflight_config = self.aircraft.load_json_config(filepathcpflight)
 
-        tx_val = self.current_config.get("speed", {}).get("tx", None)
-        self.speed_label_var.config(text=f"Speed: {tx_val}" if tx_val else "Speed: N/A")
-
         self.start_button.config(state="normal")
         self.load_button.config(state="disabled")  # disable after loading
 
@@ -143,20 +149,15 @@ class MainWindow:
         self.fps_menu.config(state="disabled")
         self.start_button.config(state="disabled")
         self.stop_button.config(state="normal")
-
-        # Show VALUES, hide VARs
-        self.vars_frame.pack_forget()
-        self.values_frame.pack(fill="both", pady=(0, 10))
+        self._schedule_status_update()
 
     def _on_stop(self):
         self.loop_controller.stop()
+        if hasattr(self, "status_update_job"):
+            self.root.after_cancel(self.status_update_job)
 
         # Enable controls
         self.file_menu.config(state="readonly")
         self.fps_menu.config(state="readonly")
         self.start_button.config(state="normal")
         self.stop_button.config(state="disabled")
-
-        # Show VARs, hide VALUES
-        self.values_frame.pack_forget()
-        self.vars_frame.pack(fill="both", pady=(0, 10))

@@ -15,6 +15,13 @@ class AircraftLoader:
     led_fcu = {"led_loc": False, "led_ap1": False, "led_ap2": False, "led_athr": False, "led_exped": False, "led_appr": False}
     led_cp_efis = {"led_cp_fd": False, "led_cp_ls": False, "led_cp_cstr": False, "led_cp_wpt": False, "led_cp_vord": False, "led_cp_ndb": False, "led_cp_arpt": False}
 
+    def _reset_leds_command(self, led_control:str, new_value:bool, cpfligh)-> str:
+        self.led_cp_efis = {
+            k: (k == led_control and new_value) if not k.endswith(("_fd", "_ls")) else self.led_cp_efis[k]
+            for k in self.led_cp_efis
+        }
+        return " ".join(cpfligh[k]["led_on" if v else "led_off"] for k, v in self.led_cp_efis.items()) + "\n"
+
     @staticmethod
     def load_json_config(filepath):
         with open(filepath, 'r') as f:
@@ -517,8 +524,7 @@ class AircraftLoader:
         for el in config['btn_cp_cstr']['tx']:
             actual = vr.get(f"({el})")
             vr.set(f"{int(actual+2)} (>{el})")
-        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
-        self.led_cp_efis[which_led] = new_value
+        sock.sendall((self._reset_leds_command(which_led, new_value, cpfligh)).encode())
         self.btn_gen["op"] = False
 
     def set_btn_cp_wpt_aircraft(self, value: str, config, vr, sock, cpfligh):
@@ -527,8 +533,7 @@ class AircraftLoader:
         for el in config['btn_cp_wpt']['tx']:
             actual = vr.get(f"({el})")
             vr.set(f"{int(actual+2)} (>{el})")
-        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
-        self.led_cp_efis[which_led] = new_value
+        sock.sendall((self._reset_leds_command(which_led, new_value, cpfligh)).encode())
         self.btn_gen["op"] = False
 
     def set_btn_cp_vord_aircraft(self, value: str, config, vr, sock, cpfligh):
@@ -537,8 +542,7 @@ class AircraftLoader:
         for el in config['btn_cp_vord']['tx']:
             actual = vr.get(f"({el})")
             vr.set(f"{int(actual+2)} (>{el})")
-        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
-        self.led_cp_efis[which_led] = new_value
+        sock.sendall((self._reset_leds_command(which_led, new_value, cpfligh)).encode())
         self.btn_gen["op"] = False
 
     def set_btn_cp_ndb_aircraft(self, value: str, config, vr, sock, cpfligh):
@@ -547,8 +551,7 @@ class AircraftLoader:
         for el in config['btn_cp_ndb']['tx']:
             actual = vr.get(f"({el})")
             vr.set(f"{int(actual+2)} (>{el})")
-        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
-        self.led_cp_efis[which_led] = new_value
+        sock.sendall((self._reset_leds_command(which_led, new_value, cpfligh)).encode())
         self.btn_gen["op"] = False
 
     def set_btn_cp_arpt_aircraft(self, value: str, config, vr, sock, cpfligh):
@@ -557,6 +560,5 @@ class AircraftLoader:
         for el in config['btn_cp_arpt']['tx']:
             actual = vr.get(f"({el})")
             vr.set(f"{int(actual+2)} (>{el})")
-        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
-        self.led_cp_efis[which_led] = new_value
+        sock.sendall((self._reset_leds_command(which_led, new_value, cpfligh)).encode())
         self.btn_gen["op"] = False

@@ -27,7 +27,10 @@ class LoopController:
         self.sm = None
         self.vr = None
         self.sock = None
-        
+
+        self.sim_status = False
+        self.fcu_status = False
+
         self.pause_loop_until = 0
 
     def find_matching_block(self, s):
@@ -74,6 +77,8 @@ class LoopController:
         self.running = False
         self.sm = None
         self.vr = None
+        self.sim_status = False
+        self.fcu_status = False
         if self.sock:
             try:
                 # turn power off:
@@ -138,8 +143,10 @@ class LoopController:
                 )
                 self.aircraft.set_led_fcu( self.current_config, self.cpflight, self.sock, self.vr)
                 self.aircraft.set_led_efis_cp( self.current_config, self.cpflight, self.sock, self.vr)
+                self.sim_status = True
                 time.sleep(interval)
             except Exception as e:
+                print(e)
                 time.sleep(1)
 
     def _socket_listener_loop(self):
@@ -152,6 +159,7 @@ class LoopController:
                         if not data:
                             self.stop()
                             break
+                        self.fcu_status = True
                         value_from_fcu = re.sub(r'[\x00-\x1F\x7F]', '', data.decode(errors="ignore")).strip()
                         what = self.find_matching_block(value_from_fcu)
                         if self.aircraft.set_opblocker(what, True):
@@ -167,4 +175,4 @@ class LoopController:
                     except Exception:
                         pass
             except Exception as e:
-                pass
+                print(e)
