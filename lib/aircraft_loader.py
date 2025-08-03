@@ -6,8 +6,8 @@ import time
 class AircraftLoader:
     speed = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "mach": False}
     heading = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "trk": False}
-    qnh_cp = {"op": False, "value": 1015, "init": False}
-    qnh_fo = {"op": False, "value": 1015, "init": False}
+    qnh_cp = {"op": False, "value": 1013, "init": False}
+    qnh_fo = {"op": False, "value": 1013, "init": False}
     altitude = {"op": False, "value": 1000, "init": False, "dot": False, "dash": False}
     vs = {"op": False, "value": 0, "init": False, "dash": False}
     btn_gen = {"op": False}
@@ -26,6 +26,14 @@ class AircraftLoader:
     def load_json_config(filepath):
         with open(filepath, 'r') as f:
             return json.load(f)
+
+    @staticmethod
+    def esthim_qnh(alt_indicata_ft, alt_vera_ft):
+        alt_indicata_m = alt_indicata_ft * 0.3048
+        alt_vera_m = alt_vera_ft * 0.3048
+        delta_h = alt_vera_m - alt_indicata_m
+        qnh = 1013.25 * (1 - (delta_h / 44330)) ** 5.255
+        return round(qnh, 2)
 
     def set_initial_values(self, aircraft_array: int, cpflight_cmds:dict, sock, vr):
         self.led_fcu = {k: not bool(vr.get(f"({v.get('rx')})")) for k, v in aircraft_array.items() if
@@ -178,21 +186,22 @@ class AircraftLoader:
     def set_qnh_cp_fcu(self, qnh_cp_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         if self.qnh_cp["op"]:
             return False
-        qnh_cp_var = qnh_cp_array.get('rx') if self.qnh_cp["init"] else qnh_cp_array.get('in')
-        qnh_cp_value = int(vr.get(f"({qnh_cp_var})"))
-        if qnh_cp_value != self.qnh_cp["value"]:
-            self.qnh_cp["value"] = qnh_cp_value
-            sock.sendall((cpflight_cmds.get("tx").format(value=qnh_cp_value) + "\n").encode())
+        # qnh_cp_var = qnh_cp_array.get('rx') if self.qnh_cp["init"] else qnh_cp_array.get('in')
+        # qnh_cp_value = (vr.get(f"({qnh_cp_var})"))
+        # # if qnh_cp_value != self.qnh_cp["value"]:
+        # #     print("write")
+        # #     self.qnh_cp["value"] = qnh_cp_value
+        # #     sock.sendall((cpflight_cmds.get("tx").format(value=qnh_cp_value) + "\n").encode())
         return True
     
     def set_qnh_fo_fcu(self, qnh_fo_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         if self.qnh_fo["op"]:
             return False
-        qnh_fo_var = qnh_fo_array.get('rx') if self.qnh_cp["init"] else qnh_fo_array.get('in')
-        qnh_fo_value = int(vr.get(f"({qnh_fo_var})"))
-        if self.qnh_cp["value"] != qnh_fo_value:
-            self.qnh_cp["value"] = qnh_fo_value
-            sock.sendall((cpflight_cmds.get("tx").format(value=qnh_fo_value) + "\n").encode())
+        # qnh_fo_var = qnh_fo_array.get('rx') if self.qnh_cp["init"] else qnh_fo_array.get('in')
+        # qnh_fo_value = int(vr.get(f"({qnh_fo_var})"))
+        # if self.qnh_cp["value"] != qnh_fo_value:
+        #     self.qnh_cp["value"] = qnh_fo_value
+        #     sock.sendall((cpflight_cmds.get("tx").format(value=qnh_fo_value) + "\n").encode())
         return True  
 
     # Blocker
@@ -203,6 +212,10 @@ class AircraftLoader:
                 self.btn_gen["op"] = value
             elif what.startswith('led_'):
                 self.led_gen["op"] = value
+            elif what.startswith('qnh_cp_'):
+                self.qnh_cp["op"] = value
+            elif what.startswith('qnh_fo_'):
+                self.qnh_fo["op"] = value
             else:
                 getattr(self, what)["op"] = value
             return True
@@ -260,22 +273,6 @@ class AircraftLoader:
         self.vs["value"] = cl_val
         self.vs["init"] = True
         self.vs["op"] = False
-
-    def set_qnh_cp_aircraft(self, value:str, config, vr, sock, cpfligh):
-        cl_val = int(re.sub(r'\D', '', value))
-        self.qnh_cp['value'] += cl_val
-        for el in config['qnh_cp']['tx']:
-            vr.set(f"{self.qnh_cp['value']} (>{el})")
-        self.qnh_cp["init"] = True
-        self.qnh_cp["op"] = False
-
-    def set_qnh_fo_aircraft(self, value:str, config, vr, sock, cpfligh):
-        cl_val = int(re.sub(r'\D', '', value))
-        self.qnh_fo['value'] += cl_val
-        for el in config['qnh_fo']['tx']:
-            vr.set(f"{self.qnh_fo['value']} (>{el})")
-        self.qnh_fo["init"] = True
-        self.qnh_fo["op"] = False
 
     def set_btn_mach_aircraft(self, value: str, config, vr, sock, cpfligh):
         for el in config['btn_mach']['tx']:
@@ -412,6 +409,53 @@ class AircraftLoader:
     def set_btn_pull_vs_aircraft(self, value: str, config, vr, sock, cpfligh):
         for el in config['btn_pull_vs']['tx']:
             vr.set(f"({el}) ++ (>{el})")
+        self.btn_gen["op"] = False
+
+    #EFIS CPT
+    def set_qnh_cp_inc_aircraft(self, value:str, config, vr, sock, cpfligh):
+        cl_val = int(re.sub(r'\D', '', value))
+        self.qnh_cp['value'] += cl_val
+        for el in config['qnh_cp']['tx']:
+            current = vr.get(f"({el})")
+            if current + cl_val > 1100:
+                cl_val = 1100-current
+                sock.sendall((cpfligh.get('qnh_cp_inc').get("tx").format(value="1100") + "\n").encode())
+            vr.set(f"{int(current + cl_val)} (>{el})")
+            self.qnh_cp["value"] = current + cl_val
+        self.qnh_cp["init"] = True
+        self.qnh_cp["op"] = False
+
+    def set_qnh_cp_dec_aircraft(self, value:str, config, vr, sock, cpfligh):
+        cl_val = int(re.sub(r'\D', '', value))
+        self.qnh_cp['value'] -= cl_val
+        for el in config['qnh_cp']['tx']:
+            current = vr.get(f"({el})")
+            if current - cl_val < 745:
+                cl_val = 745 - current
+                sock.sendall((cpfligh.get('qnh_cp_dec').get("tx").format(value="0745") + "\n").encode())
+            vr.set(f"{int(current - cl_val)} (>{el})")
+            self.qnh_cp["value"] = current - cl_val
+        self.qnh_cp["init"] = True
+        self.qnh_cp["op"] = False
+
+    def set_btn_cp_qnh_push_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_qnh_push']['tx']:
+            vr.set(f"({el}) -- (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_qnh_pull_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_qnh_pull']['tx']:
+            vr.set(f"({el}) ++ (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_inHg_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_inHg']['tx']:
+            vr.set(f"0 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_cp_hPa_aircraft(self, value: str, config, vr, sock, cpfligh):
+        for el in config['btn_cp_hPa']['tx']:
+            vr.set(f"1 (>{el})")
         self.btn_gen["op"] = False
 
     def set_btn_cp_ils_aircraft(self, value: str, config, vr, sock, cpfligh):
@@ -562,3 +606,7 @@ class AircraftLoader:
             vr.set(f"{int(actual+2)} (>{el})")
         sock.sendall((self._reset_leds_command(which_led, new_value, cpfligh)).encode())
         self.btn_gen["op"] = False
+
+    #EFIS FO
+    def set_qnh_fo_aircraft(self, value:str, config, vr, sock, cpfligh):
+        pass

@@ -33,9 +33,9 @@
     "tx_inc": "L:E_FCU_VS"
   },
   "qnh_cp": {
-	"in" : "L:N_FCU_QNH_CP",
-    "rx" : "L:N_FCU_QNH_CP",
-    "tx": ["L:N_FCU_QNH_CP", "L:E_FCU_QNH_CP"]
+	"in" : "L:E_FCU_EFIS1_BARO",
+    "rx" : "L:E_FCU_EFIS1_BARO",
+    "tx": ["L:E_FCU_EFIS1_BARO"]
   },
   "qnh_fo": {
 	"in" : "L:N_FCU_QNH_FO",
@@ -116,6 +116,18 @@
   },
   "btn_pull_vs": {
     "tx": ["L:S_FCU_VERTICAL_SPEED"]
+  },
+  "btn_cp_qnh_push": {
+    "tx": ["L:S_FCU_EFIS1_BARO_STD"]
+  },
+  "btn_cp_qnh_pull": {
+    "tx": ["L:S_FCU_EFIS1_BARO_STD"]
+  },
+  "btn_cp_inHg": {
+    "tx": ["L:S_FCU_EFIS1_BARO_MODE"]
+  },
+  "btn_cp_hPa": {
+    "tx": ["L:S_FCU_EFIS1_BARO_MODE"]
   },
   "btn_cp_ils": {
     "tx": ["L:S_FCU_EFIS1_ND_MODE"]

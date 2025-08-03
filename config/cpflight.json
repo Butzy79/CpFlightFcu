@@ -38,12 +38,20 @@
     "dash_on" : "X1005",
     "dash_off" : "X1105"
   },
-  "qnh_cp": {
+  "qnh_cp_inc": {
     "rx" : "^V101([0-9]{3})$",
     "tx": "E0V11{value}"
   },
-  "qnh_fo": {
+  "qnh_cp_dec": {
+    "rx" : "^V100([0-9]{3})$",
+    "tx": "E0V11{value}"
+  },
+  "qnh_fo_inc": {
     "rx" : "^V131([0-9]{3})$",
+    "tx": "E0V13{value}"
+  },
+  "qnh_fo_dec": {
+    "rx" : "^V130([0-9]{3})$",
     "tx": "E0V13{value}"
   },
   "btn_mach": {
@@ -126,6 +134,18 @@
   "led_appr": {
     "led_on": "L0129",
     "led_off": "L1129"
+  },
+  "btn_cp_qnh_push": {
+    "rx" : "(K050)"
+  },
+  "btn_cp_qnh_pull": {
+    "rx" : "(K051)"
+  },
+  "btn_cp_inHg": {
+    "rx" : "(K062)"
+  },
+  "btn_cp_hPa": {
+    "rx" : "(K063)"
   },
   "btn_cp_ils": {
     "rx" : "(M001)"
