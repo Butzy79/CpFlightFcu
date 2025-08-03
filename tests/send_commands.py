@@ -1,7 +1,6 @@
 import socket
 import json
 import os
-import sys
 
 config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "config", "cpflight.json"))
 with open(config_path, "r") as f:

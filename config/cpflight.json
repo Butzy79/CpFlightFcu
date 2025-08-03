@@ -3,7 +3,6 @@
   "PORT": 4500,
   "POWER_OFF" : "K999",
   "LED_ALL_ON": "E0BKL\\x08\\x00",
-  "LED_ALL_OFF": "E0BKL\\x00\\x00",
   "speed": {
     "rx" : "^V02 ([0-9]{3}|\\.[1-9][0-9])$",
     "tx": "V02 {value}",

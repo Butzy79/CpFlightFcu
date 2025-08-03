@@ -75,12 +75,12 @@ class LoopController:
         self.vr = None
         if self.sock:
             try:
-                # turn led off and then power off on:
-                self.sock.sendall((self.cpflight.get("LED_ALL_OFF") + "\n").encode())
-                self.sock.sendall((self.cpflight.get("POWER_ODD") + "\n").encode())
+                # turn power off:
+                self.sock.sendall((self.cpflight.get("POWER_OFF") + "\n").encode())
                 self.sock.shutdown(socket.SHUT_RDWR)
                 self.sock.close()
-            except Exception:
+            except Exception as e:
+                print(f"CpFlight Connection error: {e}")
                 pass
             self.sock = None
 

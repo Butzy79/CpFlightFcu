@@ -10,9 +10,7 @@ target_ip = config.get("IP")
 if not target_ip:
     raise ValueError("Ip not found in config/cpflight.json")
 
-# Abilita l'uso di Npcap/libpcap
 conf.use_pcap = True
-
 def packet_callback(packet):
     if packet.haslayer(IP) and packet.haslayer(TCP) and packet.haslayer(Raw):
         if target_ip in (packet[IP].src, packet[IP].dst):
