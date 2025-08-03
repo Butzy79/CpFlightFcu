@@ -1,6 +1,9 @@
 {
   "IP": "10.2.0.2",
   "PORT": 4500,
+  "POWER_OFF" : "K999",
+  "LED_ALL_ON": "E0BKL\\x08\\x00",
+  "LED_ALL_OFF": "E0BKL\\x00\\x00",
   "speed": {
     "rx" : "^V02 ([0-9]{3}|\\.[1-9][0-9])$",
     "tx": "V02 {value}",
@@ -25,13 +28,15 @@
     "rx" : "^V04([0-9]{5})$",
     "tx": "V04{value}",
     "dot_on" : "L0126",
-    "dot_off" : "L1126"
+    "dot_off" : "L1126",
+    "dash_on" : "X1004",
+    "dash_off" : "X1104"
   },
   "vs": {
     "rx" : "^V05([+-]\\d{2}00)$",
     "tx": "V05{value}",
-    "dash_on" : "X1004",
-    "dash_off" : "X1104"
+    "dash_on" : "X1005",
+    "dash_off" : "X1105"
   },
   "qnh_cp": {
     "rx" : "^V101([0-9]{3})$",

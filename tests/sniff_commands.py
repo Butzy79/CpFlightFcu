@@ -17,8 +17,10 @@ def packet_callback(packet):
     if packet.haslayer(IP) and packet.haslayer(TCP) and packet.haslayer(Raw):
         if target_ip in (packet[IP].src, packet[IP].dst):
             try:
-                data = packet[Raw].load.decode("ascii")
-                print(f"cmd: {data}")
+                data_bytes = packet[Raw].load
+                hex_str = " ".join(f"{b:02x}" for b in data_bytes)
+                ascii_str = "".join(chr(b) if 32 <= b <= 126 else "." for b in data_bytes)
+                print(f"Raw data (hex): {hex_str} (ascii): {ascii_str}")
             except UnicodeDecodeError:
                 pass
 

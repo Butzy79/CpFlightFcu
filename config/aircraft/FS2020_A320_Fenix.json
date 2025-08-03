@@ -20,6 +20,7 @@
     "in" : "L:N_FCU_ALTITUDE",
     "rx" : "L:N_FCU_ALTITUDE",
     "extra_dot": "L:I_FCU_ALTITUDE_MANAGED",
+    "extra_dash": "L:B_FCU_ALTITUDE_DASHED",
     "tx": ["L:N_FCU_ALTITUDE"],
     "tx_inc": "L:E_FCU_ALTITUDE",
     "scale": "L:S_FCU_ALTITUDE_SCALE"

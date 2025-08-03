@@ -55,6 +55,10 @@ class LoopController:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.connect((self.cpflight.get('IP'), self.cpflight.get('PORT')))
             self.sock.setblocking(False)
+
+            # turn led on:
+            self.sock.sendall((self.cpflight.get("LED_ALL_ON") + "\n").encode())
+
             self.running = True
             self.thread = threading.Thread(target=self._run_loop, daemon=True)
             self.socket_thread = threading.Thread(target=self._socket_listener_loop, daemon=True)
@@ -71,6 +75,9 @@ class LoopController:
         self.vr = None
         if self.sock:
             try:
+                # turn led off and then power off on:
+                self.sock.sendall((self.cpflight.get("LED_ALL_OFF") + "\n").encode())
+                self.sock.sendall((self.cpflight.get("POWER_ODD") + "\n").encode())
                 self.sock.shutdown(socket.SHUT_RDWR)
                 self.sock.close()
             except Exception:

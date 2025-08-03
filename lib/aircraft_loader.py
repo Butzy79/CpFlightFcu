@@ -8,7 +8,7 @@ class AircraftLoader:
     heading = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "trk": False}
     qnh_cp = {"op": False, "value": 1015, "init": False}
     qnh_fo = {"op": False, "value": 1015, "init": False}
-    altitude = {"op": False, "value": 1000, "init": False, "dot": False}
+    altitude = {"op": False, "value": 1000, "init": False, "dot": False, "dash": False}
     vs = {"op": False, "value": 0, "init": False, "dash": False}
     btn_gen = {"op": False}
 
@@ -45,10 +45,12 @@ class AircraftLoader:
     def set_dash_fcu(self, aircraft_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         speed_var_dash = aircraft_array.get("speed").get('extra_dash')
         heading_var_dash = aircraft_array.get("heading").get('extra_dash')
+        altitude_var_dash = aircraft_array.get("altitude").get('extra_dash')
         vs_var_dash = aircraft_array.get("vs").get('extra_dash')
 
         speed_dash_value = bool(vr.get(f"({speed_var_dash})"))
         heading_dash_value = bool(vr.get(f"({heading_var_dash})"))
+        altitude_value = bool(vr.get(f"({altitude_var_dash})"))
         vs_dash_value = bool(vr.get(f"({vs_var_dash})"))
 
         self.speed["dash"] = speed_dash_value
@@ -58,6 +60,10 @@ class AircraftLoader:
         self.heading["dash"] = heading_dash_value
         sock.sendall((cpflight_cmds.get("heading").get("dash_on") + "\n" if heading_dash_value else
                       cpflight_cmds.get("heading").get("dash_off") + "\n").encode())
+
+        self.altitude["dash"] = altitude_value
+        sock.sendall((cpflight_cmds.get("altitude").get("dash_on") + "\n" if altitude_value else
+                      cpflight_cmds.get("altitude").get("dash_off") + "\n").encode())
 
         self.vs["dash"] = vs_dash_value
         sock.sendall((cpflight_cmds.get("vs").get("dash_on") + "\n" if vs_dash_value else
