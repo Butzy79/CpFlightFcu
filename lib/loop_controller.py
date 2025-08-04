@@ -129,13 +129,13 @@ class LoopController:
                     self.sock,
                     self.vr
                 )
-                self.aircraft.set_qnh_cp_fcu(
+                self.aircraft.set_qnh_cp_efis(
                     self.current_config.get('qnh_cp'),
                     self.cpflight.get('qnh_cp'),
                     self.sock,
                     self.vr
                 )
-                self.aircraft.set_qnh_fo_fcu(
+                self.aircraft.set_qnh_fo_efis(
                     self.current_config.get('qnh_fo'),
                     self.cpflight.get('qnh_fo'),
                     self.sock,

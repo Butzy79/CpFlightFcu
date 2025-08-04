@@ -183,18 +183,19 @@ class AircraftLoader:
             sock.sendall((cpflight_cmds.get("tx").format(value=f"{vs_value:+05d}") + "\n").encode())
         return True
 
-    def set_qnh_cp_fcu(self, qnh_cp_array: int, cpflight_cmds:dict, sock, vr) -> bool:
+    def set_qnh_cp_efis(self, qnh_cp_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         if self.qnh_cp["op"]:
             return False
-        # qnh_cp_var = qnh_cp_array.get('rx') if self.qnh_cp["init"] else qnh_cp_array.get('in')
-        # qnh_cp_value = (vr.get(f"({qnh_cp_var})"))
+        qnh_cp_var = qnh_cp_array.get('rx') if self.qnh_cp["init"] else qnh_cp_array.get('in')
+        qnh_cp_value = (vr.get(f"({qnh_cp_var})"))
+        print(f"Read: {qnh_cp_value}")
         # # if qnh_cp_value != self.qnh_cp["value"]:
         # #     print("write")
         # #     self.qnh_cp["value"] = qnh_cp_value
         # #     sock.sendall((cpflight_cmds.get("tx").format(value=qnh_cp_value) + "\n").encode())
         return True
     
-    def set_qnh_fo_fcu(self, qnh_fo_array: int, cpflight_cmds:dict, sock, vr) -> bool:
+    def set_qnh_fo_efis(self, qnh_fo_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         if self.qnh_fo["op"]:
             return False
         # qnh_fo_var = qnh_fo_array.get('rx') if self.qnh_cp["init"] else qnh_fo_array.get('in')
@@ -417,9 +418,6 @@ class AircraftLoader:
         self.qnh_cp['value'] += cl_val
         for el in config['qnh_cp']['tx']:
             current = vr.get(f"({el})")
-            if current + cl_val > 1100:
-                cl_val = 1100-current
-                sock.sendall((cpfligh.get('qnh_cp_inc').get("tx").format(value="1100") + "\n").encode())
             vr.set(f"{int(current + cl_val)} (>{el})")
             self.qnh_cp["value"] = current + cl_val
         self.qnh_cp["init"] = True
@@ -430,9 +428,6 @@ class AircraftLoader:
         self.qnh_cp['value'] -= cl_val
         for el in config['qnh_cp']['tx']:
             current = vr.get(f"({el})")
-            if current - cl_val < 745:
-                cl_val = 745 - current
-                sock.sendall((cpfligh.get('qnh_cp_dec').get("tx").format(value="0745") + "\n").encode())
             vr.set(f"{int(current - cl_val)} (>{el})")
             self.qnh_cp["value"] = current - cl_val
         self.qnh_cp["init"] = True
