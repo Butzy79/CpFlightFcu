@@ -37,8 +37,19 @@ Contributions, testing, and bug reports are welcome.
    ```bash
     pip install -r requirements.txt
    ```
-   
-3. Run the main script:
+
+3. Edit the file `config/cpflight.json` with your IP address and communication port
+By default, the port is set to `4500`.
+```json
+{
+    ...
+    "IP": "10.2.0.2",
+    "PORT": 4500,
+    ...
+}
+```
+
+4. Run the main script:
    ```bash
    python main.py
    ```
