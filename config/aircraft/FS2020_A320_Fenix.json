@@ -33,14 +33,14 @@
     "tx_inc": "L:E_FCU_VS"
   },
   "qnh_cp": {
-	"in" : "L:E_FCU_EFIS1_BARO",
-    "rx" : "L:E_FCU_EFIS1_BARO",
+	"in" : "L:B_FCU_EFIS1_BARO",
+    "rx" : "L:B_FCU_EFIS1_BARO",
     "tx": ["L:E_FCU_EFIS1_BARO"]
   },
   "qnh_fo": {
-	"in" : "L:N_FCU_QNH_FO",
-    "rx" : "L:N_FCU_QNH_FO",
-    "tx": ["L:N_FCU_QNH_FO", "L:E_FCU_QNH_FO"]
+	"in" : "L:B_FCU_EFIS2_BARO",
+    "rx" : "L:B_FCU_EFIS2_BARO",
+    "tx": ["L:E_FCU_EFIS2_BARO"]
   },
   "btn_mach": {
     "tx": ["L:S_FCU_SPD_MACH"]
