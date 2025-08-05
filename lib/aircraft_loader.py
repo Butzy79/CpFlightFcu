@@ -158,6 +158,19 @@ class AircraftLoader:
                     sock.sendall((cmd + "\n").encode())
         return True
 
+    def set_led_efis_fo(self, aircraft_array: int, cpflight_cmds:dict, sock, vr) -> bool:
+        for key in self.led_fo_efis.keys():
+            rx_expr = aircraft_array.get(key, {}).get("rx")
+            if rx_expr is None:
+                continue
+            value = bool(vr.get(f"({rx_expr})"))
+            if self.led_fo_efis[key] != value:
+                self.led_fo_efis[key] = value
+                cmd = cpflight_cmds.get(key, {}).get("led_on" if value else "led_off")
+                if cmd:
+                    sock.sendall((cmd + "\n").encode())
+        return True
+
     #next functions need to respect interval timer
     def set_speed_fcu(self, speed_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         if self.speed["op"]:

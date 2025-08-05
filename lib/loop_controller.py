@@ -144,6 +144,8 @@ class LoopController:
                 )
                 self.aircraft.set_led_fcu( self.current_config, self.cpflight, self.sock, self.vr)
                 self.aircraft.set_led_efis_cp( self.current_config, self.cpflight, self.sock, self.vr)
+                self.aircraft.set_led_efis_fo( self.current_config, self.cpflight, self.sock, self.vr)
+
                 self.sim_status = True
                 time.sleep(interval)
             except Exception as e:
