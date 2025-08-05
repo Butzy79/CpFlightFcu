@@ -231,5 +231,110 @@
   },
   "led_cp_arpt": {
     "rx": "L:I_FCU_EFIS1_ARPT"
+  },
+  "btn_fo_qnh_push": {
+    "tx": ["L:S_FCU_EFIS2_BARO_STD"]
+  },
+  "btn_fo_qnh_pull": {
+    "tx": ["L:S_FCU_EFIS2_BARO_STD"]
+  },
+  "btn_fo_inHg": {
+    "tx": ["L:S_FCU_EFIS2_BARO_MODE"]
+  },
+  "btn_fo_hPa": {
+    "tx": ["L:S_FCU_EFIS2_BARO_MODE"]
+  },
+  "btn_fo_ils": {
+    "tx": ["L:S_FCU_EFIS2_ND_MODE"]
+  },
+  "btn_fo_vor": {
+    "tx": ["L:S_FCU_EFIS2_ND_MODE"]
+  },
+  "btn_fo_nav": {
+    "tx": ["L:S_FCU_EFIS2_ND_MODE"]
+  },
+  "btn_fo_arc": {
+    "tx": ["L:S_FCU_EFIS2_ND_MODE"]
+  },
+  "btn_fo_plan": {
+    "tx": ["L:S_FCU_EFIS2_ND_MODE"]
+  },
+  "btn_fo_1_adf": {
+    "tx": ["L:S_FCU_EFIS2_NAV1"]
+  },
+  "btn_fo_1_off": {
+    "tx": ["L:S_FCU_EFIS2_NAV1"]
+  },
+  "btn_fo_1_vor": {
+    "tx": ["L:S_FCU_EFIS2_NAV1"]
+  },
+  "btn_fo_2_adf": {
+    "tx": ["L:S_FCU_EFIS2_NAV2"]
+  },
+  "btn_fo_2_off": {
+    "tx": ["L:S_FCU_EFIS2_NAV2"]
+  },
+  "btn_fo_2_vor": {
+    "tx": ["L:S_FCU_EFIS2_NAV2"]
+  },
+  "btn_fo_range_10": {
+    "tx": ["L:S_FCU_EFIS2_ND_ZOOM"]
+  },
+  "btn_fo_range_20": {
+    "tx": ["L:S_FCU_EFIS2_ND_ZOOM"]
+  },
+  "btn_fo_range_40": {
+    "tx": ["L:S_FCU_EFIS2_ND_ZOOM"]
+  },
+  "btn_fo_range_80": {
+    "tx": ["L:S_FCU_EFIS2_ND_ZOOM"]
+  },
+  "btn_fo_range_160": {
+    "tx": ["L:S_FCU_EFIS2_ND_ZOOM"]
+  },
+  "btn_fo_range_320": {
+    "tx": ["L:S_FCU_EFIS2_ND_ZOOM"]
+  },
+  "btn_fo_fd": {
+    "tx": ["L:S_FCU_EFIS2_FD"]
+  },
+  "btn_fo_ls": {
+    "tx": ["L:S_FCU_EFIS2_LS"]
+  },
+  "btn_fo_cstr": {
+    "tx": ["L:S_FCU_EFIS2_CSTR"]
+  },
+  "btn_fo_wpt": {
+    "tx": ["L:S_FCU_EFIS2_WPT"]
+  },
+  "btn_fo_vord": {
+    "tx": ["L:S_FCU_EFIS2_VORD"]
+  },
+  "btn_fo_ndb": {
+    "tx": ["L:S_FCU_EFIS2_NDB"]
+  },
+  "btn_fo_arpt": {
+    "tx": ["L:S_FCU_EFIS2_ARPT"]
+  },
+  "led_fo_fd": {
+    "rx": "L:I_FCU_EFIS2_FD"
+  },
+  "led_fo_ls": {
+    "rx": "L:I_FCU_EFIS2_LS"
+  },
+  "led_fo_cstr": {
+    "rx": "L:I_FCU_EFIS2_CSTR"
+  },
+  "led_fo_wpt": {
+    "rx": "L:I_FCU_EFIS2_WPT"
+  },
+  "led_fo_vord": {
+    "rx": "L:I_FCU_EFIS2_VORD"
+  },
+  "led_fo_ndb": {
+    "rx": "L:I_FCU_EFIS2_NDB"
+  },
+  "led_fo_arpt": {
+    "rx": "L:I_FCU_EFIS2_ARPT"
   }
 }

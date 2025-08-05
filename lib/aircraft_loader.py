@@ -681,5 +681,232 @@ class AircraftLoader:
         self.btn_gen["op"] = False
 
     #EFIS FO
-    def set_qnh_fo_aircraft(self, value:str, config, vr, sock, cpfligh):
-        pass
+    def set_qnh_fo_inc_aircraft(self, value:str, config, vr, sock, fofligh):
+        cl_val = int(re.sub(r'\D', '', value))
+        for el in config['qnh_fo']['tx']:
+            current = vr.get(f"({el})")
+            vr.set(f"{int(current + cl_val)} (>{el})")
+        qnh_fo_mode_hpa, qnh_fo_value, cmd_send = self._get_value_qhn_to_unit(
+            vr,
+            config['qnh_fo']['mode_hpa'],
+            config['qnh_fo']['rx_hpa'],
+            config['qnh_fo']['rx_inhg'],
+            config['qnh_fo']['hpa_range'],
+            config['qnh_fo']['inhg_range'],
+            increment=cl_val
+        )
+        sock.sendall((fofligh["qnh_fo"]["tx"].format(value=cmd_send)+ "\n").encode())
+        self.qnh_fo["value"] = qnh_fo_value
+        self.qnh_fo["init"] = True
+        self.qnh_fo["op"] = False
+
+    def set_qnh_fo_dec_aircraft(self, value:str, config, vr, sock, fofligh):
+        cl_val = int(re.sub(r'\D', '', value))
+        for el in config['qnh_fo']['tx']:
+            current = vr.get(f"({el})")
+            vr.set(f"{int(current - cl_val)} (>{el})")
+        qnh_fo_mode_hpa, qnh_fo_value, cmd_send = self._get_value_qhn_to_unit(
+            vr,
+            config['qnh_fo']['mode_hpa'],
+            config['qnh_fo']['rx_hpa'],
+            config['qnh_fo']['rx_inhg'],
+            config['qnh_fo']['hpa_range'],
+            config['qnh_fo']['inhg_range'],
+            increment=-cl_val
+        )
+        sock.sendall((fofligh["qnh_fo"]["tx"].format(value=cmd_send)+ "\n").encode())
+        self.qnh_fo["value"] = qnh_fo_value
+        self.qnh_fo["init"] = True
+        self.qnh_fo["op"] = False
+
+    def set_btn_fo_qnh_push_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_qnh_push']['tx']:
+            vr.set(f"({el}) -- (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_qnh_pull_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_qnh_pull']['tx']:
+            vr.set(f"({el}) ++ (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_inHg_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_inHg']['tx']:
+            vr.set(f"0 (>{el})")
+        qnh_fo_mode_hpa, qnh_fo_value, cmd_send = self._get_value_qhn_to_unit(
+            vr,
+            False,
+            config['qnh_fo']['rx_hpa'],
+            config['qnh_fo']['rx_inhg'],
+            config['qnh_fo']['hpa_range'],
+            config['qnh_fo']['inhg_range'],
+            increment=0,
+            force_mode=True
+        )
+        sock.sendall((fofligh["qnh_fo"]["tx"].format(value=cmd_send)+ "\n").encode())
+
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_hPa_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_hPa']['tx']:
+            vr.set(f"1 (>{el})")
+        qnh_fo_mode_hpa, qnh_fo_value, cmd_send = self._get_value_qhn_to_unit(
+            vr,
+            True,
+            config['qnh_fo']['rx_hpa'],
+            config['qnh_fo']['rx_inhg'],
+            config['qnh_fo']['hpa_range'],
+            config['qnh_fo']['inhg_range'],
+            increment=0,
+            force_mode = True
+        )
+        sock.sendall((fofligh["qnh_fo"]["tx"].format(value=cmd_send)+ "\n").encode())
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_ils_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_ils']['tx']:
+            vr.set(f"0 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_vor_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_vor']['tx']:
+            vr.set(f"1 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_nav_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_nav']['tx']:
+            vr.set(f"2 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_arc_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_arc']['tx']:
+            vr.set(f"3 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_plan_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_plan']['tx']:
+            vr.set(f"4 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_1_adf_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_1_adf']['tx']:
+            vr.set(f"0 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_1_off_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_1_off']['tx']:
+            vr.set(f"1 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_1_vor_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_1_vor']['tx']:
+            vr.set(f"2 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_2_adf_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_2_adf']['tx']:
+            vr.set(f"0 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_2_off_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_2_off']['tx']:
+            vr.set(f"1 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_2_vor_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_2_vor']['tx']:
+            vr.set(f"2 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_range_10_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_range_10']['tx']:
+            vr.set(f"0 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_range_20_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_range_20']['tx']:
+            vr.set(f"1 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_range_40_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_range_40']['tx']:
+            vr.set(f"2 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_range_80_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_range_80']['tx']:
+            vr.set(f"3 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_range_160_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_range_160']['tx']:
+            vr.set(f"5 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_range_320_aircraft(self, value: str, config, vr, sock, fofligh):
+        for el in config['btn_fo_range_320']['tx']:
+            vr.set(f"5 (>{el})")
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_fd_aircraft(self, value: str, config, vr, sock, fofligh):
+        new_value = not self.led_fo_efis['led_fo_fd']
+        for el in config['btn_fo_fd']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((fofligh["led_fo_fd"]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_fo_efis["led_fo_fd"] = new_value
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_ls_aircraft(self, value: str, config, vr, sock, fofligh):
+        which_led = 'led_fo_ls'
+        new_value = not self.led_fo_efis[which_led]
+        for el in config['btn_fo_ls']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((fofligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_fo_efis[which_led] = new_value
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_cstr_aircraft(self, value: str, config, vr, sock, fofligh):
+        which_led = 'led_fo_cstr'
+        new_value = not self.led_fo_efis[which_led]
+        for el in config['btn_fo_cstr']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((self._reset_leds_command(which_led, new_value, fofligh)).encode())
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_wpt_aircraft(self, value: str, config, vr, sock, fofligh):
+        which_led = 'led_fo_wpt'
+        new_value = not self.led_fo_efis[which_led]
+        for el in config['btn_fo_wpt']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((self._reset_leds_command(which_led, new_value, fofligh)).encode())
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_vord_aircraft(self, value: str, config, vr, sock, fofligh):
+        which_led = 'led_fo_vord'
+        new_value = not self.led_fo_efis[which_led]
+        for el in config['btn_fo_vord']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((self._reset_leds_command(which_led, new_value, fofligh)).encode())
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_ndb_aircraft(self, value: str, config, vr, sock, fofligh):
+        which_led = 'led_fo_ndb'
+        new_value = not self.led_fo_efis[which_led]
+        for el in config['btn_fo_ndb']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((self._reset_leds_command(which_led, new_value, fofligh)).encode())
+        self.btn_gen["op"] = False
+
+    def set_btn_fo_arpt_aircraft(self, value: str, config, vr, sock, fofligh):
+        which_led = 'led_fo_arpt'
+        new_value = not self.led_fo_efis[which_led]
+        for el in config['btn_fo_arpt']['tx']:
+            actual = vr.get(f"({el})")
+            vr.set(f"{int(actual+2)} (>{el})")
+        sock.sendall((self._reset_leds_command(which_led, new_value, fofligh)).encode())
+        self.btn_gen["op"] = False
