@@ -6,8 +6,8 @@ import time
 class AircraftLoader:
     speed = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "mach": False}
     heading = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "trk": False}
-    qnh_cp = {"op": False, "value": 1013, "init": False}
-    qnh_fo = {"op": False, "value": 1013, "init": False}
+    qnh_cp = {"op": False, "value": 1013.0, "init": False}
+    qnh_fo = {"op": False, "value": 1013.0, "init": False}
     altitude = {"op": False, "value": 1000, "init": False, "dot": False, "dash": False}
     vs = {"op": False, "value": 0, "init": False, "dash": False}
     btn_gen = {"op": False}
@@ -183,20 +183,31 @@ class AircraftLoader:
             sock.sendall((cpflight_cmds.get("tx").format(value=f"{vs_value:+05d}") + "\n").encode())
         return True
 
+    def _get_value_qhn_to_unit(self, vr, mode_hpa_var, rx_hpa, rx_inhg, increment=0) -> tuple[bool, float, str]:
+        qnh_cp_mode_hpa = bool(vr.get(f'({mode_hpa_var})'))
+        if qnh_cp_mode_hpa:
+            qnh_cp_value = float(vr.get(f'({rx_hpa})')) + increment
+            if qnh_cp_value > 1100:
+                qnh_cp_value = 1100
+        else:
+            qnh_cp_value = float(vr.get(f'({rx_inhg})')) + increment
+            if qnh_cp_value > 32.48:
+                qnh_cp_value = 32.48
+        cmd_send = f"{int(qnh_cp_value):04d}" if qnh_cp_mode_hpa else f"{qnh_cp_value:05.2f}"
+        return qnh_cp_mode_hpa, qnh_cp_value, cmd_send
+
     def set_qnh_cp_efis(self, qnh_cp_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         if self.qnh_cp["op"]:
             return False
-        qnh_cp_mode_hpa = bool(qnh_cp_array.get('mode_hpa'))
-        if qnh_cp_mode_hpa:
-            qnh_cp_var = qnh_cp_array.get('rx_hpa') if self.qnh_cp["init"] else qnh_cp_array.get('in_hpa')
-            qnh_cp_value = int(vr.get(f"({qnh_cp_var})"))
-        else:
-            qnh_cp_var = qnh_cp_array.get('rx') if self.qnh_cp["init"] else qnh_cp_array.get('in')
-            qnh_cp_value = round(vr.get(f"({qnh_cp_var})"), 2)
+        qnh_cp_mode_hpa, qnh_cp_value, cmd_send = self._get_value_qhn_to_unit(
+            vr,
+            qnh_cp_array.get('mode_hpa'),
+            qnh_cp_array.get('rx_hpa') if self.qnh_cp["init"] else qnh_cp_array.get('in_hpa'),
+            qnh_cp_array.get('rx_inhg') if self.qnh_cp["init"] else qnh_cp_array.get('in_inhg')
+        )
         if qnh_cp_value != self.qnh_cp["value"]:
-            print(qnh_cp_value)
             self.qnh_cp["value"] = qnh_cp_value
-            sock.sendall((cpflight_cmds.get("tx").format(value=qnh_cp_value) + "\n").encode())
+            sock.sendall((cpflight_cmds.get("tx").format(value=cmd_send) + "\n").encode())
         return True
     
     def set_qnh_fo_efis(self, qnh_fo_array: int, cpflight_cmds:dict, sock, vr) -> bool:
@@ -419,21 +430,36 @@ class AircraftLoader:
     #EFIS CPT
     def set_qnh_cp_inc_aircraft(self, value:str, config, vr, sock, cpfligh):
         cl_val = int(re.sub(r'\D', '', value))
-        self.qnh_cp['value'] += cl_val
         for el in config['qnh_cp']['tx']:
             current = vr.get(f"({el})")
             vr.set(f"{int(current + cl_val)} (>{el})")
-            self.qnh_cp["value"] = current + cl_val
+
+        qnh_cp_mode_hpa, qnh_cp_value, cmd_send = self._get_value_qhn_to_unit(
+            vr,
+            config['qnh_cp']['mode_hpa'],
+            config['qnh_cp']['rx_hpa'],
+            config['qnh_cp']['rx_inhg'],
+            cl_val
+        )
+        sock.sendall((cpfligh["qnh_cp"]["tx"].format(value=cmd_send)+ "\n").encode())
+        self.qnh_cp["value"] = qnh_cp_value
         self.qnh_cp["init"] = True
         self.qnh_cp["op"] = False
 
     def set_qnh_cp_dec_aircraft(self, value:str, config, vr, sock, cpfligh):
         cl_val = int(re.sub(r'\D', '', value))
-        self.qnh_cp['value'] -= cl_val
         for el in config['qnh_cp']['tx']:
             current = vr.get(f"({el})")
             vr.set(f"{int(current - cl_val)} (>{el})")
-            self.qnh_cp["value"] = current - cl_val
+        qnh_cp_mode_hpa, qnh_cp_value, cmd_send = self._get_value_qhn_to_unit(
+            vr,
+            config['qnh_cp']['mode_hpa'],
+            config['qnh_cp']['rx_hpa'],
+            config['qnh_cp']['rx_inhg'],
+            -cl_val
+        )
+        sock.sendall((cpfligh["qnh_cp"]["tx"].format(value=cmd_send)+ "\n").encode())
+        self.qnh_cp["value"] = qnh_cp_value
         self.qnh_cp["init"] = True
         self.qnh_cp["op"] = False
 
