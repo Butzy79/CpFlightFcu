@@ -41,6 +41,17 @@ class AircraftLoader:
         self.led_cp_efis = {k: not bool(vr.get(f"({v.get('rx')})")) for k, v in aircraft_array.items() if
                         k in self.led_cp_efis and v.get("rx")}
 
+        dashes = ['speed', 'heading', 'altitude', 'vs']
+        for dash in dashes:
+            getattr(self, dash)["dash"] = not bool(vr.get(f"({aircraft_array.get(dash).get('extra_dash')})"))
+
+        dots = ['speed', 'heading', 'altitude']
+        for dot in dots:
+            getattr(self, dot)["dot"] = not bool(vr.get(f"({aircraft_array.get(dash).get('extra_dot')})"))
+
+        self.speed["nack"] = not bool(vr.get(f"({aircraft_array.get('speed').get('extra_mach')})"))
+        self.heading["trk"] = not bool(vr.get(f"({aircraft_array.get('heading').get('extra_trk')})"))
+
     def set_dot_fcu(self, aircraft_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         speed_var_dot = aircraft_array.get("speed").get('extra_dot')
         heading_var_dot = aircraft_array.get("heading").get('extra_dot')
