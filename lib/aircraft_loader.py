@@ -189,6 +189,9 @@ class AircraftLoader:
         qnh_cp_var = qnh_cp_array.get('rx') if self.qnh_cp["init"] else qnh_cp_array.get('in')
         qnh_cp_value = (vr.get(f"({qnh_cp_var})"))
         print(f"Read: {qnh_cp_value}")
+
+        print(vr.get(f"(N_FCU_EFIS1_BARO_INCH)"), vr.get(f"(N_FCU_EFIS1_BARO_HPA)"), vr.get(f"(B_FCU_EFIS1_BARO)"))
+
         # # if qnh_cp_value != self.qnh_cp["value"]:
         # #     print("write")
         # #     self.qnh_cp["value"] = qnh_cp_value
