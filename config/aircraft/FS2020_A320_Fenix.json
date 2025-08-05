@@ -43,9 +43,14 @@
     "inhg_range": [22, 32.48]
   },
   "qnh_fo": {
-	"in" : "L:B_FCU_EFIS2_BARO",
-    "rx" : "L:B_FCU_EFIS2_BARO",
-    "tx": ["L:E_FCU_EFIS2_BARO"]
+   	"in_inhg" : "L:N_FCU_EFIS2_BARO_INCH",
+    "rx_inhg" : "L:N_FCU_EFIS2_BARO_INCH",
+    "in_hpa" : "L:N_FCU_EFIS2_BARO_HPA",
+    "rx_hpa" : "L:N_FCU_EFIS2_BARO_HPA",
+    "mode_hpa": "L:S_FCU_EFIS2_BARO_MODE",
+    "tx": ["L:E_FCU_EFIS2_BARO"],
+    "hpa_range": [745, 1100],
+    "inhg_range": [22, 32.48]
   },
   "btn_mach": {
     "tx": ["L:S_FCU_SPD_MACH"]

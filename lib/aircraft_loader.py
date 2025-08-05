@@ -27,14 +27,6 @@ class AircraftLoader:
         with open(filepath, 'r') as f:
             return json.load(f)
 
-    @staticmethod
-    def esthim_qnh(alt_indicata_ft, alt_vera_ft):
-        alt_indicata_m = alt_indicata_ft * 0.3048
-        alt_vera_m = alt_vera_ft * 0.3048
-        delta_h = alt_vera_m - alt_indicata_m
-        qnh = 1013.25 * (1 - (delta_h / 44330)) ** 5.255
-        return round(qnh, 2)
-
     def set_initial_values(self, aircraft_array: int, cpflight_cmds:dict, sock, vr):
         self.led_fcu = {k: not bool(vr.get(f"({v.get('rx')})")) for k, v in aircraft_array.items() if
                         k in self.led_fcu and v.get("rx")}

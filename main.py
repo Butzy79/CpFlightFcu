@@ -2,6 +2,13 @@ import tkinter as tk
 from lib.main_window import MainWindow
 from lib.settings_manager import SettingsManager
 
+import logging
+
+logging.basicConfig(
+    level=logging.CRITICAL,
+    format='%(asctime)s [%(levelname)s] %(message)s'
+)
+
 def on_close(root, settings):
     # Save geometry before exit
     app._on_stop()
