@@ -183,9 +183,12 @@ class AircraftLoader:
             sock.sendall((cpflight_cmds.get("tx").format(value=f"{vs_value:+05d}") + "\n").encode())
         return True
 
-    def _get_value_qhn_to_unit(self, vr, mode_hpa_var:str, rx_hpa:str, rx_inhg:str,
-                               limit_hpa:list, limit_inhg:list, increment=0) -> tuple[bool, float, str]:
-        qnh_cp_mode_hpa = bool(vr.get(f'({mode_hpa_var})'))
+    def _get_value_qhn_to_unit(self, vr, mode_hpa_var, rx_hpa:str, rx_inhg:str,
+                               limit_hpa:list, limit_inhg:list, increment=0, force_mode=False) -> tuple[bool, float, str]:
+        if force_mode:
+            qnh_cp_mode_hpa = bool(mode_hpa_var)
+        else:
+            qnh_cp_mode_hpa = bool(vr.get(f'({mode_hpa_var})'))
         if qnh_cp_mode_hpa:
             qnh_cp_value = float(vr.get(f'({rx_hpa})')) + increment
             if qnh_cp_value > limit_hpa[1]:
@@ -487,15 +490,15 @@ class AircraftLoader:
     def set_btn_cp_inHg_aircraft(self, value: str, config, vr, sock, cpfligh):
         for el in config['btn_cp_inHg']['tx']:
             vr.set(f"0 (>{el})")
-
         qnh_cp_mode_hpa, qnh_cp_value, cmd_send = self._get_value_qhn_to_unit(
             vr,
-            config['qnh_cp']['mode_hpa'],
+            False,
             config['qnh_cp']['rx_hpa'],
             config['qnh_cp']['rx_inhg'],
             config['qnh_cp']['hpa_range'],
             config['qnh_cp']['inhg_range'],
-            increment=0
+            increment=0,
+            force_mode=True
         )
         sock.sendall((cpfligh["qnh_cp"]["tx"].format(value=cmd_send)+ "\n").encode())
 
@@ -504,15 +507,15 @@ class AircraftLoader:
     def set_btn_cp_hPa_aircraft(self, value: str, config, vr, sock, cpfligh):
         for el in config['btn_cp_hPa']['tx']:
             vr.set(f"1 (>{el})")
-
         qnh_cp_mode_hpa, qnh_cp_value, cmd_send = self._get_value_qhn_to_unit(
             vr,
-            config['qnh_cp']['mode_hpa'],
+            True,
             config['qnh_cp']['rx_hpa'],
             config['qnh_cp']['rx_inhg'],
             config['qnh_cp']['hpa_range'],
             config['qnh_cp']['inhg_range'],
-            increment=0
+            increment=0,
+            force_mode = True
         )
         sock.sendall((cpfligh["qnh_cp"]["tx"].format(value=cmd_send)+ "\n").encode())
         self.btn_gen["op"] = False
