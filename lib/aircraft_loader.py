@@ -186,16 +186,17 @@ class AircraftLoader:
     def set_qnh_cp_efis(self, qnh_cp_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         if self.qnh_cp["op"]:
             return False
-        qnh_cp_var = qnh_cp_array.get('rx') if self.qnh_cp["init"] else qnh_cp_array.get('in')
-        qnh_cp_value = (vr.get(f"({qnh_cp_var})"))
-        print(f"Read: {qnh_cp_value}")
-
-        print(vr.get(f"(N_FCU_EFIS1_BARO_INCH)"), vr.get(f"(N_FCU_EFIS1_BARO_HPA)"), vr.get(f"(B_FCU_EFIS1_BARO)"))
-
-        # # if qnh_cp_value != self.qnh_cp["value"]:
-        # #     print("write")
-        # #     self.qnh_cp["value"] = qnh_cp_value
-        # #     sock.sendall((cpflight_cmds.get("tx").format(value=qnh_cp_value) + "\n").encode())
+        qnh_cp_mode_hpa = bool(qnh_cp_array.get('mode_hpa'))
+        if qnh_cp_mode_hpa:
+            qnh_cp_var = qnh_cp_array.get('rx_hpa') if self.qnh_cp["init"] else qnh_cp_array.get('in_hpa')
+            qnh_cp_value = int(vr.get(f"({qnh_cp_var})"))
+        else:
+            qnh_cp_var = qnh_cp_array.get('rx') if self.qnh_cp["init"] else qnh_cp_array.get('in')
+            qnh_cp_value = round(vr.get(f"({qnh_cp_var})"), 2)
+        if qnh_cp_value != self.qnh_cp["value"]:
+            print(qnh_cp_value)
+            self.qnh_cp["value"] = qnh_cp_value
+            sock.sendall((cpflight_cmds.get("tx").format(value=qnh_cp_value) + "\n").encode())
         return True
     
     def set_qnh_fo_efis(self, qnh_fo_array: int, cpflight_cmds:dict, sock, vr) -> bool:

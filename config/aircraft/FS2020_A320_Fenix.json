@@ -33,8 +33,11 @@
     "tx_inc": "L:E_FCU_VS"
   },
   "qnh_cp": {
-	"in" : "L:N_FCU_EFIS1_BARO_HPA",
+	"in" : "L:N_FCU_EFIS1_BARO_INCH",
     "rx" : "L:N_FCU_EFIS1_BARO_INCH",
+    "in_hpa" : "L:N_FCU_EFIS1_BARO_HPA",
+    "rx_hpa" : "L:N_FCU_EFIS1_BARO_HPA",
+    "mode_hpa": ["L:S_FCU_EFIS1_BARO_MODE"],
     "tx": ["L:E_FCU_EFIS1_BARO"]
   },
   "qnh_fo": {
