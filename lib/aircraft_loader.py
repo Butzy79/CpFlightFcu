@@ -24,11 +24,11 @@ class AircraftLoader:
         return " ".join(cpfligh[k]["led_on" if v else "led_off"] for k, v in self.led_cp_efis.items()) + "\n"
 
     def _reset_leds_command_fo(self, led_control:str, new_value:bool, cpfligh)-> str:
-        self.led_cp_efis = {
-            k: (k == led_control and new_value) if not k.endswith(("_fd", "_ls")) else self.led_cp_efis[k]
-            for k in self.led_cp_efis
+        self.led_fo_efis = {
+            k: (k == led_control and new_value) if not k.endswith(("_fd", "_ls")) else self.led_fo_efis[k]
+            for k in self.led_fo_efis
         }
-        return " ".join(cpfligh[k]["led_on" if v else "led_off"] for k, v in self.led_cp_efis.items()) + "\n"
+        return " ".join(cpfligh[k]["led_on" if v else "led_off"] for k, v in self.led_fo_efis.items()) + "\n"
 
     @staticmethod
     def load_json_config(filepath):
