@@ -235,11 +235,18 @@ class AircraftLoader:
     def set_qnh_fo_efis(self, qnh_fo_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         if self.qnh_fo["op"]:
             return False
-        # qnh_fo_var = qnh_fo_array.get('rx') if self.qnh_cp["init"] else qnh_fo_array.get('in')
-        # qnh_fo_value = int(vr.get(f"({qnh_fo_var})"))
-        # if self.qnh_cp["value"] != qnh_fo_value:
-        #     self.qnh_cp["value"] = qnh_fo_value
-        #     sock.sendall((cpflight_cmds.get("tx").format(value=qnh_fo_value) + "\n").encode())
+        qnh_fo_mode_hpa, qnh_fo_value, cmd_send = self._get_value_qhn_to_unit(
+            vr,
+            qnh_fo_array.get('mode_hpa'),
+            qnh_fo_array.get('rx_hpa') if self.qnh_cp["init"] else qnh_fo_array.get('in_hpa'),
+            qnh_fo_array.get('rx_inhg') if self.qnh_cp["init"] else qnh_fo_array.get('in_inhg'),
+            limit_hpa=qnh_fo_array.get('hpa_range'),
+            limit_inhg=qnh_fo_array.get('inhg_range'),
+            increment=0
+        )
+        if qnh_fo_value != self.qnh_fo["value"]:
+            self.qnh_fo["value"] = qnh_fo_value
+            sock.sendall((cpflight_cmds.get("tx").format(value=cmd_send) + "\n").encode())
         return True  
 
     # Blocker

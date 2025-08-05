@@ -29,7 +29,7 @@ try:
             break
 
         if user_input:
-            sock.sendall((user_input + "\n").encode())
+            sock.sendall((user_input + "\nk999").encode())
             print("Sent:", user_input)
 
 except Exception as e:

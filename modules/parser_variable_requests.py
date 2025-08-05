@@ -101,10 +101,12 @@ class ParserVariableRequests:
             data_bytes = struct.pack("I", client_data.dwData[0])
             float_data = struct.unpack('<f', data_bytes)[0]   # unpack delivers a tuple -> [0]
             float_value = round(float_data, 5)
+
             sim_var = self.sim_vars[client_data.dwDefineID]
             if not sim_var.initialized and float_value == 0.0:
                 sim_var.initialized = True
             else:
+                sim_var.initialized = True
                 self.sim_vars[client_data.dwDefineID].float_value = float_value
             logging.debug("client_data_callback_handler %s, raw=%s", sim_var, float_value)
         else:
@@ -112,6 +114,8 @@ class ParserVariableRequests:
 
 
     def get(self, variableString):
+        if variableString is None or variableString == "(None)":
+            return 0
         if variableString not in self.sim_var_name_to_id:
             # add new variable
             id = len(self.sim_vars) + 1
