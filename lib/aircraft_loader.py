@@ -183,16 +183,21 @@ class AircraftLoader:
             sock.sendall((cpflight_cmds.get("tx").format(value=f"{vs_value:+05d}") + "\n").encode())
         return True
 
-    def _get_value_qhn_to_unit(self, vr, mode_hpa_var, rx_hpa, rx_inhg, increment=0) -> tuple[bool, float, str]:
+    def _get_value_qhn_to_unit(self, vr, mode_hpa_var:str, rx_hpa:str, rx_inhg:str,
+                               limit_hpa:list, limit_inhg:list, increment=0) -> tuple[bool, float, str]:
         qnh_cp_mode_hpa = bool(vr.get(f'({mode_hpa_var})'))
         if qnh_cp_mode_hpa:
             qnh_cp_value = float(vr.get(f'({rx_hpa})')) + increment
-            if qnh_cp_value > 1100:
-                qnh_cp_value = 1100
+            if qnh_cp_value > limit_hpa[1]:
+                qnh_cp_value = limit_hpa[1]
+            if qnh_cp_value <limit_hpa[0]:
+                qnh_cp_value = limit_hpa[0]
         else:
             qnh_cp_value = float(vr.get(f'({rx_inhg})')) + increment
-            if qnh_cp_value > 32.48:
-                qnh_cp_value = 32.48
+            if qnh_cp_value > limit_inhg[1]:
+                qnh_cp_value = limit_inhg[1]
+            if qnh_cp_value <limit_hpa[0]:
+                qnh_cp_value = limit_inhg[0]
         cmd_send = f"{int(qnh_cp_value):04d}" if qnh_cp_mode_hpa else f"{qnh_cp_value:05.2f}"
         return qnh_cp_mode_hpa, qnh_cp_value, cmd_send
 
@@ -203,7 +208,10 @@ class AircraftLoader:
             vr,
             qnh_cp_array.get('mode_hpa'),
             qnh_cp_array.get('rx_hpa') if self.qnh_cp["init"] else qnh_cp_array.get('in_hpa'),
-            qnh_cp_array.get('rx_inhg') if self.qnh_cp["init"] else qnh_cp_array.get('in_inhg')
+            qnh_cp_array.get('rx_inhg') if self.qnh_cp["init"] else qnh_cp_array.get('in_inhg'),
+            limit_hpa=qnh_cp_array.get('hpa_range'),
+            limit_inhg=qnh_cp_array.get('inhg_range'),
+            increment=0
         )
         if qnh_cp_value != self.qnh_cp["value"]:
             self.qnh_cp["value"] = qnh_cp_value
@@ -439,7 +447,9 @@ class AircraftLoader:
             config['qnh_cp']['mode_hpa'],
             config['qnh_cp']['rx_hpa'],
             config['qnh_cp']['rx_inhg'],
-            cl_val
+            config['qnh_cp']['hpa_range'],
+            config['qnh_cp']['inhg_range'],
+            increment=cl_val
         )
         sock.sendall((cpfligh["qnh_cp"]["tx"].format(value=cmd_send)+ "\n").encode())
         self.qnh_cp["value"] = qnh_cp_value
@@ -456,7 +466,9 @@ class AircraftLoader:
             config['qnh_cp']['mode_hpa'],
             config['qnh_cp']['rx_hpa'],
             config['qnh_cp']['rx_inhg'],
-            -cl_val
+            config['qnh_cp']['hpa_range'],
+            config['qnh_cp']['inhg_range'],
+            increment=-cl_val
         )
         sock.sendall((cpfligh["qnh_cp"]["tx"].format(value=cmd_send)+ "\n").encode())
         self.qnh_cp["value"] = qnh_cp_value
