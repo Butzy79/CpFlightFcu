@@ -39,6 +39,8 @@
     "dash_off" : "X1105"
   },
   "qnh_cp": {
+    "tx_label_qnh": "E0L2001",
+    "tx_label_baro": "E0L3001",
     "tx": "E0V11{value}"
   },
   "qnh_cp_inc": {
@@ -48,6 +50,8 @@
     "rx" : "^V100([0-9]{3})$"
   },
   "qnh_fo": {
+    "tx_label_qnh": "E0L2002",
+    "tx_label_baro": "E0L3002",
     "tx": "E0V13{value}"
   },
   "qnh_fo_inc": {

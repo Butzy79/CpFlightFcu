@@ -44,6 +44,10 @@ class AircraftLoader:
         self.speed["nack"] = not bool(vr.get(f"({aircraft_array.get('speed').get('extra_mach')})"))
         self.heading["trk"] = not bool(vr.get(f"({aircraft_array.get('heading').get('extra_trk')})"))
 
+        # QNH Label EFIS
+        sock.sendall((cpflight_cmds.get("qnh_cp").get("tx_label_qnh") + "\n").encode())
+        sock.sendall((cpflight_cmds.get("qnh_fo").get("tx_label_qnh") + "\n").encode())
+
     def set_dot_fcu(self, aircraft_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         speed_var_dot = aircraft_array.get("speed").get('extra_dot')
         heading_var_dot = aircraft_array.get("heading").get('extra_dot')
