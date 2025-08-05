@@ -83,6 +83,7 @@ class LoopController:
             try:
                 # turn power off:
                 self.sock.sendall((self.cpflight.get("POWER_OFF") + "\n").encode())
+                time.sleep(3)
                 self.sock.shutdown(socket.SHUT_RDWR)
                 self.sock.close()
             except Exception as e:

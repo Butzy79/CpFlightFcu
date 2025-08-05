@@ -274,13 +274,10 @@ class AircraftLoader:
 
     def set_heading_aircraft(self, value:str, config, vr, sock, cpfligh):
         cl_val = int(re.sub(r'\D', '', value))
-        sock.sendall((cpfligh.get("heading").get("tx").format(value=value) + "\n").encode())
-        for _ in range(2):
-            for el in config['heading']['tx']:
-                incr = cl_val - vr.get(f"({config['heading']['rx']})")
-                current = vr.get(f"({el})")
-                vr.set(f"{current+incr} +  (>{el})")
-                time.sleep(0.4)
+        for el in config['heading']['tx']:
+            incr = cl_val - vr.get(f"({config['heading']['rx']})")
+            current = vr.get(f"({el})")
+            vr.set(f"{current + incr} +  (>{el})")
         self.heading["value"] = cl_val
         self.heading["init"] = True
         self.heading["op"] = False
