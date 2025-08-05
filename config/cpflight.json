@@ -252,5 +252,117 @@
   "led_cp_arpt": {
     "led_on": "E0L0194",
     "led_off": "E0L1194"
+  },
+  "btn_fo_qnh_push": {
+    "rx" : "(K150)"
+  },
+  "btn_fo_qnh_pull": {
+    "rx" : "(K151)"
+  },
+  "btn_fo_inHg": {
+    "rx" : "(K162)"
+  },
+  "btn_fo_hPa": {
+    "rx" : "(K163)"
+  },
+  "btn_fo_ils": {
+    "rx" : "(M011)"
+  },
+  "btn_fo_vor": {
+    "rx" : "(M012)"
+  },
+  "btn_fo_nav": {
+    "rx" : "(M013)"
+  },
+  "btn_fo_arc": {
+    "rx" : "(M014)"
+  },
+  "btn_fo_plan": {
+    "rx" : "(M015)"
+  },
+  "btn_fo_1_adf": {
+    "rx" : "(K171)"
+  },
+  "btn_fo_1_off": {
+    "rx" : "(K172)"
+  },
+  "btn_fo_1_vor": {
+    "rx" : "(K170)"
+  },
+  "btn_fo_2_adf": {
+    "rx" : "(K174)"
+  },
+  "btn_fo_2_off": {
+    "rx" : "(K175)"
+  },
+  "btn_fo_2_vor": {
+    "rx" : "(K173)"
+  },
+  "btn_fo_range_10": {
+    "rx" : "(S011)"
+  },
+  "btn_fo_range_20": {
+    "rx" : "(S012)"
+  },
+  "btn_fo_range_40": {
+    "rx" : "(S013)"
+  },
+  "btn_fo_range_80": {
+    "rx" : "(S014)"
+  },
+  "btn_fo_range_160": {
+    "rx" : "(S015)"
+  },
+  "btn_fo_range_320": {
+    "rx" : "(S016)"
+  },
+  "btn_fo_fd": {
+    "rx" : "(K017)"
+  },
+  "btn_fo_ls": {
+    "rx" : "(K049)"
+  },
+  "btn_fo_cstr": {
+    "rx" : "(B015)"
+  },
+  "btn_fo_wpt": {
+    "rx" : "(B013)"
+  },
+  "btn_fo_vord": {
+    "rx" : "(B011)"
+  },
+  "btn_fo_ndb": {
+    "rx" : "(B012)"
+  },
+  "btn_fo_arpt": {
+    "rx" : "(B014)"
+  },
+  "led_fo_fd": {
+    "led_on": "E0L0117",
+    "led_off": "E0L1117"
+  },
+  "led_fo_ls": {
+    "led_on": "E0L2149",
+    "led_off": "E0L3149"
+  },
+  "led_fo_cstr": {
+    "led_on": "E0L2195",
+    "led_off": "E0L3195"
+  },
+  "led_fo_wpt": {
+    "led_on": "E0L2193",
+    "led_off": "E0L3193"
+  },
+  "led_fo_vord": {
+    "led_on": "E0L2191",
+    "led_off": "E0L3191"
+  },
+  "led_fo_ndb": {
+    "led_on": "E0L2192",
+    "led_off": "E0L3192"
+  },
+  "led_fo_arpt": {
+    "led_on": "E0L2194",
+    "led_off": "E0L3194"
   }
 }
