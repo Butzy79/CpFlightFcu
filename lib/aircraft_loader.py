@@ -190,13 +190,13 @@ class AircraftLoader:
             qnh_cp_value = float(vr.get(f'({rx_hpa})')) + increment
             if qnh_cp_value > limit_hpa[1]:
                 qnh_cp_value = limit_hpa[1]
-            if qnh_cp_value <limit_hpa[0]:
+            if qnh_cp_value < limit_hpa[0]:
                 qnh_cp_value = limit_hpa[0]
         else:
-            qnh_cp_value = float(vr.get(f'({rx_inhg})')) + increment
+            qnh_cp_value = float(vr.get(f'({rx_inhg})')) + (increment/100)
             if qnh_cp_value > limit_inhg[1]:
                 qnh_cp_value = limit_inhg[1]
-            if qnh_cp_value <limit_hpa[0]:
+            if qnh_cp_value < limit_inhg[0]:
                 qnh_cp_value = limit_inhg[0]
         cmd_send = f"{int(qnh_cp_value):04d}" if qnh_cp_mode_hpa else f"{qnh_cp_value:05.2f}"
         return qnh_cp_mode_hpa, qnh_cp_value, cmd_send
@@ -441,7 +441,6 @@ class AircraftLoader:
         for el in config['qnh_cp']['tx']:
             current = vr.get(f"({el})")
             vr.set(f"{int(current + cl_val)} (>{el})")
-
         qnh_cp_mode_hpa, qnh_cp_value, cmd_send = self._get_value_qhn_to_unit(
             vr,
             config['qnh_cp']['mode_hpa'],
