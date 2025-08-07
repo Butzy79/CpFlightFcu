@@ -371,7 +371,6 @@ class AircraftLoader:
                 vr.set(f"{current+2} ++ (>{el})")
             else:
                 vr.set(f"({el}) ++ (>{el})")
-            vr.set(f"({el}) ++ (>{el})")
         self.btn_gen["op"] = False
 
     def set_btn_ap2_aircraft(self, value: str, config, vr, sock, cpfligh):
@@ -381,7 +380,6 @@ class AircraftLoader:
                 vr.set(f"{current+2} ++ (>{el})")
             else:
                 vr.set(f"({el}) ++ (>{el})")
-            vr.set(f"({el}) ++ (>{el})")
         self.btn_gen["op"] = False
 
     def set_btn_athr_aircraft(self, value: str, config, vr, sock, cpfligh):
