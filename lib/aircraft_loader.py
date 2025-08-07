@@ -54,8 +54,7 @@ class AircraftLoader:
         self.heading["trk"] = not bool(vr.get(f"({aircraft_array.get('heading').get('extra_trk')})"))
 
         # QNH Label EFIS
-        sock.sendall((cpflight_cmds.get("qnh_cp").get("tx_label_qnh") + "\n").encode())
-        sock.sendall((cpflight_cmds.get("qnh_fo").get("tx_label_qnh") + "\n").encode())
+        sock.sendall((f"{cpflight_cmds.get("qnh_cp").get("tx_label_qnh")} {cpflight_cmds.get("qnh_fo").get("tx_label_qnh")}\n").encode())
 
     def set_dot_fcu(self, aircraft_array: int, cpflight_cmds:dict, sock, vr) -> bool:
         speed_var_dot = aircraft_array.get("speed").get('extra_dot')
@@ -213,7 +212,7 @@ class AircraftLoader:
         return True
 
     def _get_value_qhn_to_unit(self, vr, mode_hpa_var, rx_hpa:str, rx_inhg:str,
-                               limit_hpa:list, limit_inhg:list, increment=0, force_mode=False) -> tuple[bool, float, str]:
+                               limit_hpa:list, limit_inhg:list, increment=0, force_mode=False, mode_std_var:str = "", mode_std_type:int = 0) -> tuple[bool, float, str]:
         if force_mode:
             qnh_cp_mode_hpa = bool(mode_hpa_var)
         else:
@@ -231,6 +230,8 @@ class AircraftLoader:
             if qnh_cp_value < limit_inhg[0]:
                 qnh_cp_value = limit_inhg[0]
         cmd_send = f"{int(qnh_cp_value):04d}" if qnh_cp_mode_hpa else f"{qnh_cp_value:05.2f}"
+        if (mode_std_type == 1 or mode_std_type == 0) and not vr.get(f'({mode_std_var})'):
+            return qnh_cp_mode_hpa, qnh_cp_value, "STD"
         return qnh_cp_mode_hpa, qnh_cp_value, cmd_send
 
     def set_qnh_cp_efis(self, qnh_cp_array: int, cpflight_cmds:dict, sock, vr) -> bool:
@@ -243,9 +244,10 @@ class AircraftLoader:
             qnh_cp_array.get('rx_inhg') if self.qnh_cp["init"] else qnh_cp_array.get('in_inhg'),
             limit_hpa=qnh_cp_array.get('hpa_range'),
             limit_inhg=qnh_cp_array.get('inhg_range'),
-            increment=0
+            increment=0,
+            mode_std_var=qnh_cp_array.get('mode_std')
         )
-        if qnh_cp_value != self.qnh_cp["value"]:
+        if qnh_cp_value != self.qnh_cp["value"] or cmd_send == "STD":
             self.qnh_cp["value"] = qnh_cp_value
             sock.sendall((cpflight_cmds.get("tx").format(value=cmd_send) + "\n").encode())
         return True
@@ -260,9 +262,10 @@ class AircraftLoader:
             qnh_fo_array.get('rx_inhg') if self.qnh_cp["init"] else qnh_fo_array.get('in_inhg'),
             limit_hpa=qnh_fo_array.get('hpa_range'),
             limit_inhg=qnh_fo_array.get('inhg_range'),
-            increment=0
+            increment=0,
+            mode_std_var = qnh_fo_array.get('mode_std')
         )
-        if qnh_fo_value != self.qnh_fo["value"]:
+        if qnh_fo_value != self.qnh_fo["value"] or cmd_send == "STD":
             self.qnh_fo["value"] = qnh_fo_value
             sock.sendall((cpflight_cmds.get("tx").format(value=cmd_send) + "\n").encode())
         return True  
@@ -502,7 +505,8 @@ class AircraftLoader:
             config['qnh_cp']['rx_inhg'],
             config['qnh_cp']['hpa_range'],
             config['qnh_cp']['inhg_range'],
-            increment=cl_val
+            increment=cl_val,
+            mode_std_var=config['qnh_cp']['mode_std']
         )
         sock.sendall((cpfligh["qnh_cp"]["tx"].format(value=cmd_send)+ "\n").encode())
         self.qnh_cp["value"] = qnh_cp_value
@@ -521,7 +525,8 @@ class AircraftLoader:
             config['qnh_cp']['rx_inhg'],
             config['qnh_cp']['hpa_range'],
             config['qnh_cp']['inhg_range'],
-            increment=-cl_val
+            increment=-cl_val,
+            mode_std_var=config['qnh_cp']['mode_std']
         )
         sock.sendall((cpfligh["qnh_cp"]["tx"].format(value=cmd_send)+ "\n").encode())
         self.qnh_cp["value"] = qnh_cp_value
@@ -531,11 +536,37 @@ class AircraftLoader:
     def set_btn_cp_qnh_push_aircraft(self, value: str, config, vr, sock, cpfligh):
         for el in config['btn_cp_qnh_push']['tx']:
             vr.set(f"({el}) -- (>{el})")
+        qnh_cp_mode_hpa, qnh_cp_value, cmd_send = self._get_value_qhn_to_unit(
+            vr,
+            config['qnh_cp']['mode_hpa'],
+            config['qnh_cp']['rx_hpa'],
+            config['qnh_cp']['rx_inhg'],
+            config['qnh_cp']['hpa_range'],
+            config['qnh_cp']['inhg_range'],
+            increment=0,
+            force_mode=True,
+            mode_std_var=config['qnh_cp']['mode_std'],
+            mode_std_type=2
+        )
+        sock.sendall((cpfligh["qnh_cp"]["tx"].format(value=cmd_send) + "\n").encode())
         self.btn_gen["op"] = False
 
     def set_btn_cp_qnh_pull_aircraft(self, value: str, config, vr, sock, cpfligh):
         for el in config['btn_cp_qnh_pull']['tx']:
             vr.set(f"({el}) ++ (>{el})")
+        qnh_cp_mode_hpa, qnh_cp_value, cmd_send = self._get_value_qhn_to_unit(
+            vr,
+            config['qnh_cp']['mode_hpa'],
+            config['qnh_cp']['rx_hpa'],
+            config['qnh_cp']['rx_inhg'],
+            config['qnh_cp']['hpa_range'],
+            config['qnh_cp']['inhg_range'],
+            increment=0,
+            force_mode=True,
+            mode_std_var=config['qnh_cp']['mode_std'],
+            mode_std_type=1
+        )
+        sock.sendall((cpfligh["qnh_cp"]["tx"].format(value=cmd_send) + "\n").encode())
         self.btn_gen["op"] = False
 
     def set_btn_cp_inHg_aircraft(self, value: str, config, vr, sock, cpfligh):
@@ -549,7 +580,8 @@ class AircraftLoader:
             config['qnh_cp']['hpa_range'],
             config['qnh_cp']['inhg_range'],
             increment=0,
-            force_mode=True
+            force_mode=True,
+            mode_std_var=config['qnh_cp']['mode_std']
         )
         sock.sendall((cpfligh["qnh_cp"]["tx"].format(value=cmd_send)+ "\n").encode())
 
@@ -566,7 +598,8 @@ class AircraftLoader:
             config['qnh_cp']['hpa_range'],
             config['qnh_cp']['inhg_range'],
             increment=0,
-            force_mode = True
+            force_mode = True,
+            mode_std_var=config['qnh_cp']['mode_std']
         )
         sock.sendall((cpfligh["qnh_cp"]["tx"].format(value=cmd_send)+ "\n").encode())
         self.btn_gen["op"] = False
@@ -733,7 +766,8 @@ class AircraftLoader:
             config['qnh_fo']['rx_inhg'],
             config['qnh_fo']['hpa_range'],
             config['qnh_fo']['inhg_range'],
-            increment=cl_val
+            increment=cl_val,
+            mode_std_var=config['qnh_fo']['mode_std']
         )
         sock.sendall((fofligh["qnh_fo"]["tx"].format(value=cmd_send)+ "\n").encode())
         self.qnh_fo["value"] = qnh_fo_value
@@ -752,7 +786,8 @@ class AircraftLoader:
             config['qnh_fo']['rx_inhg'],
             config['qnh_fo']['hpa_range'],
             config['qnh_fo']['inhg_range'],
-            increment=-cl_val
+            increment=-cl_val,
+            mode_std_var=config['qnh_fo']['mode_std']
         )
         sock.sendall((fofligh["qnh_fo"]["tx"].format(value=cmd_send)+ "\n").encode())
         self.qnh_fo["value"] = qnh_fo_value
@@ -762,11 +797,37 @@ class AircraftLoader:
     def set_btn_fo_qnh_push_aircraft(self, value: str, config, vr, sock, fofligh):
         for el in config['btn_fo_qnh_push']['tx']:
             vr.set(f"({el}) -- (>{el})")
+        qnh_fo_mode_hpa, qnh_fo_value, cmd_send = self._get_value_qhn_to_unit(
+            vr,
+            config['qnh_fo']['mode_hpa'],
+            config['qnh_fo']['rx_hpa'],
+            config['qnh_fo']['rx_inhg'],
+            config['qnh_fo']['hpa_range'],
+            config['qnh_fo']['inhg_range'],
+            increment=0,
+            force_mode=True,
+            mode_std_var=config['qnh_fo']['mode_std'],
+            mode_std_type=2
+        )
+        sock.sendall((fofligh["qnh_fo"]["tx"].format(value=cmd_send)+ "\n").encode())
         self.btn_gen["op"] = False
 
     def set_btn_fo_qnh_pull_aircraft(self, value: str, config, vr, sock, fofligh):
         for el in config['btn_fo_qnh_pull']['tx']:
             vr.set(f"({el}) ++ (>{el})")
+        qnh_fo_mode_hpa, qnh_fo_value, cmd_send = self._get_value_qhn_to_unit(
+            vr,
+            config['qnh_fo']['mode_hpa'],
+            config['qnh_fo']['rx_hpa'],
+            config['qnh_fo']['rx_inhg'],
+            config['qnh_fo']['hpa_range'],
+            config['qnh_fo']['inhg_range'],
+            increment=0,
+            force_mode=True,
+            mode_std_var=config['qnh_fo']['mode_std'],
+            mode_std_type=1
+        )
+        sock.sendall((fofligh["qnh_fo"]["tx"].format(value=cmd_send)+ "\n").encode())
         self.btn_gen["op"] = False
 
     def set_btn_fo_inHg_aircraft(self, value: str, config, vr, sock, fofligh):
@@ -780,7 +841,8 @@ class AircraftLoader:
             config['qnh_fo']['hpa_range'],
             config['qnh_fo']['inhg_range'],
             increment=0,
-            force_mode=True
+            force_mode=True,
+            mode_std_var=config['qnh_fo']['mode_std']
         )
         sock.sendall((fofligh["qnh_fo"]["tx"].format(value=cmd_send)+ "\n").encode())
 
@@ -797,7 +859,8 @@ class AircraftLoader:
             config['qnh_fo']['hpa_range'],
             config['qnh_fo']['inhg_range'],
             increment=0,
-            force_mode = True
+            force_mode = True,
+            mode_std_var=config['qnh_fo']['mode_std']
         )
         sock.sendall((fofligh["qnh_fo"]["tx"].format(value=cmd_send)+ "\n").encode())
         self.btn_gen["op"] = False

@@ -38,6 +38,7 @@
     "in_hpa" : "L:N_FCU_EFIS1_BARO_HPA",
     "rx_hpa" : "L:N_FCU_EFIS1_BARO_HPA",
     "mode_hpa": "L:S_FCU_EFIS1_BARO_MODE",
+    "mode_std": "L:I_FCU_EFIS1_QNH",
     "tx": ["L:E_FCU_EFIS1_BARO"],
     "hpa_range": [745, 1100],
     "inhg_range": [22, 32.48]
@@ -48,6 +49,7 @@
     "in_hpa" : "L:N_FCU_EFIS2_BARO_HPA",
     "rx_hpa" : "L:N_FCU_EFIS2_BARO_HPA",
     "mode_hpa": "L:S_FCU_EFIS2_BARO_MODE",
+    "mode_std": "L:I_FCU_EFIS2_QNH",
     "tx": ["L:E_FCU_EFIS2_BARO"],
     "hpa_range": [745, 1100],
     "inhg_range": [22, 32.48]
