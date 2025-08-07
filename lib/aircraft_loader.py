@@ -344,12 +344,16 @@ class AircraftLoader:
         self.btn_gen["op"] = False
 
     def set_btn_loc_aircraft(self, value: str, config, vr, sock, cpfligh):
-        for el in config['btn_loc']['tx']:
+        which_led = 'led_log'
+        new_value = not self.led_fcu[which_led]
+        for el in config['btn_log']['tx']:
             current = int(vr.get(f"({el})"))
             if current % 2:
                 vr.set(f"{current+2} ++ (>{el})")
             else:
                 vr.set(f"({el}) ++ (>{el})")
+        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_fcu[which_led] = new_value
         self.btn_gen["op"] = False
 
     def set_btn_hdgtrk_aircraft(self, value: str, config, vr, sock, cpfligh):
@@ -364,30 +368,42 @@ class AircraftLoader:
         self.btn_gen["op"] = False
 
     def set_btn_ap1_aircraft(self, value: str, config, vr, sock, cpfligh):
+        which_led = 'led_ap1'
+        new_value = not self.led_fcu[which_led]
         for el in config['btn_ap1']['tx']:
             current = int(vr.get(f"({el})"))
             if current % 2:
                 vr.set(f"{current+2} ++ (>{el})")
             else:
                 vr.set(f"({el}) ++ (>{el})")
+        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_fcu[which_led] = new_value
         self.btn_gen["op"] = False
 
     def set_btn_ap2_aircraft(self, value: str, config, vr, sock, cpfligh):
+        which_led = 'led_ap1'
+        new_value = not self.led_fcu[which_led]
         for el in config['btn_ap2']['tx']:
             current = int(vr.get(f"({el})"))
             if current % 2:
                 vr.set(f"{current+2} ++ (>{el})")
             else:
                 vr.set(f"({el}) ++ (>{el})")
+        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_fcu[which_led] = new_value
         self.btn_gen["op"] = False
 
     def set_btn_athr_aircraft(self, value: str, config, vr, sock, cpfligh):
+        which_led = 'led_athr'
+        new_value = not self.led_fcu[which_led]
         for el in config['btn_athr']['tx']:
             current = int(vr.get(f"({el})"))
             if current % 2:
                 vr.set(f"{current+2} ++ (>{el})")
             else:
                 vr.set(f"({el}) ++ (>{el})")
+        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_fcu[which_led] = new_value
         self.btn_gen["op"] = False
 
     def set_btn_metric_aircraft(self, value: str, config, vr, sock, cpfligh):
@@ -400,12 +416,16 @@ class AircraftLoader:
         self.btn_gen["op"] = False
 
     def set_btn_exped_aircraft(self, value: str, config, vr, sock, cpfligh):
+        which_led = 'led_exped'
+        new_value = not self.led_fcu[which_led]
         for el in config['btn_exped']['tx']:
             current = int(vr.get(f"({el})"))
             if current % 2:
                 vr.set(f"{current+2} ++ (>{el})")
             else:
                 vr.set(f"({el}) ++ (>{el})")
+        sock.sendall((cpfligh[which_led]["led_on" if new_value else "led_off"] + "\n").encode())
+        self.led_fcu[which_led] = new_value
         self.btn_gen["op"] = False
 
     def set_btn_appr_aircraft(self, value: str, config, vr, sock, cpfligh):
