@@ -99,6 +99,8 @@ class LoopController:
                 self.aircraft.set_dash_fcu( self.current_config, self.cpflight, self.sock, self.vr)
                 self.aircraft.set_dot_fcu( self.current_config, self.cpflight, self.sock, self.vr)
                 self.aircraft.set_type_fcu( self.current_config, self.cpflight, self.sock, self.vr)
+                self.aircraft.set_led_fcu( self.current_config, self.cpflight, self.sock, self.vr)
+
                 now = time.time()
                 if now < self.pause_loop_until:
                     time.sleep(0.1)
@@ -142,7 +144,6 @@ class LoopController:
                     self.sock,
                     self.vr
                 )
-                self.aircraft.set_led_fcu( self.current_config, self.cpflight, self.sock, self.vr)
                 self.aircraft.set_led_efis_cp( self.current_config, self.cpflight, self.sock, self.vr)
                 self.aircraft.set_led_efis_fo( self.current_config, self.cpflight, self.sock, self.vr)
 
