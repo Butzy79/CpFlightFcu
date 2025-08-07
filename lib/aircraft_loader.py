@@ -1,7 +1,6 @@
 import json
 import re
-import time
-
+#TODO: Missing STD
 
 class AircraftLoader:
     speed = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "mach": False}
@@ -49,7 +48,7 @@ class AircraftLoader:
 
         dots = ['speed', 'heading', 'altitude']
         for dot in dots:
-            getattr(self, dot)["dot"] = not bool(vr.get(f"({aircraft_array.get(dash).get('extra_dot')})"))
+            getattr(self, dot)["dot"] = not bool(vr.get(f"({aircraft_array.get(dot).get('extra_dot')})"))
 
         self.speed["nack"] = not bool(vr.get(f"({aircraft_array.get('speed').get('extra_mach')})"))
         self.heading["trk"] = not bool(vr.get(f"({aircraft_array.get('heading').get('extra_trk')})"))
