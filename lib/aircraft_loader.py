@@ -230,7 +230,7 @@ class AircraftLoader:
             if qnh_cp_value < limit_inhg[0]:
                 qnh_cp_value = limit_inhg[0]
         cmd_send = f"{int(qnh_cp_value):04d}" if qnh_cp_mode_hpa else f"{qnh_cp_value:05.2f}"
-        if (mode_std_type == 1 or mode_std_type == 0) and not vr.get(f'({mode_std_var})'):
+        if mode_std_type < 2 and (mode_std_type == 1 or not vr.get(f'({mode_std_var})')):
             return qnh_cp_mode_hpa, qnh_cp_value, "STD"
         return qnh_cp_mode_hpa, qnh_cp_value, cmd_send
 
