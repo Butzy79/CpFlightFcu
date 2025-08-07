@@ -347,7 +347,7 @@ class AircraftLoader:
         self.btn_gen["op"] = False
 
     def set_btn_loc_aircraft(self, value: str, config, vr, sock, cpfligh):
-        which_led = 'led_log'
+        which_led = 'led_loc'
         new_value = not self.led_fcu[which_led]
         for el in config['btn_log']['tx']:
             current = int(vr.get(f"({el})"))
