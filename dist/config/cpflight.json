@@ -1,0 +1,368 @@
+{
+  "IP": "10.2.0.2",
+  "PORT": 4500,
+  "POWER_ON" : "Q001",
+  "POWER_OFF" : "K999",
+  "LED_ALL_ON": "E0BKL\\x08",
+  "speed": {
+    "rx" : "^V02 ([0-9]{3}|\\.[1-9][0-9])$",
+    "tx": "V02 {value}",
+    "dash_on" : "X1002",
+    "dash_off" : "X1102",
+    "dot_on" : "L0183",
+    "dot_off" : "L1183",
+    "mach_on" : "L1055",
+    "mach_off" : "L1155"
+  },
+  "heading": {
+    "rx" : "^V03 ([0-9]{3})$",
+    "tx": "V03 {value}",
+    "dash_on" : "X1003",
+    "dash_off" : "X1103",
+    "dot_on" : "L0127",
+    "dot_off" : "L1127",
+    "trk_on" : "L1161",
+    "trk_off" : "L0161"
+  },
+  "altitude": {
+    "rx" : "^V04([0-9]{5})$",
+    "tx": "V04{value}",
+    "dot_on" : "L0126",
+    "dot_off" : "L1126",
+    "dash_on" : "X1004",
+    "dash_off" : "X1104"
+  },
+  "vs": {
+    "rx" : "^V05([+-]\\d{2}00)$",
+    "tx": "V05{value}",
+    "dash_on" : "X1005",
+    "dash_off" : "X1105"
+  },
+  "qnh_cp": {
+    "tx_label_qnh": "E0L2001",
+    "tx_label_baro": "E0L3001",
+    "tx": "E0V11{value}"
+  },
+  "qnh_cp_inc": {
+    "rx" : "^V101([0-9]{3})$"
+  },
+  "qnh_cp_dec": {
+    "rx" : "^V100([0-9]{3})$"
+  },
+  "qnh_fo": {
+    "tx_label_qnh": "E0L2002",
+    "tx_label_baro": "E0L3002",
+    "tx": "E0V13{value}"
+  },
+  "qnh_fo_inc": {
+    "rx" : "^V131([0-9]{3})$"
+  },
+  "qnh_fo_dec": {
+    "rx" : "^V130([0-9]{3})$"
+  },
+  "btn_mach": {
+    "rx" : "(K023)"
+  },
+  "btn_loc": {
+    "rx" : "(K028)"
+  },
+  "btn_hdgtrk": {
+    "rx" : "(K061)"
+  },
+  "btn_ap1": {
+    "rx" : "(K032)"
+  },
+  "btn_ap2": {
+    "rx" : "(K033)"
+  },
+  "btn_athr": {
+    "rx" : "(K019)"
+  },
+  "btn_metric": {
+    "rx" : "(K045)"
+  },
+  "btn_exped": {
+    "rx" : "(K060)"
+  },
+  "btn_appr": {
+    "rx" : "(K029)"
+  },
+  "btn_int100": {
+    "rx" : "(INT100)$"
+  },
+  "btn_int1000": {
+    "rx" : "(INT1000)$"
+  },
+  "btn_push_speed": {
+    "rx" : "(K052)"
+  },
+  "btn_pull_speed": {
+    "rx" : "(K053)"
+  },
+  "btn_push_heading": {
+    "rx" : "(K054)"
+  },
+  "btn_pull_heading": {
+    "rx" : "(K055)"
+  },
+  "btn_push_altitude": {
+    "rx" : "(K056)"
+  },
+  "btn_pull_altitude": {
+    "rx" : "(K057)"
+  },
+  "btn_push_vs": {
+    "rx" : "(K058)"
+  },
+  "btn_pull_vs": {
+    "rx" : "(K059)"
+  },
+  "led_ap1": {
+    "led_on": "L0132",
+    "led_off": "L1132"
+  },
+  "led_ap2": {
+    "led_on": "L0133",
+    "led_off": "L1133"
+  },
+  "led_athr": {
+    "led_on": "L0119",
+    "led_off": "L1119"
+  },
+  "led_loc": {
+    "led_on": "L0128",
+    "led_off": "L1128"
+  },
+  "led_exped": {
+    "led_on": "L0160",
+    "led_off": "L1160"
+  },
+  "led_appr": {
+    "led_on": "L0129",
+    "led_off": "L1129"
+  },
+  "btn_cp_qnh_push": {
+    "rx" : "(K050)"
+  },
+  "btn_cp_qnh_pull": {
+    "rx" : "(K051)"
+  },
+  "btn_cp_inHg": {
+    "rx" : "(K062)"
+  },
+  "btn_cp_hPa": {
+    "rx" : "(K063)"
+  },
+  "btn_cp_ils": {
+    "rx" : "(M001)"
+  },
+  "btn_cp_vor": {
+    "rx" : "(M002)"
+  },
+  "btn_cp_nav": {
+    "rx" : "(M003)"
+  },
+  "btn_cp_arc": {
+    "rx" : "(M004)"
+  },
+  "btn_cp_plan": {
+    "rx" : "(M005)"
+  },
+  "btn_cp_1_adf": {
+    "rx" : "(K071)"
+  },
+  "btn_cp_1_off": {
+    "rx" : "(K072)"
+  },
+  "btn_cp_1_vor": {
+    "rx" : "(K070)"
+  },
+  "btn_cp_2_adf": {
+    "rx" : "(K074)"
+  },
+  "btn_cp_2_off": {
+    "rx" : "(K075)"
+  },
+  "btn_cp_2_vor": {
+    "rx" : "(K073)"
+  },
+  "btn_cp_range_10": {
+    "rx" : "(S001)"
+  },
+  "btn_cp_range_20": {
+    "rx" : "(S002)"
+  },
+  "btn_cp_range_40": {
+    "rx" : "(S003)"
+  },
+  "btn_cp_range_80": {
+    "rx" : "(S004)"
+  },
+  "btn_cp_range_160": {
+    "rx" : "(S005)"
+  },
+  "btn_cp_range_320": {
+    "rx" : "(S006)"
+  },
+  "btn_cp_fd": {
+    "rx" : "(K037)"
+  },
+  "btn_cp_ls": {
+    "rx" : "(K049)"
+  },
+  "btn_cp_cstr": {
+    "rx" : "(B005)"
+  },
+  "btn_cp_wpt": {
+    "rx" : "(B003)"
+  },
+  "btn_cp_vord": {
+    "rx" : "(B001)"
+  },
+  "btn_cp_ndb": {
+    "rx" : "(B002)"
+  },
+  "btn_cp_arpt": {
+    "rx" : "(B004)"
+  },
+  "led_cp_fd": {
+    "led_on": "E0L0137",
+    "led_off": "E0L1137"
+  },
+  "led_cp_ls": {
+    "led_on": "E0L0149",
+    "led_off": "E0L1149"
+  },
+  "led_cp_cstr": {
+    "led_on": "E0L0195",
+    "led_off": "E0L1195"
+  },
+  "led_cp_wpt": {
+    "led_on": "E0L0193",
+    "led_off": "E0L1193"
+  },
+  "led_cp_vord": {
+    "led_on": "E0L0191",
+    "led_off": "E0L1191"
+  },
+  "led_cp_ndb": {
+    "led_on": "E0L0192",
+    "led_off": "E0L1192"
+  },
+  "led_cp_arpt": {
+    "led_on": "E0L0194",
+    "led_off": "E0L1194"
+  },
+  "btn_fo_qnh_push": {
+    "rx" : "(K150)"
+  },
+  "btn_fo_qnh_pull": {
+    "rx" : "(K151)"
+  },
+  "btn_fo_inHg": {
+    "rx" : "(K162)"
+  },
+  "btn_fo_hPa": {
+    "rx" : "(K163)"
+  },
+  "btn_fo_ils": {
+    "rx" : "(M011)"
+  },
+  "btn_fo_vor": {
+    "rx" : "(M012)"
+  },
+  "btn_fo_nav": {
+    "rx" : "(M013)"
+  },
+  "btn_fo_arc": {
+    "rx" : "(M014)"
+  },
+  "btn_fo_plan": {
+    "rx" : "(M015)"
+  },
+  "btn_fo_1_adf": {
+    "rx" : "(K171)"
+  },
+  "btn_fo_1_off": {
+    "rx" : "(K172)"
+  },
+  "btn_fo_1_vor": {
+    "rx" : "(K170)"
+  },
+  "btn_fo_2_adf": {
+    "rx" : "(K174)"
+  },
+  "btn_fo_2_off": {
+    "rx" : "(K175)"
+  },
+  "btn_fo_2_vor": {
+    "rx" : "(K173)"
+  },
+  "btn_fo_range_10": {
+    "rx" : "(S011)"
+  },
+  "btn_fo_range_20": {
+    "rx" : "(S012)"
+  },
+  "btn_fo_range_40": {
+    "rx" : "(S013)"
+  },
+  "btn_fo_range_80": {
+    "rx" : "(S014)"
+  },
+  "btn_fo_range_160": {
+    "rx" : "(S015)"
+  },
+  "btn_fo_range_320": {
+    "rx" : "(S016)"
+  },
+  "btn_fo_fd": {
+    "rx" : "(K017)"
+  },
+  "btn_fo_ls": {
+    "rx" : "(K149)"
+  },
+  "btn_fo_cstr": {
+    "rx" : "(B015)"
+  },
+  "btn_fo_wpt": {
+    "rx" : "(B013)"
+  },
+  "btn_fo_vord": {
+    "rx" : "(B011)"
+  },
+  "btn_fo_ndb": {
+    "rx" : "(B012)"
+  },
+  "btn_fo_arpt": {
+    "rx" : "(B014)"
+  },
+  "led_fo_fd": {
+    "led_on": "E0L0117",
+    "led_off": "E0L1117"
+  },
+  "led_fo_ls": {
+    "led_on": "E0L2149",
+    "led_off": "E0L3149"
+  },
+  "led_fo_cstr": {
+    "led_on": "E0L2195",
+    "led_off": "E0L3195"
+  },
+  "led_fo_wpt": {
+    "led_on": "E0L2193",
+    "led_off": "E0L3193"
+  },
+  "led_fo_vord": {
+    "led_on": "E0L2191",
+    "led_off": "E0L3191"
+  },
+  "led_fo_ndb": {
+    "led_on": "E0L2192",
+    "led_off": "E0L3192"
+  },
+  "led_fo_arpt": {
+    "led_on": "E0L2194",
+    "led_off": "E0L3194"
+  }
+}

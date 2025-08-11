@@ -22,7 +22,7 @@ pyinstaller --onefile --noconsole --name CpFlight_Controller main.py --hidden-im
 
 echo.
 echo Copying settings.json and config folder to dist...
-copy /Y settings.json dist\
+copy /Y .\resources\settings_template.json dist\settings.json
 xcopy config dist\config\ /E /I /Y
 
 echo.

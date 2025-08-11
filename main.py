@@ -1,3 +1,4 @@
+import re
 import tkinter as tk
 from lib.main_window import MainWindow
 from lib.settings_manager import SettingsManager
@@ -8,6 +9,18 @@ logging.basicConfig(
     level=logging.CRITICAL,
     format='%(asctime)s [%(levelname)s] %(message)s'
 )
+
+def get_latest_release_version(changelog_path='CHANGELOG.md'):
+    with open(changelog_path, 'r') as file:
+        content = file.read()
+
+    versions = re.findall(r'\[\d+\.\d+\.\d+\]', content)
+
+    if not versions:
+        return None
+
+    latest_version = versions[0].strip('[]')
+    return latest_version
 
 def on_close(root, settings):
     # Save geometry before exit
@@ -26,9 +39,10 @@ def on_close(root, settings):
 
 if __name__ == "__main__":
     settings = SettingsManager()
+    version = get_latest_release_version()
     root = tk.Tk()
     root.geometry(settings.get_window_geometry())
     root.resizable(False, False)
-    app = MainWindow(root)
+    app = MainWindow(root, version)
     root.protocol("WM_DELETE_WINDOW", lambda: on_close(root, settings))
     root.mainloop()

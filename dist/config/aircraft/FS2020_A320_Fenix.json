@@ -1,0 +1,342 @@
+{
+  "speed": {
+	"in" : "L:N_FCU_SPEED",
+    "rx" : "L:N_FCU_SPEED",
+    "extra_dash": "L:B_FCU_SPEED_DASHED",
+    "extra_mach": "L:I_FCU_MACH_MODE",
+    "extra_dot": "L:I_FCU_SPEED_MANAGED",
+    "tx": ["L:N_FCU_SPEED"],
+    "tx_inc": "L:E_FCU_SPEED"
+  },
+  "heading": {
+	"in" : "L:N_FCU_HEADING",
+    "extra_dash": "L:B_FCU_HEADING_DASHED",
+    "extra_dot": "L:I_FCU_HEADING_MANAGED",
+    "extra_trk": "L:I_FCU_TRACK_FPA_MODE",
+    "rx" : "L:N_FCU_HEADING",
+    "tx": ["L:E_FCU_HEADING"]
+  },
+  "altitude": {
+    "in" : "L:N_FCU_ALTITUDE",
+    "rx" : "L:N_FCU_ALTITUDE",
+    "extra_dot": "L:I_FCU_ALTITUDE_MANAGED",
+    "extra_dash": "L:B_FCU_ALTITUDE_DASHED",
+    "tx": ["L:N_FCU_ALTITUDE"],
+    "tx_inc": "L:E_FCU_ALTITUDE",
+    "scale": "L:S_FCU_ALTITUDE_SCALE"
+  },
+  "vs": {
+    "in" : "L:N_FCU_VS",
+    "rx" : "L:N_FCU_VS",
+    "extra_dash": "L:B_FCU_VERTICALSPEED_DASHED",
+    "tx": ["L:N_FCU_VS"],
+    "tx_inc": "L:E_FCU_VS"
+  },
+  "qnh_cp": {
+	"in_inhg" : "L:N_FCU_EFIS1_BARO_INCH",
+    "rx_inhg" : "L:N_FCU_EFIS1_BARO_INCH",
+    "in_hpa" : "L:N_FCU_EFIS1_BARO_HPA",
+    "rx_hpa" : "L:N_FCU_EFIS1_BARO_HPA",
+    "mode_hpa": "L:S_FCU_EFIS1_BARO_MODE",
+    "mode_std": "L:I_FCU_EFIS1_QNH",
+    "tx": ["L:E_FCU_EFIS1_BARO"],
+    "hpa_range": [745, 1100],
+    "inhg_range": [22, 32.48]
+  },
+  "qnh_fo": {
+   	"in_inhg" : "L:N_FCU_EFIS2_BARO_INCH",
+    "rx_inhg" : "L:N_FCU_EFIS2_BARO_INCH",
+    "in_hpa" : "L:N_FCU_EFIS2_BARO_HPA",
+    "rx_hpa" : "L:N_FCU_EFIS2_BARO_HPA",
+    "mode_hpa": "L:S_FCU_EFIS2_BARO_MODE",
+    "mode_std": "L:I_FCU_EFIS2_QNH",
+    "tx": ["L:E_FCU_EFIS2_BARO"],
+    "hpa_range": [745, 1100],
+    "inhg_range": [22, 32.48]
+  },
+  "btn_mach": {
+    "tx": ["L:S_FCU_SPD_MACH"]
+  },
+  "btn_loc": {
+    "tx": ["L:S_FCU_LOC"]
+  },
+  "btn_hdgtrk": {
+    "tx": ["L:S_FCU_HDGVS_TRKFPA"]
+  },
+  "btn_ap1": {
+    "tx": ["L:S_FCU_AP1"]
+  },
+  "btn_ap2": {
+    "tx": ["L:S_FCU_AP2"]
+  },
+  "btn_athr": {
+    "tx": ["L:S_FCU_ATHR"]
+  },
+  "btn_metric": {
+    "tx": ["L:S_FCU_METRIC_ALT"]
+  },
+  "btn_exped": {
+    "tx": ["L:S_FCU_EXPED"]
+  },
+  "btn_appr": {
+    "tx": ["L:S_FCU_APPR"]
+  },
+  "btn_int100": {
+    "tx": ["L:S_FCU_ALTITUDE_SCALE"]
+  },
+  "btn_int1000": {
+    "tx": ["L:S_FCU_ALTITUDE_SCALE"]
+  },
+  "btn_push_speed": {
+    "tx": ["L:S_FCU_SPEED"]
+  },
+  "btn_pull_speed": {
+    "tx": ["L:S_FCU_SPEED"]
+  },
+  "btn_push_heading": {
+    "tx": ["L:S_FCU_HEADING"]
+  },
+  "btn_pull_heading": {
+    "tx": ["L:S_FCU_HEADING"]
+  },
+  "btn_push_altitude": {
+    "tx": ["L:S_FCU_ALTITUDE"]
+  },
+  "btn_pull_altitude": {
+    "tx": ["L:S_FCU_ALTITUDE"]
+  },
+  "led_loc": {
+    "rx": "L:I_FCU_LOC"
+  },
+  "led_ap1": {
+    "rx": "L:I_FCU_AP1"
+  },
+  "led_ap2": {
+    "rx": "L:I_FCU_AP2"
+  },
+  "led_athr": {
+    "rx": "L:I_FCU_ATHR"
+  },
+  "led_exped": {
+    "rx": "L:I_FCU_EXPED"
+  },
+  "led_appr": {
+    "rx": "L:I_FCU_APPR"
+  },
+  "btn_push_vs": {
+    "tx": ["L:S_FCU_VERTICAL_SPEED"]
+  },
+  "btn_pull_vs": {
+    "tx": ["L:S_FCU_VERTICAL_SPEED"]
+  },
+  "btn_cp_qnh_push": {
+    "tx": ["L:S_FCU_EFIS1_BARO_STD"]
+  },
+  "btn_cp_qnh_pull": {
+    "tx": ["L:S_FCU_EFIS1_BARO_STD"]
+  },
+  "btn_cp_inHg": {
+    "tx": ["L:S_FCU_EFIS1_BARO_MODE"]
+  },
+  "btn_cp_hPa": {
+    "tx": ["L:S_FCU_EFIS1_BARO_MODE"]
+  },
+  "btn_cp_ils": {
+    "tx": ["L:S_FCU_EFIS1_ND_MODE"]
+  },
+  "btn_cp_vor": {
+    "tx": ["L:S_FCU_EFIS1_ND_MODE"]
+  },
+  "btn_cp_nav": {
+    "tx": ["L:S_FCU_EFIS1_ND_MODE"]
+  },
+  "btn_cp_arc": {
+    "tx": ["L:S_FCU_EFIS1_ND_MODE"]
+  },
+  "btn_cp_plan": {
+    "tx": ["L:S_FCU_EFIS1_ND_MODE"]
+  },
+  "btn_cp_1_adf": {
+    "tx": ["L:S_FCU_EFIS1_NAV1"]
+  },
+  "btn_cp_1_off": {
+    "tx": ["L:S_FCU_EFIS1_NAV1"]
+  },
+  "btn_cp_1_vor": {
+    "tx": ["L:S_FCU_EFIS1_NAV1"]
+  },
+  "btn_cp_2_adf": {
+    "tx": ["L:S_FCU_EFIS1_NAV2"]
+  },
+  "btn_cp_2_off": {
+    "tx": ["L:S_FCU_EFIS1_NAV2"]
+  },
+  "btn_cp_2_vor": {
+    "tx": ["L:S_FCU_EFIS1_NAV2"]
+  },
+  "btn_cp_range_10": {
+    "tx": ["L:S_FCU_EFIS1_ND_ZOOM"]
+  },
+  "btn_cp_range_20": {
+    "tx": ["L:S_FCU_EFIS1_ND_ZOOM"]
+  },
+  "btn_cp_range_40": {
+    "tx": ["L:S_FCU_EFIS1_ND_ZOOM"]
+  },
+  "btn_cp_range_80": {
+    "tx": ["L:S_FCU_EFIS1_ND_ZOOM"]
+  },
+  "btn_cp_range_160": {
+    "tx": ["L:S_FCU_EFIS1_ND_ZOOM"]
+  },
+  "btn_cp_range_320": {
+    "tx": ["L:S_FCU_EFIS1_ND_ZOOM"]
+  },
+  "btn_cp_fd": {
+    "tx": ["L:S_FCU_EFIS1_FD"]
+  },
+  "btn_cp_ls": {
+    "tx": ["L:S_FCU_EFIS1_LS"]
+  },
+  "btn_cp_cstr": {
+    "tx": ["L:S_FCU_EFIS1_CSTR"]
+  },
+  "btn_cp_wpt": {
+    "tx": ["L:S_FCU_EFIS1_WPT"]
+  },
+  "btn_cp_vord": {
+    "tx": ["L:S_FCU_EFIS1_VORD"]
+  },
+  "btn_cp_ndb": {
+    "tx": ["L:S_FCU_EFIS1_NDB"]
+  },
+  "btn_cp_arpt": {
+    "tx": ["L:S_FCU_EFIS1_ARPT"]
+  },
+  "led_cp_fd": {
+    "rx": "L:I_FCU_EFIS1_FD"
+  },
+  "led_cp_ls": {
+    "rx": "L:I_FCU_EFIS1_LS"
+  },
+  "led_cp_cstr": {
+    "rx": "L:I_FCU_EFIS1_CSTR"
+  },
+  "led_cp_wpt": {
+    "rx": "L:I_FCU_EFIS1_WPT"
+  },
+  "led_cp_vord": {
+    "rx": "L:I_FCU_EFIS1_VORD"
+  },
+  "led_cp_ndb": {
+    "rx": "L:I_FCU_EFIS1_NDB"
+  },
+  "led_cp_arpt": {
+    "rx": "L:I_FCU_EFIS1_ARPT"
+  },
+  "btn_fo_qnh_push": {
+    "tx": ["L:S_FCU_EFIS2_BARO_STD"]
+  },
+  "btn_fo_qnh_pull": {
+    "tx": ["L:S_FCU_EFIS2_BARO_STD"]
+  },
+  "btn_fo_inHg": {
+    "tx": ["L:S_FCU_EFIS2_BARO_MODE"]
+  },
+  "btn_fo_hPa": {
+    "tx": ["L:S_FCU_EFIS2_BARO_MODE"]
+  },
+  "btn_fo_ils": {
+    "tx": ["L:S_FCU_EFIS2_ND_MODE"]
+  },
+  "btn_fo_vor": {
+    "tx": ["L:S_FCU_EFIS2_ND_MODE"]
+  },
+  "btn_fo_nav": {
+    "tx": ["L:S_FCU_EFIS2_ND_MODE"]
+  },
+  "btn_fo_arc": {
+    "tx": ["L:S_FCU_EFIS2_ND_MODE"]
+  },
+  "btn_fo_plan": {
+    "tx": ["L:S_FCU_EFIS2_ND_MODE"]
+  },
+  "btn_fo_1_adf": {
+    "tx": ["L:S_FCU_EFIS2_NAV1"]
+  },
+  "btn_fo_1_off": {
+    "tx": ["L:S_FCU_EFIS2_NAV1"]
+  },
+  "btn_fo_1_vor": {
+    "tx": ["L:S_FCU_EFIS2_NAV1"]
+  },
+  "btn_fo_2_adf": {
+    "tx": ["L:S_FCU_EFIS2_NAV2"]
+  },
+  "btn_fo_2_off": {
+    "tx": ["L:S_FCU_EFIS2_NAV2"]
+  },
+  "btn_fo_2_vor": {
+    "tx": ["L:S_FCU_EFIS2_NAV2"]
+  },
+  "btn_fo_range_10": {
+    "tx": ["L:S_FCU_EFIS2_ND_ZOOM"]
+  },
+  "btn_fo_range_20": {
+    "tx": ["L:S_FCU_EFIS2_ND_ZOOM"]
+  },
+  "btn_fo_range_40": {
+    "tx": ["L:S_FCU_EFIS2_ND_ZOOM"]
+  },
+  "btn_fo_range_80": {
+    "tx": ["L:S_FCU_EFIS2_ND_ZOOM"]
+  },
+  "btn_fo_range_160": {
+    "tx": ["L:S_FCU_EFIS2_ND_ZOOM"]
+  },
+  "btn_fo_range_320": {
+    "tx": ["L:S_FCU_EFIS2_ND_ZOOM"]
+  },
+  "btn_fo_fd": {
+    "tx": ["L:S_FCU_EFIS2_FD"]
+  },
+  "btn_fo_ls": {
+    "tx": ["L:S_FCU_EFIS2_LS"]
+  },
+  "btn_fo_cstr": {
+    "tx": ["L:S_FCU_EFIS2_CSTR"]
+  },
+  "btn_fo_wpt": {
+    "tx": ["L:S_FCU_EFIS2_WPT"]
+  },
+  "btn_fo_vord": {
+    "tx": ["L:S_FCU_EFIS2_VORD"]
+  },
+  "btn_fo_ndb": {
+    "tx": ["L:S_FCU_EFIS2_NDB"]
+  },
+  "btn_fo_arpt": {
+    "tx": ["L:S_FCU_EFIS2_ARPT"]
+  },
+  "led_fo_fd": {
+    "rx": "L:I_FCU_EFIS2_FD"
+  },
+  "led_fo_ls": {
+    "rx": "L:I_FCU_EFIS2_LS"
+  },
+  "led_fo_cstr": {
+    "rx": "L:I_FCU_EFIS2_CSTR"
+  },
+  "led_fo_wpt": {
+    "rx": "L:I_FCU_EFIS2_WPT"
+  },
+  "led_fo_vord": {
+    "rx": "L:I_FCU_EFIS2_VORD"
+  },
+  "led_fo_ndb": {
+    "rx": "L:I_FCU_EFIS2_NDB"
+  },
+  "led_fo_arpt": {
+    "rx": "L:I_FCU_EFIS2_ARPT"
+  }
+}

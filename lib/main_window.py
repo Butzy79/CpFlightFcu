@@ -9,11 +9,11 @@ CONFIG_AIRCRAFT_DIR = "config/aircraft"
 CONFIG_DIR = "config"
 
 class MainWindow:
-    def __init__(self, root):
+    def __init__(self, root, ver):
         self.root = root
-        self.root.title("CpFlight Control (CFC)")
+        self.version = ver
+        self.root.title(f"CpFlight Control (CFC) - {ver}")
         root.iconbitmap("resources/butzy.ico")
-        self.root.geometry("480x300")
         self.root.resizable(False, False)
 
         self.current_config = None
@@ -43,17 +43,14 @@ class MainWindow:
             self.fcu_ready_label.config(text="FCU NOT ready", foreground="red")
 
     def _build_gui(self):
-        # Layout base
         main_frame = ttk.Frame(self.root, padding=10)
         main_frame.grid(row=0, column=0, sticky="nsew")
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
 
-        # Colonne principali
         main_frame.grid_columnconfigure(0, weight=0)  # Sinistra
         main_frame.grid_columnconfigure(1, weight=1)  # Destra
 
-        # --- Pannello sinistro ---
         left_frame = ttk.LabelFrame(main_frame, text="Controls", padding=10)
         left_frame.grid(row=0, column=0, sticky="ns", padx=(0, 10))
 
@@ -78,7 +75,6 @@ class MainWindow:
         self.fps_menu = ttk.Combobox(left_frame, textvariable=self.fps_var, values=["0.5", "1", "2", "5", "10", "30", "60"], state="readonly", width=5)
         # self.fps_menu.grid(row=6, column=0, pady=5, sticky="w")
 
-        # --- Pannello destro ---
         right_frame = ttk.Frame(main_frame)
         right_frame.grid(row=0, column=1, sticky="nsew")
         right_frame.grid_rowconfigure(0, weight=1)
