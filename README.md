@@ -85,5 +85,5 @@ For issues, suggestions, or collaboration, please open an issue on GitHub or con
 ```py gen_version.py```
 
 ```
-pyinstaller --onefile --noconsole --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi --icon=resources/butzy.ico
+pyinstaller --onefile --noconsole --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi --add-binary ".venv\Lib\site-packages\SimConnect\SimConnect.dll;SimConnect" --icon=resources/butzy.ico --add-data "resources/butzy.ico;resources"
 ```
