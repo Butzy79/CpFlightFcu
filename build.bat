@@ -18,7 +18,7 @@ if exist dist (
 )
 
 echo Running PyInstaller...
-pyinstaller --onefile --noconsole --add-data "config;config" --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi
+pyinstaller --noconsole --add-data "config;config" --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi
 
 echo.
 echo ============================================
