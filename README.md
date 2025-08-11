@@ -81,6 +81,7 @@ For issues, suggestions, or collaboration, please open an issue on GitHub or con
 
 ## Create EXE file
 ```pip install pyinstaller```
+```py gen_version.py```
 ```
-pyinstaller --noconsole --add-data "config;config" --name CpFlight_Controller main.py  --hidden-import SimConnect --hidden-import scapi
+pyinstaller --onefile --noconsole --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi
 ```
