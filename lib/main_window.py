@@ -1,4 +1,5 @@
 import os
+import sys
 import tkinter as tk
 from tkinter import ttk
 
@@ -8,12 +9,21 @@ from lib.loop_controller import LoopController
 CONFIG_AIRCRAFT_DIR = "config/aircraft"
 CONFIG_DIR = "config"
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 class MainWindow:
     def __init__(self, root, ver):
         self.root = root
         self.version = ver
         self.root.title(f"CpFlight Control (CFC) - {ver}")
-        root.iconbitmap("resources/butzy.ico")
+        root.iconbitmap(resource_path("resources/butzy.ico"))
         self.root.resizable(False, False)
 
         self.current_config = None
