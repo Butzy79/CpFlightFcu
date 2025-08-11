@@ -77,3 +77,8 @@ See the LICENSE file for details.
 
 ## Contact
 For issues, suggestions, or collaboration, please open an issue on GitHub or contact the developer.
+
+
+## Create EXE file
+```pip install pyinstaller```
+```pyinstaller --onefile --noconsole main.py --hidden-import SimConnect --hidden-import scapi```
