@@ -1,0 +1,1 @@
+pyinstaller --onefile --noconsole --name CpFlight_Controller main.py  --hidden-import SimConnect --hidden-import scapi
