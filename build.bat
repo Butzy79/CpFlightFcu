@@ -19,7 +19,7 @@ if exist dist (
 
 echo Running PyInstaller...
 py gen_version.py
-pyinstaller --onefile --noconsole --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi
+pyinstaller --onefile --noconsole --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi --icon=resources/butzy.ico
 
 echo.
 echo Copying settings.json and config folder to dist...
