@@ -70,7 +70,7 @@ class MainWindow:
         self.stop_button = ttk.Button(left_frame, text="STOP", command=self._on_stop, state="disabled")
         self.stop_button.grid(row=4, column=0, pady=5, sticky="we")
 
-        ttk.Label(left_frame, text="Frames per second").grid(row=5, column=0, pady=(15, 0), sticky="w")
+        # ttk.Label(left_frame, text="Frames per second").grid(row=5, column=0, pady=(15, 0), sticky="w")
         self.fps_var = tk.StringVar(value="5")
         self.fps_menu = ttk.Combobox(left_frame, textvariable=self.fps_var, values=["0.5", "1", "2", "5", "10", "30", "60"], state="readonly", width=5)
         # self.fps_menu.grid(row=6, column=0, pady=5, sticky="w")

@@ -17,9 +17,14 @@ if exist dist (
     rmdir /s /q dist
 )
 
+if exist CpFlight_Controller.spec (
+    echo Removing old spec file...
+    del CpFlight_Controller.spec
+)
+
 echo Running PyInstaller...
 py gen_version.py
-pyinstaller --onefile --noconsole --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi --icon=resources/butzy.ico
+pyinstaller --onefile --noconsole --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi --icon=resources/butzy.ico --add-data "resources/butzy.ico;resources"
 
 echo.
 echo Copying settings.json and config folder to dist...
