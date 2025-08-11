@@ -9,22 +9,26 @@ echo.
 
 REM Clean previous build/dist folders
 if exist build (
-    echo 🧹 Removing old build folder...
+    echo Removing old build folder...
     rmdir /s /q build
 )
 if exist dist (
-    echo 🧹 Removing old dist folder...
+    echo Removing old dist folder...
     rmdir /s /q dist
 )
 
 echo Running PyInstaller...
-pyinstaller --noconsole --add-data "config;config" --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi
+pyinstaller --onefile --noconsole --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi
+
+echo.
+echo Copying settings.json and config folder to dist...
+copy /Y settings.json dist\
+xcopy config dist\config\ /E /I /Y
 
 echo.
 echo ============================================
 echo   Build completed!
 echo   Your file is here: dist\CpFlight_Controller.exe
+echo   Config files have been copied next to the EXE.
 echo ============================================
 echo.
-
-pause
