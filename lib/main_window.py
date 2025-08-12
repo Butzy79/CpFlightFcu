@@ -19,7 +19,7 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 class MainWindow:
-    def __init__(self, root, ver):
+    def __init__(self, root, ver, update_available:bool, remote_version=None):
         self.root = root
         self.version = ver
         self.root.title(f"CpFlight Control (CFC) - {ver}")
@@ -32,6 +32,8 @@ class MainWindow:
         self.aircraft_files = self._scan_aircraft_files()
         self.aircraft = AircraftLoader()
         self.loop_controller = LoopController(self._get_interval, self.aircraft)
+        self.update_available = update_available
+        self.remote_version = remote_version
 
         self._build_gui()
 
@@ -58,11 +60,23 @@ class MainWindow:
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
 
-        main_frame.grid_columnconfigure(0, weight=0)  # Sinistra
-        main_frame.grid_columnconfigure(1, weight=1)  # Destra
+        if self.update_available and self.remote_version:
+            banner = ttk.Label(
+                main_frame,
+                text=f"⚠ Update available: version {self.remote_version}",
+                foreground="white",
+                background="red",
+                font=("Helvetica", 9, "bold"),
+                padding=3
+            )
+            banner.grid(row=0, column=0, columnspan=2, sticky="we", pady=(0, 1))
+        start_row = 1 if self.update_available else 0
+
+        main_frame.grid_columnconfigure(0, weight=0)
+        main_frame.grid_columnconfigure(1, weight=1)
 
         left_frame = ttk.LabelFrame(main_frame, text="Controls", padding=10)
-        left_frame.grid(row=0, column=0, sticky="ns", padx=(0, 10))
+        left_frame.grid(row=start_row, column=0, sticky="ns", padx=(0, 10))
 
         ttk.Label(left_frame, text="Aircraft Config").grid(row=0, column=0, sticky="w")
         self.file_var = tk.StringVar()
@@ -86,7 +100,7 @@ class MainWindow:
         # self.fps_menu.grid(row=6, column=0, pady=5, sticky="w")
 
         right_frame = ttk.Frame(main_frame)
-        right_frame.grid(row=0, column=1, sticky="nsew")
+        right_frame.grid(row=start_row, column=1, sticky="nsew")
         right_frame.grid_rowconfigure(0, weight=1)
 
         self.status_frame = ttk.LabelFrame(right_frame, text="Aircraft Status", padding=20)

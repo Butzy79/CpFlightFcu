@@ -29,9 +29,9 @@ class SettingsManager:
         with open(SETTINGS_PATH, "w") as f:
             json.dump(self.settings, f, indent=4)
 
-    def get_window_geometry(self):
+    def get_window_geometry(self, update_available:bool=False):
         w = self.settings["window"]["width"]
-        h = self.settings["window"]["height"]
+        h = self.settings["window"]["height"] if not update_available else self.settings["window"]["height"] + 25
         x = self.settings["window"]["x"]
         y = self.settings["window"]["y"]
         return f"{w}x{h}+{x}+{y}"
@@ -40,6 +40,6 @@ class SettingsManager:
         self.settings["window"]["x"] = x
         self.settings["window"]["y"] = y
 
-    def update_window_size(self, width, height):
+    def update_window_size(self, width, height, update_available):
         self.settings["window"]["width"] = width
-        self.settings["window"]["height"] = height
+        self.settings["window"]["height"] = height if not update_available else height - 25
