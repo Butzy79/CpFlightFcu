@@ -80,10 +80,12 @@ For issues, suggestions, or collaboration, please open an issue on GitHub or con
 
 
 ## Create EXE file
-```pip install pyinstaller```
-
-```py gen_version.py```
-
+```
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+pip install pyinstaller
+py gen_version.py
 ```
 pyinstaller --onefile --noconsole --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi --add-binary ".venv\Lib\site-packages\SimConnect\SimConnect.dll;SimConnect" --icon=resources/butzy.ico --add-data "resources/butzy.ico;resources"
 ```
