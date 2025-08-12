@@ -24,7 +24,7 @@ if exist CpFlight_Controller.spec (
 
 echo Running PyInstaller...
 py gen_version.py
-pyinstaller --onefile --noconsole --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi --add-binary ".venv\Lib\site-packages\SimConnect\SimConnect.dll;SimConnect" --icon=resources/butzy.ico --add-data "resources/butzy.ico;resources"
+pyinstaller --onefile --noconsole --name CpFlight_Controller main.py --hidden-import SimConnect --hidden-import scapi --hidden-import requests --hidden-import packaging --add-binary ".venv\Lib\site-packages\SimConnect\SimConnect.dll;SimConnect" --icon=resources/butzy.ico --add-data "resources/butzy.ico;resources"
 
 echo.
 echo Copying settings.json and config folder to dist...
