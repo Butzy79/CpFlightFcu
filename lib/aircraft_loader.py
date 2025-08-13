@@ -1,14 +1,17 @@
 import json
 import re
+import time
+
+
 #TODO: Missing STD
 
 class AircraftLoader:
-    speed = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "mach": False}
-    heading = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "trk": False}
+    speed = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "mach": False, "time_set": 0.0}
+    heading = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "trk": False, "time_set": 0.0}
     qnh_cp = {"op": False, "value": 1013.0, "init": False}
     qnh_fo = {"op": False, "value": 1013.0, "init": False}
-    altitude = {"op": False, "value": 1000, "init": False, "dot": False, "dash": False}
-    vs = {"op": False, "value": 0, "init": False, "dash": False}
+    altitude = {"op": False, "value": 1000, "init": False, "dot": False, "dash": False, "time_set": 0.0}
+    vs = {"op": False, "value": 0, "init": False, "dash": False, "time_set": 0.0}
     btn_gen = {"op": False}
     led_gen = {"op": False}
     led_fcu = {"led_loc": False, "led_ap1": False, "led_ap2": False, "led_athr": False, "led_exped": False, "led_appr": False}
@@ -175,10 +178,11 @@ class AircraftLoader:
             return False
         speed_var = speed_array.get('rx') if self.speed["init"] else speed_array.get('in')
         speed_value = int(vr.get(f"({speed_var})"))
-        if speed_value != self.speed["value"]:
+        if speed_value != self.speed["value"] or (0 < self.speed['time_set'] < time.time()):
             self.speed["value"] = speed_value
             speed_value = f".{speed_value}" if speed_value< 100 else speed_value
             sock.sendall((cpflight_cmds.get("tx").format(value=speed_value) + "\n").encode())
+            self.speed['time_set'] = time.time() + 60
         return True
 
     def set_heading_fcu(self, heading_array: int, cpflight_cmds:dict, sock, vr) -> bool:
@@ -186,9 +190,10 @@ class AircraftLoader:
             return False
         heading_var = heading_array.get('rx') if self.heading["init"] else heading_array.get('in')
         heading_value = int(vr.get(f"({heading_var})"))
-        if heading_value != self.heading["value"]:
+        if heading_value != self.heading["value"] or (0 < self.heading['time_set'] < time.time()):
             self.heading["value"] = heading_value
             sock.sendall((cpflight_cmds.get("tx").format(value=str(heading_value).zfill(3)) + "\n").encode())
+            self.heading['time_set'] = time.time() + 60
         return True
 
     def set_altitude_fcu(self, altitude_array: int, cpflight_cmds:dict, sock, vr) -> bool:
@@ -196,9 +201,10 @@ class AircraftLoader:
             return False
         altitude_var = altitude_array.get('rx') if self.altitude["init"] else altitude_array.get('in')
         altitude_value = int(vr.get(f"({altitude_var})"))
-        if altitude_value != self.altitude["value"]:
+        if altitude_value != self.altitude["value"] or (0 < self.altitude['time_set'] < time.time()):
             self.altitude["value"] = altitude_value
             sock.sendall((cpflight_cmds.get("tx").format(value=f"{altitude_value:05d}") + "\n").encode())
+            self.altitude['time_set'] = time.time() + 60
         return True
 
     def set_vs_fcu(self, vs_array: int, cpflight_cmds:dict, sock, vr) -> bool:
@@ -206,9 +212,10 @@ class AircraftLoader:
             return False
         vs_var = vs_array.get('rx') if self.vs["init"] else vs_array.get('in')
         vs_value = int(vr.get(f"({vs_var})"))
-        if vs_value != self.vs["value"]:
+        if vs_value != self.vs["value"] or (0 < self.vs['time_set'] < time.time()):
             self.vs["value"] = vs_value
             sock.sendall((cpflight_cmds.get("tx").format(value=f"{vs_value:+05d}") + "\n").encode())
+            self.vs['time_set'] = time.time() + 60
         return True
 
     def _get_value_qhn_to_unit(self, vr, mode_hpa_var, rx_hpa:str, rx_inhg:str,
@@ -298,6 +305,7 @@ class AircraftLoader:
             vr.set(f"{cl_val} (>{el})")
             vr.set(f"{new_speed + speed_abs} (>{config['speed']['tx_inc']})")
         self.speed["value"] = cl_val
+        self.speed['time_set'] = time.time() + 60
         self.speed["init"] = True
         self.speed["op"] = False
 
@@ -308,6 +316,7 @@ class AircraftLoader:
             current = vr.get(f"({el})")
             vr.set(f"{current + incr} +  (>{el})")
         self.heading["value"] = cl_val
+        self.heading['time_set'] = time.time() + 60
         self.heading["init"] = True
         self.heading["op"] = False
 
@@ -321,6 +330,7 @@ class AircraftLoader:
             vr.set(f"{altitude_abs+new_altitude} (>{config['altitude']['tx_inc']})")
             vr.set(f"{cl_val} (>{el})")
         self.altitude["value"] = cl_val
+        self.altitude['time_set'] = time.time() + 60
         self.altitude["init"] = True
         self.altitude["op"] = False
 
@@ -334,6 +344,7 @@ class AircraftLoader:
             vr.set(f"{vs_abs+new_vs} (>{config['vs']['tx_inc']})")
             vr.set(f"{cl_val} (>{el})")
         self.vs["value"] = cl_val
+        self.vs['time_set'] = time.time() + 60
         self.vs["init"] = True
         self.vs["op"] = False
 
