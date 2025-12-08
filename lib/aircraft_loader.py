@@ -696,7 +696,7 @@ class AircraftLoader:
 
     def set_btn_cp_range_160_aircraft(self, value: str, config, vr, sock, cpfligh):
         for el in config['btn_cp_range_160']['tx']:
-            vr.set(f"5 (>{el})")
+            vr.set(f"4 (>{el})")
         self.btn_gen["op"] = False
 
     def set_btn_cp_range_320_aircraft(self, value: str, config, vr, sock, cpfligh):
@@ -957,7 +957,7 @@ class AircraftLoader:
 
     def set_btn_fo_range_160_aircraft(self, value: str, config, vr, sock, fofligh):
         for el in config['btn_fo_range_160']['tx']:
-            vr.set(f"5 (>{el})")
+            vr.set(f"4 (>{el})")
         self.btn_gen["op"] = False
 
     def set_btn_fo_range_320_aircraft(self, value: str, config, vr, sock, fofligh):

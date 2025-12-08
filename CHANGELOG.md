@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.9.5] - 2025-08-12
+### Fix
+- Efis 160 CP/FO Issue
+
 ## [0.9.4] - 2025-08-12
 ### Added
 - Calibration FCU Values
