@@ -2,6 +2,7 @@ import os
 import sys
 import tkinter as tk
 from tkinter import ttk
+from typing import Dict
 
 from lib.aircraft_loader import AircraftLoader
 from lib.loop_controller import LoopController
@@ -19,13 +20,17 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 class MainWindow:
-    def __init__(self, root, ver, update_available:bool, remote_version=None):
+    def __init__(self, root, ver, update_available:bool, remote_version=None, settings=None, on_close_callback=None):
         self.root = root
         self.version = ver
+        self.on_close_callback = on_close_callback
+        self.settings = settings
+        self.setting_autostart = self.settings.settings.get('autostart', True) if self.settings else True
+        self.setting_autostart_obj = None
+        self.started = False
         self.root.title(f"CpFlight Control (CFC) - {ver}")
         root.iconbitmap(resource_path("resources/butzy.ico"))
         self.root.resizable(False, False)
-
         self.current_config = None
         self.current_cpflight_config = None
 
@@ -35,7 +40,28 @@ class MainWindow:
         self.update_available = update_available
         self.remote_version = remote_version
 
+        self._build_menu()
         self._build_gui()
+
+    def _toggle_autostart(self):
+        self.setting_autostart = self.setting_autostart_obj.get()
+
+    def _build_menu(self):
+        menubar = tk.Menu(self.root)
+        self.root.config(menu=menubar)
+        settings_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Settings", menu=settings_menu)
+        self.setting_autostart_obj = tk.BooleanVar(value=self.setting_autostart)
+        settings_menu.add_checkbutton(
+            label="Autostart",
+            variable=self.setting_autostart_obj,
+            command=self._toggle_autostart
+        )
+        settings_menu.add_separator()
+        settings_menu.add_command(
+            label="Close",
+            command=lambda: self.on_close_callback(self.root, self.settings, self.update_available)
+        )
 
     def _scan_aircraft_files(self):
         return [f for f in os.listdir(CONFIG_AIRCRAFT_DIR) if f.endswith(".json")]
@@ -53,6 +79,11 @@ class MainWindow:
             self.fcu_ready_label.config(text="FCU ready!", foreground="green")
         else:
             self.fcu_ready_label.config(text="FCU NOT ready", foreground="red")
+
+        if self.loop_controller.sim_status and self.loop_controller.fcu_status and self.setting_autostart and not self.started:
+            self._on_start()
+        elif (not self.loop_controller.sim_status or not self.loop_controller.fcu_status) and self.setting_autostart and self.started:
+            self.on_stop()
 
     def _build_gui(self):
         main_frame = ttk.Frame(self.root, padding=10)
@@ -91,7 +122,7 @@ class MainWindow:
         self.start_button = ttk.Button(left_frame, text="START", command=self._on_start, state="disabled")
         self.start_button.grid(row=3, column=0, pady=(10, 5), sticky="we")
 
-        self.stop_button = ttk.Button(left_frame, text="STOP", command=self._on_stop, state="disabled")
+        self.stop_button = ttk.Button(left_frame, text="STOP", command=self.on_stop, state="disabled")
         self.stop_button.grid(row=4, column=0, pady=5, sticky="we")
 
         # ttk.Label(left_frame, text="Frames per second").grid(row=5, column=0, pady=(15, 0), sticky="w")
@@ -166,6 +197,7 @@ class MainWindow:
         if not success:
             self.status_bar.config(text=msg_err)
             return
+        self.started = True
         self.status_bar.config(text="Sim connected")
 
         self.file_menu.config(state="disabled")
@@ -174,7 +206,8 @@ class MainWindow:
         self.stop_button.config(state="normal")
         self._schedule_status_update()
 
-    def _on_stop(self):
+    def on_stop(self) -> Dict:
+        self.started = False
         self.loop_controller.stop()
         self._update_status_labels()
         if hasattr(self, "status_update_job"):
@@ -184,3 +217,7 @@ class MainWindow:
         self.fps_menu.config(state="readonly")
         self.start_button.config(state="normal")
         self.stop_button.config(state="disabled")
+        return {
+            "autostart" : self.setting_autostart,
+            "CpFlight": self.aircraft_files
+        }
