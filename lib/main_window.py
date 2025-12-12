@@ -20,17 +20,18 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 class MainWindow:
-    def __init__(self, root, ver, update_available:bool, remote_version=None, settings=None, on_close_callback=None):
+    def __init__(self, root, ver, update_available: bool, remote_version=None, settings=None, on_close_callback=None):
         self.root = root
         self.version = ver
-        self.on_close_callback = on_close_callback
         self.settings = settings
-        self.setting_autostart = self.settings.settings.get('autostart', True) if self.settings else True
-        self.setting_autostart_obj = None
-        self.started = False
+        self.on_close_callback = on_close_callback
+        self.manual_stop = False
         self.root.title(f"CpFlight Control (CFC) - {ver}")
         root.iconbitmap(resource_path("resources/butzy.ico"))
         self.root.resizable(False, False)
+        self.setting_autostart = self.settings.settings.get('autostart', True) if self.settings else True
+        self.setting_autostart_obj = self.setting_autostart
+
         self.current_config = None
         self.current_cpflight_config = None
 
@@ -43,8 +44,29 @@ class MainWindow:
         self._build_menu()
         self._build_gui()
 
-    def _toggle_autostart(self):
-        self.setting_autostart = self.setting_autostart_obj.get()
+    def _scan_aircraft_files(self):
+        return [f for f in os.listdir(CONFIG_AIRCRAFT_DIR) if f.endswith(".json")]
+
+    def _format_filename(self, filename):
+        return filename.replace("_", " ").replace(".json", "")
+
+    def _update_status_labels(self):
+        sim_st = False
+        fcu_st = False
+        if self.loop_controller.sim_status:
+            self.aircraft_ready_label.config(text="Aircraft ready!", foreground="green")
+            sim_st = True
+        else:
+            self.aircraft_ready_label.config(text="Aircraft NOT ready", foreground="red")
+
+        if self.loop_controller.fcu_status:
+            fcu_st = True
+            self.fcu_ready_label.config(text="FCU ready!", foreground="green")
+        else:
+            self.fcu_ready_label.config(text="FCU NOT ready", foreground="red")
+
+        if fcu_st and sim_st:
+            self.status_bar.config(text="Sim connected!")
 
     def _build_menu(self):
         menubar = tk.Menu(self.root)
@@ -63,27 +85,8 @@ class MainWindow:
             command=lambda: self.on_close_callback(self.root, self.settings, self.update_available)
         )
 
-    def _scan_aircraft_files(self):
-        return [f for f in os.listdir(CONFIG_AIRCRAFT_DIR) if f.endswith(".json")]
-
-    def _format_filename(self, filename):
-        return filename.replace("_", " ").replace(".json", "")
-
-    def _update_status_labels(self):
-        if self.loop_controller.sim_status:
-            self.aircraft_ready_label.config(text="Aircraft ready!", foreground="green")
-        else:
-            self.aircraft_ready_label.config(text="Aircraft NOT ready", foreground="red")
-
-        if self.loop_controller.fcu_status:
-            self.fcu_ready_label.config(text="FCU ready!", foreground="green")
-        else:
-            self.fcu_ready_label.config(text="FCU NOT ready", foreground="red")
-
-        if self.loop_controller.sim_status and self.loop_controller.fcu_status and self.setting_autostart and not self.started:
-            self._on_start()
-        elif (not self.loop_controller.sim_status or not self.loop_controller.fcu_status) and self.setting_autostart and self.started:
-            self.on_stop()
+    def _toggle_autostart(self):
+        self.setting_autostart = self.setting_autostart_obj.get()
 
     def _build_gui(self):
         main_frame = ttk.Frame(self.root, padding=10)
@@ -154,12 +157,25 @@ class MainWindow:
         self.fcu_ready_label.pack(anchor="center", pady=20)
 
         # Status bar
-        self.status_bar = ttk.Label(self.root, text="Ready", anchor="w", relief="sunken", padding=5)
+        if not self.setting_autostart:
+            self.status_bar = ttk.Label(self.root, text="Ready", anchor="w", relief="sunken", padding=5)
+        else:
+            self.status_bar = ttk.Label(self.root, text="Auto Connect...", anchor="w", relief="sunken", padding=5)
+
         self.status_bar.grid(row=1, column=0, sticky="we")
 
         if options:
             self.file_var.set(options[0])
             self._on_load()
+
+    def _schedule_check_sim(self):
+        if self.loop_controller.check_status(self.setting_autostart, self.current_config, self.current_cpflight_config):
+            self.file_menu.config(state="disabled")
+            self.fps_menu.config(state="disabled")
+            self.stop_button.config(state="normal")
+            self._schedule_status_update()
+        if not self.loop_controller.is_sim_running:
+            self.status_sim_job = self.root.after(5000, self._schedule_check_sim)
 
     def _schedule_status_update(self):
         self._update_status_labels()
@@ -185,8 +201,10 @@ class MainWindow:
         self.current_config = self.aircraft.load_json_config(filepath)
         filepathcpflight = os.path.join(CONFIG_DIR, "cpflight.json")
         self.current_cpflight_config = self.aircraft.load_json_config(filepathcpflight)
+        self._schedule_check_sim()
 
-        self.start_button.config(state="normal")
+        if not self.setting_autostart:
+            self.start_button.config(state="normal")
         self.load_button.config(state="disabled")
 
     def _on_start(self):
@@ -197,9 +215,6 @@ class MainWindow:
         if not success:
             self.status_bar.config(text=msg_err)
             return
-        self.started = True
-        self.status_bar.config(text="Sim connected")
-
         self.file_menu.config(state="disabled")
         self.fps_menu.config(state="disabled")
         self.start_button.config(state="disabled")
@@ -207,14 +222,16 @@ class MainWindow:
         self._schedule_status_update()
 
     def on_stop(self) -> Dict:
-        self.started = False
         self.loop_controller.stop()
         self._update_status_labels()
+        self.manual_stop = True
         if hasattr(self, "status_update_job"):
             self.root.after_cancel(self.status_update_job)
-
+        if hasattr(self, "status_sim_job"):
+            self.root.after_cancel(self.status_sim_job)
         self.file_menu.config(state="readonly")
         self.fps_menu.config(state="readonly")
+        self.status_bar.config(text="Ready")
         self.start_button.config(state="normal")
         self.stop_button.config(state="disabled")
         return {

@@ -5,8 +5,8 @@ DEFAULT_SETTINGS = {
     "window": {
         "x": 100,
         "y": 100,
-        "width": 400,
-        "height": 400
+        "width": 480,
+        "height": 265
     },
     "autostart": True,
 }
