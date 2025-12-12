@@ -14,18 +14,18 @@ logging.basicConfig(
 
 def check_update_api():
     url = "https://api.github.com/repos/Butzy79/CpFlightFcu/releases/latest"
-    resp = requests.get(url)
-    if resp.ok:
+    try:
+        resp = requests.get(url, timeout=3)
+        if not resp.ok:
+            return False, None
         latest = resp.json().get("tag_name", "").lstrip("v")
-        if pkg_version.parse(latest) > pkg_version.parse(version):
-            return True, latest
-        else:
-            return False, latest
-    return False, None
+        return pkg_version.parse(latest) > pkg_version.parse(version), latest
+    except Exception:
+        return False, None
 
 def on_close(root, settings, update_available):
     # Save geometry before exit
-    app._on_stop()
+    extra_param = app.on_stop()
     geo = root.geometry()  # Format: "400x400+100+100"
     parts = geo.split("+")
     size = parts[0].split("x")
@@ -35,7 +35,7 @@ def on_close(root, settings, update_available):
     height = int(size[1])
     settings.update_window_position(x, y)
     settings.update_window_size(width, height, update_available)
-    settings.save_settings()
+    settings.save_settings(extra_param)
     root.destroy()
 
 if __name__ == "__main__":
@@ -44,6 +44,13 @@ if __name__ == "__main__":
     root = tk.Tk()
     root.geometry(settings.get_window_geometry(update_available))
     root.resizable(False, False)
-    app = MainWindow(root, version, update_available, remote_version)
+    app = MainWindow(
+        root,
+        version,
+        update_available,
+        remote_version,
+        settings=settings,
+        on_close_callback=on_close
+    )
     root.protocol("WM_DELETE_WINDOW", lambda: on_close(root, settings, update_available))
     root.mainloop()
