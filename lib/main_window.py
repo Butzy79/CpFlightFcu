@@ -29,7 +29,7 @@ class MainWindow:
         self.root.title(f"CpFlight Control (CFC) - {ver}")
         root.iconbitmap(resource_path("resources/butzy.ico"))
         self.root.resizable(False, False)
-        self.setting_autostart = self.settings.settings.get('autostart', True) if self.settings else True
+        self.setting_autostart = self.settings.settings.get('autostart', False) if self.settings else False
         self.setting_autostart_obj = self.setting_autostart
 
         self.current_config = None
@@ -174,7 +174,7 @@ class MainWindow:
             self.fps_menu.config(state="disabled")
             self.stop_button.config(state="normal")
             self._schedule_status_update()
-        if not self.loop_controller.is_sim_running:
+        if not self.loop_controller.is_sim_running():
             self.status_sim_job = self.root.after(5000, self._schedule_check_sim)
 
     def _schedule_status_update(self):
