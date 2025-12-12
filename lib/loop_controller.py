@@ -17,6 +17,7 @@ class LoopController:
         """
         self.get_interval = get_interval_callback
         self.running = False
+        self.sim_running = False
         self.thread = None
         self.socket_thread = None
 
@@ -32,6 +33,7 @@ class LoopController:
         self.fcu_status = False
 
         self.pause_loop_until = 0
+        self.pause_loop_check_until = 0
 
     def find_matching_block(self, s):
         for key, value in self.cpflight.items():
@@ -40,6 +42,32 @@ class LoopController:
                 if re.match(pattern, s):
                     return key
         return None
+
+    def is_sim_running(self) -> bool:
+        return self.sim_running
+
+    def check_status(self, autostart, config, cpflight) -> bool:
+        if not autostart:
+            return False
+        if self.sim_running:
+            return True
+        now = time.time()
+        if now < self.pause_loop_check_until:
+            return False
+        self.pause_loop_check_until = now + 2
+        self.sm = SimConnectParser()
+        self.vr = ParserVariableRequests(self.sm)
+        self.vr.clear_sim_variables()
+        if not self.vr:
+            return False
+        sim_load = bool(self.vr.get("(A:IS USER SIM,Bool)"))
+        if sim_load:
+            self.sim_running = True
+            self.pause_loop_check_until = time.time() + 2
+            self.start(config, cpflight)
+            return True
+        return False
+
 
     def start(self, config, cpflight) -> tuple[bool, Optional[str]]:
         if self.running:
@@ -64,6 +92,7 @@ class LoopController:
             self.sock.sendall((self.cpflight.get("LED_ALL_ON") + "\n").encode())
 
             self.running = True
+            self.sim_running = True
             self.thread = threading.Thread(target=self._run_loop, daemon=True)
             self.socket_thread = threading.Thread(target=self._socket_listener_loop, daemon=True)
 
@@ -75,6 +104,7 @@ class LoopController:
 
     def stop(self):
         self.running = False
+        self.sim_running = False
         self.sm = None
         self.vr = None
         self.sim_status = False
@@ -95,6 +125,8 @@ class LoopController:
         self.aircraft.set_initial_values(self.current_config, self.cpflight, self.sock, self.vr)
         while self.running:
             try:
+                if not self.sim_running:
+                    self.stop()
                 # Dash and Dot Control need to be here
                 self.aircraft.set_dash_fcu( self.current_config, self.cpflight, self.sock, self.vr)
                 self.aircraft.set_dot_fcu( self.current_config, self.cpflight, self.sock, self.vr)
