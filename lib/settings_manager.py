@@ -8,7 +8,7 @@ DEFAULT_SETTINGS = {
         "width": 480,
         "height": 265
     },
-    "autostart": True,
+    "autostart": False,
 }
 
 SETTINGS_PATH = "settings.json"
