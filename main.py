@@ -14,14 +14,14 @@ logging.basicConfig(
 
 def check_update_api():
     url = "https://api.github.com/repos/Butzy79/CpFlightFcu/releases/latest"
-    resp = requests.get(url)
-    if resp.ok:
+    try:
+        resp = requests.get(url, timeout=3)
+        if not resp.ok:
+            return False, None
         latest = resp.json().get("tag_name", "").lstrip("v")
-        if pkg_version.parse(latest) > pkg_version.parse(version):
-            return True, latest
-        else:
-            return False, latest
-    return False, None
+        return pkg_version.parse(latest) > pkg_version.parse(version), latest
+    except Exception:
+        return False, None
 
 def on_close(root, settings, update_available):
     # Save geometry before exit

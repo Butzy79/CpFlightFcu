@@ -22,6 +22,8 @@ class MainWindow:
     def __init__(self, root, ver, update_available:bool, remote_version=None):
         self.root = root
         self.version = ver
+        self.autostart = True
+        self.started = False
         self.root.title(f"CpFlight Control (CFC) - {ver}")
         root.iconbitmap(resource_path("resources/butzy.ico"))
         self.root.resizable(False, False)
@@ -53,6 +55,12 @@ class MainWindow:
             self.fcu_ready_label.config(text="FCU ready!", foreground="green")
         else:
             self.fcu_ready_label.config(text="FCU NOT ready", foreground="red")
+
+        if self.loop_controller.sim_status and self.loop_controller.fcu_status and self.autostart and not self.started:
+            self._on_start()
+        elif (not self.loop_controller.sim_status or not self.loop_controller.fcu_status) and self.autostart and self.started:
+            self._on_stop()
+
 
     def _build_gui(self):
         main_frame = ttk.Frame(self.root, padding=10)
@@ -166,6 +174,7 @@ class MainWindow:
         if not success:
             self.status_bar.config(text=msg_err)
             return
+        self.started = True
         self.status_bar.config(text="Sim connected")
 
         self.file_menu.config(state="disabled")
@@ -175,6 +184,7 @@ class MainWindow:
         self._schedule_status_update()
 
     def _on_stop(self):
+        self.started = False
         self.loop_controller.stop()
         self._update_status_labels()
         if hasattr(self, "status_update_job"):
