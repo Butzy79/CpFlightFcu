@@ -1,8 +1,9 @@
 {
     "window": {
-        "x": 1582,
-        "y": 376,
+        "x": 100,
+        "y": 100,
         "width": 480,
         "height": 265
-    }
+    },
+  "autostart": true
 }
