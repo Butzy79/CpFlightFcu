@@ -61,7 +61,6 @@ class MainWindow:
         elif (not self.loop_controller.sim_status or not self.loop_controller.fcu_status) and self.autostart and self.started:
             self._on_stop()
 
-
     def _build_gui(self):
         main_frame = ttk.Frame(self.root, padding=10)
         main_frame.grid(row=0, column=0, sticky="nsew")
