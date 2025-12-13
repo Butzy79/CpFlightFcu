@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
+## [1.0.4] - 2025-12-13
+### Added
+- FCU Display Brightness and Int Brightness
+### Fix
+- Auto stop on FCU OFF
+
 ## [1.0.3] - 2025-12-13
 ### Fix
 - Autostart check on fcu plane

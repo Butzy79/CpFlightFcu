@@ -29,6 +29,7 @@ try:
             break
 
         if user_input:
+            # Backlight= b"E0BKL" + bytes([int(10)]) + b"\x00" # 0 to 10
             sock.sendall((user_input + "\n").encode())
             print("Sent:", user_input)
 
