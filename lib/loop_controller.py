@@ -18,8 +18,10 @@ class LoopController:
         self.get_interval = get_interval_callback
         self.running = False
         self.sim_running = False
+        self.autostart = False
         self.thread = None
         self.socket_thread = None
+        self.ready_to_stop = False
 
         self.aircraft = obj_aircraft
         self.current_config = None
@@ -46,7 +48,11 @@ class LoopController:
     def is_sim_running(self) -> bool:
         return self.sim_running
 
+    def is_sim_ready_to_stop(self):
+        return self.ready_to_stop
+
     def check_status(self, autostart, config, cpflight) -> bool:
+        self.autostart = autostart
         if not autostart:
             return False
         if self.sim_running:
@@ -60,14 +66,13 @@ class LoopController:
         self.vr.clear_sim_variables()
         if not self.vr:
             return False
-        sim_load = bool(self.vr.get("(A:IS USER SIM,Bool)"))
+        sim_load = bool(self.vr.get(f"({config.get('fcu',{}).get('power_on')})"))
         if sim_load:
             self.sim_running = True
             self.pause_loop_check_until = time.time() + 2
             self.start(config, cpflight)
             return True
         return False
-
 
     def start(self, config, cpflight) -> tuple[bool, Optional[str]]:
         if self.running:
@@ -106,6 +111,7 @@ class LoopController:
         self.running = False
         self.sim_running = False
         self.sm = None
+        self.ready_to_stop = False
         self.vr = None
         self.sim_status = False
         self.fcu_status = False
@@ -178,6 +184,10 @@ class LoopController:
                 )
                 self.aircraft.set_led_efis_cp( self.current_config, self.cpflight, self.sock, self.vr)
                 self.aircraft.set_led_efis_fo( self.current_config, self.cpflight, self.sock, self.vr)
+
+                if self.autostart:
+                    if not bool(self.vr.get(f"({self.current_config.get('fcu', {}).get('power_off')})")):
+                        self.ready_to_stop = True
 
                 self.sim_status = True
                 time.sleep(interval)
