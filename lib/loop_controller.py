@@ -94,7 +94,7 @@ class LoopController:
 
             # turn led on:
             self.sock.sendall((self.cpflight.get("POWER_ON") + "\n").encode())
-            self.sock.sendall((self.cpflight.get("LED_ALL_ON") + "\n").encode())
+            # self.sock.sendall((self.cpflight.get("LED_ALL_ON") + "\n").encode())
 
             self.running = True
             self.sim_running = True
@@ -184,6 +184,13 @@ class LoopController:
                 )
                 self.aircraft.set_led_efis_cp( self.current_config, self.cpflight, self.sock, self.vr)
                 self.aircraft.set_led_efis_fo( self.current_config, self.cpflight, self.sock, self.vr)
+
+                self.aircraft.set_fcu_brightness(
+                    self.current_config.get('fcu'),
+                    self.cpflight.get('fcu'),
+                    self.sock,
+                    self.vr
+                )
 
                 if self.autostart:
                     if not bool(self.vr.get(f"({self.current_config.get('fcu', {}).get('power_off')})")):

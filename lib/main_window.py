@@ -75,7 +75,7 @@ class MainWindow:
         menubar.add_cascade(label="Settings", menu=settings_menu)
         self.setting_autostart_obj = tk.BooleanVar(value=self.setting_autostart)
         settings_menu.add_checkbutton(
-            label="Autostart",
+            label="Auto Connection",
             variable=self.setting_autostart_obj,
             command=self._toggle_autostart
         )
@@ -180,6 +180,8 @@ class MainWindow:
     def _schedule_status_update(self):
         self._update_status_labels()
         self.status_update_job = self.root.after(5000, self._schedule_status_update)
+        if self.loop_controller.is_sim_ready_to_stop():
+            self.on_stop(False)
 
     def _get_interval(self):
         try:
@@ -221,18 +223,24 @@ class MainWindow:
         self.stop_button.config(state="normal")
         self._schedule_status_update()
 
-    def on_stop(self) -> Dict:
+    def on_stop(self, manual=True) -> Dict:
         self.loop_controller.stop()
         self._update_status_labels()
         self.manual_stop = True
+        if self.setting_autostart and not manual:
+            self._schedule_check_sim()
+            self.start_button.config(state="disabled")
+            self.status_bar.config(text="Auto Connect...")
+        else:
+            self.status_bar.config(text="Ready")
+            if hasattr(self, "status_sim_job"):
+                self.root.after_cancel(self.status_sim_job)
+            self.start_button.config(state="normal")
         if hasattr(self, "status_update_job"):
             self.root.after_cancel(self.status_update_job)
-        if hasattr(self, "status_sim_job"):
-            self.root.after_cancel(self.status_sim_job)
+
         self.file_menu.config(state="readonly")
         self.fps_menu.config(state="readonly")
-        self.status_bar.config(text="Ready")
-        self.start_button.config(state="normal")
         self.stop_button.config(state="disabled")
         return {
             "autostart" : self.setting_autostart,

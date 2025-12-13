@@ -1,7 +1,9 @@
 {
   "fcu": {
     "power_on" : "L:B_FCU_POWER",
-    "power_off" : "L:B_FCU_POWER"
+    "power_off" : "L:B_FCU_POWER",
+    "display_bright": "L:A_FCU_LIGHTING_TEXT",
+    "int_light": "L:A_FCU_LIGHTING"
   },
   "speed": {
 	"in" : "L:N_FCU_SPEED",

@@ -364,5 +364,9 @@
   "led_fo_arpt": {
     "led_on": "E0L2194",
     "led_off": "E0L3194"
+  },
+  "fcu": {
+    "display_brightness": "E0BKL",
+    "int_brightness": "E0BKL"
   }
 }

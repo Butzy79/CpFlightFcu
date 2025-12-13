@@ -17,6 +17,7 @@ class AircraftLoader:
     led_fcu = {"led_loc": False, "led_ap1": False, "led_ap2": False, "led_athr": False, "led_exped": False, "led_appr": False}
     led_cp_efis = {"led_cp_fd": False, "led_cp_ls": False, "led_cp_cstr": False, "led_cp_wpt": False, "led_cp_vord": False, "led_cp_ndb": False, "led_cp_arpt": False}
     led_fo_efis = {"led_fo_fd": False, "led_fo_ls": False, "led_fo_cstr": False, "led_fo_wpt": False, "led_fo_vord": False, "led_fo_ndb": False, "led_fo_arpt": False}
+    fcu = {"display_brightness": 100, "int_brightness": 100}
 
     def _reset_leds_command_cp(self, led_control:str, new_value:bool, cpfligh)-> str:
         self.led_cp_efis = {
@@ -170,6 +171,23 @@ class AircraftLoader:
                 cmd = cpflight_cmds.get(key, {}).get("led_on" if value else "led_off")
                 if cmd:
                     sock.sendall((cmd + "\n").encode())
+        return True
+
+    def set_fcu_brightness(self, aircraft_array: int, cpflight_cmds: dict, sock, vr) -> bool:
+        display_brightness_var = aircraft_array.get("display_bright")
+        int_brightness_var = aircraft_array.get("int_light")
+
+        display_brightness_value = vr.get(f"({display_brightness_var})")
+        int_brightness_value = vr.get(f"({int_brightness_var})")
+        if not display_brightness_value is None and display_brightness_value != self.fcu["display_brightness"]:
+                self.fcu["display_brightness"] = display_brightness_value
+                msg = cpflight_cmds.get("display_brightness").encode() + bytes([int(display_brightness_value*10)]) + b"\x00"
+                # sock.sendall(msg)
+
+        if not int_brightness_value is None and int_brightness_value != self.fcu["int_brightness"]:
+                self.fcu["int_brightness"] = int_brightness_value
+                msg = cpflight_cmds.get("display_brightness").encode() + bytes([int(int_brightness_value*10)]) + b"\x00"
+                sock.sendall(msg)
         return True
 
     #next functions need to respect interval timer
