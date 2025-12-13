@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
+## [1.0.3] - 2025-12-13
+### Fix
+- Autostart check on fcu plane
+
 ## [1.0.2] - 2025-12-12
 ### Fix
 - Autostart failure
