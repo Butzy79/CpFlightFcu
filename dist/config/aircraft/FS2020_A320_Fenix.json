@@ -1,4 +1,8 @@
 {
+  "fcu": {
+    "power_on" : "L:B_FCU_POWER",
+    "power_off" : "L:B_FCU_POWER"
+  },
   "speed": {
 	"in" : "L:N_FCU_SPEED",
     "rx" : "L:N_FCU_SPEED",
