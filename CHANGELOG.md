@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
+## [1.0.5] - 2025-12-15
+### Fix
+- Auto check time changed
+
 ## [1.0.4] - 2025-12-13
 ### Added
 - FCU Display Brightness and Int Brightness
