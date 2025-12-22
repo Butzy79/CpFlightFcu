@@ -14,7 +14,7 @@ The goal is to allow smooth and realistic integration between CPFLIGHT hardware 
 - Fenix A320 installed  
 - FS2020 or FS2024 properly configured  
 - MobiFlight installed along with its WASM module
-- ***CpFlight FCU VERSION 611***
+- ***CpFlight Firmware FCU VERSION 611***
 
 ## Main Features
 
