@@ -18,7 +18,7 @@ class AircraftLoader:
     led_cp_efis = {"led_cp_fd": False, "led_cp_ls": False, "led_cp_cstr": False, "led_cp_wpt": False, "led_cp_vord": False, "led_cp_ndb": False, "led_cp_arpt": False}
     led_fo_efis = {"led_fo_fd": False, "led_fo_ls": False, "led_fo_cstr": False, "led_fo_wpt": False, "led_fo_vord": False, "led_fo_ndb": False, "led_fo_arpt": False}
     fcu = {"display_brightness": 100, "int_brightness": 100}
-
+    critical_error = None
     def _reset_leds_command_cp(self, led_control:str, new_value:bool, cpfligh)-> str:
         self.led_cp_efis = {
             k: (k == led_control and new_value) if not k.endswith(("_fd", "_ls")) else self.led_cp_efis[k]
@@ -33,10 +33,14 @@ class AircraftLoader:
         }
         return " ".join(cpfligh[k]["led_on" if v else "led_off"] for k, v in self.led_fo_efis.items()) + "\n"
 
-    @staticmethod
-    def load_json_config(filepath):
-        with open(filepath, 'r') as f:
-            return json.load(f)
+    def load_json_config(self, filepath):
+        try:
+            with open(filepath, 'r') as f:
+                self.critical_error = None
+                return json.load(f)
+        except Exception as e:
+            self.critical_error = e
+        return None
 
     def set_initial_values(self, aircraft_array: int, cpflight_cmds:dict, sock, vr):
         self.led_fcu = {k: not bool(vr.get(f"({v.get('rx')})")) for k, v in aircraft_array.items() if
@@ -57,6 +61,10 @@ class AircraftLoader:
         self.speed["nack"] = not bool(vr.get(f"({aircraft_array.get('speed').get('extra_mach')})"))
         self.heading["trk"] = not bool(vr.get(f"({aircraft_array.get('heading').get('extra_trk')})"))
 
+        self.fcu["display_brightness"] = vr.get(f"({aircraft_array.get("display_bright")})")
+        self.fcu["int_brightness"] = vr.get(f"({aircraft_array.get("int_light")})")
+        sock.sendall(cpflight_cmds.get('fcu').get("display_brightness").encode() + bytes([int(self.fcu["display_brightness"] * 10)]) + b"\x00")
+        sock.sendall(cpflight_cmds.get('fcu').get("int_brightness").encode() + bytes([int(self.fcu["int_brightness"] * 10)]) + b"\x00")
         # QNH Label EFIS
         sock.sendall((f"{cpflight_cmds.get('qnh_cp').get('tx_label_qnh')} {cpflight_cmds.get('qnh_fo').get('tx_label_qnh')}\n").encode())
 
@@ -182,11 +190,11 @@ class AircraftLoader:
         if not display_brightness_value is None and display_brightness_value != self.fcu["display_brightness"]:
                 self.fcu["display_brightness"] = display_brightness_value
                 msg = cpflight_cmds.get("display_brightness").encode() + bytes([int(display_brightness_value*10)]) + b"\x00"
-                # sock.sendall(msg)
+                sock.sendall(msg)
 
         if not int_brightness_value is None and int_brightness_value != self.fcu["int_brightness"]:
                 self.fcu["int_brightness"] = int_brightness_value
-                msg = cpflight_cmds.get("display_brightness").encode() + bytes([int(int_brightness_value*10)]) + b"\x00"
+                msg = cpflight_cmds.get("int_brightness").encode() + bytes([int(int_brightness_value*10)]) + b"\x00"
                 sock.sendall(msg)
         return True
 

@@ -20,6 +20,8 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 class MainWindow:
+    critical_message = None
+
     def __init__(self, root, ver, update_available: bool, remote_version=None, settings=None, on_close_callback=None):
         self.root = root
         self.version = ver
@@ -30,6 +32,7 @@ class MainWindow:
         root.iconbitmap(resource_path("resources/butzy.ico"))
         self.root.resizable(False, False)
         self.setting_autostart = self.settings.settings.get('autostart', False) if self.settings else False
+        self.original_setting_autostart = self.setting_autostart
         self.setting_autostart_obj = self.setting_autostart
 
         self.current_config = None
@@ -40,9 +43,30 @@ class MainWindow:
         self.loop_controller = LoopController(self._get_interval, self.aircraft)
         self.update_available = update_available
         self.remote_version = remote_version
-
-        self._build_menu()
         self._build_gui()
+        self._build_menu()
+
+        if self.critical_message:
+            self.left_frame.grid_forget()
+            self.status_frame.grid_forget()
+            self.status_bar.config(text="Error!!!", foreground="red")
+
+            # Prevent auto-start
+            self.setting_autostart = False
+
+            self.critical_label = ttk.Label(
+                self.root,
+                text=f"{self.critical_message}",
+                foreground="white",
+                background="red",
+                font=("Helvetica", 12, "bold"),
+                padding=0,
+                anchor="center",
+                justify="center",
+                wraplength=370
+            )
+            self.critical_label.grid(row=0, column=0, sticky="nsew")
+
 
     def _scan_aircraft_files(self):
         return [f for f in os.listdir(CONFIG_AIRCRAFT_DIR) if f.endswith(".json")]
@@ -59,6 +83,12 @@ class MainWindow:
         else:
             self.aircraft_ready_label.config(text="Aircraft NOT ready", foreground="red")
 
+        if self.loop_controller.fw_compatible is not None:
+            if self.loop_controller.fw_compatible:
+                self.firmware_ready_label.config(text="Firmware Compatible", foreground="green")
+            else:
+                self.firmware_ready_label.config(text="Firmware Not Compatible", foreground="red")
+
         if self.loop_controller.fcu_status:
             fcu_st = True
             self.fcu_ready_label.config(text="FCU ready!", foreground="green")
@@ -71,19 +101,37 @@ class MainWindow:
     def _build_menu(self):
         menubar = tk.Menu(self.root)
         self.root.config(menu=menubar)
+
+        # Settings menu
         settings_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Settings", menu=settings_menu)
-        self.setting_autostart_obj = tk.BooleanVar(value=self.setting_autostart)
-        settings_menu.add_checkbutton(
-            label="Auto Connection",
-            variable=self.setting_autostart_obj,
-            command=self._toggle_autostart
-        )
-        settings_menu.add_separator()
+
+        if not self.critical_message:
+        ## Auto Connection
+            self.setting_autostart_obj = tk.BooleanVar(value=self.setting_autostart)
+            settings_menu.add_checkbutton(
+                label="Auto Connection",
+                variable=self.setting_autostart_obj,
+                command=self._toggle_autostart
+            )
+            settings_menu.add_separator()
+
+        ## Close
         settings_menu.add_command(
             label="Close",
             command=lambda: self.on_close_callback(self.root, self.settings, self.update_available)
         )
+
+        if not self.critical_message:
+            # FCU menu
+            fcu_menu = tk.Menu(menubar, tearoff=0)
+            menubar.add_cascade(label="FCU", menu=fcu_menu)
+
+            ## Network info
+            ip_info = f"Ip: {self.current_cpflight_config['IP']}"
+            fcu_menu.add_command(label=ip_info, state="disabled")
+            port_info = f"Port: {self.current_cpflight_config['PORT']}"
+            fcu_menu.add_command(label=port_info, state="disabled")
 
     def _toggle_autostart(self):
         self.setting_autostart = self.setting_autostart_obj.get()
@@ -109,29 +157,27 @@ class MainWindow:
         main_frame.grid_columnconfigure(0, weight=0)
         main_frame.grid_columnconfigure(1, weight=1)
 
-        left_frame = ttk.LabelFrame(main_frame, text="Controls", padding=10)
-        left_frame.grid(row=start_row, column=0, sticky="ns", padx=(0, 10))
+        self.left_frame = ttk.LabelFrame(main_frame, text="Controls", padding=10)
+        self.left_frame.grid(row=start_row, column=0, sticky="ns", padx=(0, 10))
 
-        ttk.Label(left_frame, text="Aircraft Config").grid(row=0, column=0, sticky="w")
+        ttk.Label(self.left_frame, text="Aircraft Config").grid(row=0, column=0, sticky="w")
         self.file_var = tk.StringVar()
         options = [self._format_filename(f) for f in self.aircraft_files]
-        self.file_menu = ttk.Combobox(left_frame, textvariable=self.file_var, values=options, state="readonly", width=20)
+        self.file_menu = ttk.Combobox(self.left_frame, textvariable=self.file_var, values=options, state="readonly", width=20)
         self.file_menu.grid(row=1, column=0, pady=5, sticky="w")
 
-        self.load_button = ttk.Button(left_frame, text="LOAD", command=self._on_load)
+        self.load_button = ttk.Button(self.left_frame, text="LOAD", command=self._on_load)
         self.load_button.grid(row=2, column=0, pady=(0, 10), sticky="w")
         self.file_menu.bind("<<ComboboxSelected>>", self._on_file_change)
 
-        self.start_button = ttk.Button(left_frame, text="START", command=self._on_start, state="disabled")
+        self.start_button = ttk.Button(self.left_frame, text="START", command=self._on_start, state="disabled")
         self.start_button.grid(row=3, column=0, pady=(10, 5), sticky="we")
 
-        self.stop_button = ttk.Button(left_frame, text="STOP", command=self.on_stop, state="disabled")
+        self.stop_button = ttk.Button(self.left_frame, text="STOP", command=self.on_stop, state="disabled")
         self.stop_button.grid(row=4, column=0, pady=5, sticky="we")
 
-        # ttk.Label(left_frame, text="Frames per second").grid(row=5, column=0, pady=(15, 0), sticky="w")
         self.fps_var = tk.StringVar(value="5")
-        self.fps_menu = ttk.Combobox(left_frame, textvariable=self.fps_var, values=["0.5", "1", "2", "5", "10", "30", "60"], state="readonly", width=5)
-        # self.fps_menu.grid(row=6, column=0, pady=5, sticky="w")
+        self.fps_menu = ttk.Combobox(self.left_frame, textvariable=self.fps_var, values=["0.5", "1", "2", "5", "10", "30", "60"], state="readonly", width=5)
 
         right_frame = ttk.Frame(main_frame)
         right_frame.grid(row=start_row, column=1, sticky="nsew")
@@ -144,17 +190,27 @@ class MainWindow:
             self.status_frame,
             text="Aircraft NOT ready",
             foreground="red",
-            font=("Helvetica", 18, "bold")
+            font=("Helvetica", 18, "bold"),
         )
-        self.aircraft_ready_label.pack(anchor="center", pady=20)
+        self.aircraft_ready_label.pack(anchor="center", pady=15)
 
         self.fcu_ready_label = ttk.Label(
             self.status_frame,
             text="FCU NOT ready",
             foreground="red",
-            font=("Helvetica", 18, "bold")
+            font=("Helvetica", 18, "bold"),
         )
-        self.fcu_ready_label.pack(anchor="center", pady=20)
+        self.fcu_ready_label.pack(anchor="center", pady=15)
+
+        self.firmware_ready_label = ttk.Label(
+            self.status_frame,
+            text="Firmware not checked",
+            foreground="blue",
+            font=("Helvetica", 12, "bold"),
+            wraplength=230
+        )
+        self.firmware_ready_label.pack(anchor="center", pady=5)
+
 
         # Status bar
         if not self.setting_autostart:
@@ -169,12 +225,12 @@ class MainWindow:
             self._on_load()
 
     def _schedule_check_sim(self):
-        if self.loop_controller.check_status(self.setting_autostart, self.current_config, self.current_cpflight_config):
+        if self.loop_controller.check_status(self.setting_autostart, self.current_config, self.current_cpflight_config, bool(self.critical_message)):
             self.file_menu.config(state="disabled")
             self.fps_menu.config(state="disabled")
             self.stop_button.config(state="normal")
             self._schedule_status_update()
-        if not self.loop_controller.is_sim_running():
+        if not self.loop_controller.is_sim_running() and not self.critical_message:
             self.status_sim_job = self.root.after(10000, self._schedule_check_sim)
 
     def _schedule_status_update(self):
@@ -197,17 +253,26 @@ class MainWindow:
         mapping = {self._format_filename(f): f for f in self.aircraft_files}
         filename = mapping.get(selected)
         if not filename:
-            return
+            self.critical_message = "File not found"
+            return False
 
         filepath = os.path.join(CONFIG_AIRCRAFT_DIR, filename)
         self.current_config = self.aircraft.load_json_config(filepath)
+        if not self.current_config:
+            self.critical_message = f"Aircraft Json File: {self.aircraft.critical_error}"
+            return False
         filepathcpflight = os.path.join(CONFIG_DIR, "cpflight.json")
         self.current_cpflight_config = self.aircraft.load_json_config(filepathcpflight)
+        if not self.current_cpflight_config:
+            self.critical_message = f"CpFlight Json File: {self.aircraft.critical_error}"
+            return False
+        self.critical_message = None
         self._schedule_check_sim()
 
         if not self.setting_autostart:
             self.start_button.config(state="normal")
         self.load_button.config(state="disabled")
+        return True
 
     def _on_start(self):
         if not self.current_config or not self.current_cpflight_config:
@@ -243,6 +308,6 @@ class MainWindow:
         self.fps_menu.config(state="readonly")
         self.stop_button.config(state="disabled")
         return {
-            "autostart" : self.setting_autostart,
+            "autostart" : self.setting_autostart if not self.critical_message else self.original_setting_autostart,
             "CpFlight": self.aircraft_files
         }

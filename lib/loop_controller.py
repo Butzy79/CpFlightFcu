@@ -15,6 +15,7 @@ class LoopController:
         """
         get_interval_callback: function returning the loop interval (float).
         """
+        self.fw_compatible = None # None = Not verified, 1 = Compatible, 0 = Not Compatible
         self.get_interval = get_interval_callback
         self.running = False
         self.sim_running = False
@@ -51,7 +52,9 @@ class LoopController:
     def is_sim_ready_to_stop(self):
         return self.ready_to_stop
 
-    def check_status(self, autostart, config, cpflight) -> bool:
+    def check_status(self, autostart, config, cpflight, is_critical_on) -> bool:
+        if is_critical_on:
+            return False
         self.autostart = autostart
         if not autostart:
             return False
@@ -214,6 +217,13 @@ class LoopController:
                             break
                         self.fcu_status = True
                         value_from_fcu = re.sub(r'[\x00-\x1F\x7F]', '', data.decode(errors="ignore")).strip()
+                        if self.fw_compatible is None:
+                            if self.cpflight.get('FW_COMPATIBLE') and self.cpflight.get('fcu', {}).get('fw_value_rx') and value_from_fcu.startswith(self.cpflight.get('fcu', {}).get('fw_value_rx')):
+                                fw_version = value_from_fcu.split(self.cpflight.get('fcu', {}).get('fw_value_rx'))[1]
+                                if fw_version and fw_version == self.cpflight.get('FW_COMPATIBLE', ""):
+                                    self.fw_compatible = True
+                                elif fw_version and fw_version != self.cpflight.get('FW_COMPATIBLE', ""):
+                                    self.fw_compatible = False
                         what = self.find_matching_block(value_from_fcu)
                         if self.aircraft.set_opblocker(what, True):
                             pattern = self.cpflight.get(what).get('rx')
