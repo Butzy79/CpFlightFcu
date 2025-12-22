@@ -8,7 +8,7 @@ with open(config_path, "r") as f:
 
 FCU_IP = config.get("IP")
 FCU_PORT = config.get("PORT")
-
+print(f"FCU IP: {FCU_IP}:{FCU_PORT}")
 if not FCU_IP or not FCU_PORT:
     raise ValueError("IP or PORT not found in config/cpflight.json")
 
@@ -29,8 +29,11 @@ try:
             break
 
         if user_input:
-            # Backlight= b"E0BKL" + bytes([int(10)]) + b"\x00" # 0 to 10
-            sock.sendall((user_input + "\n").encode())
+            # Backlight= b"E0BKL" + bytes([int(user_input)]) + b"\x00" # 0 to 10
+            # sock.sendall(Backlight)
+            # Display_Brgtheess= b"DSPBRG" + bytes([int(user_input)]) + b"\x00" # 0 to 10
+            # sock.sendall(Display_Brgtheess)
+            # sock.sendall((user_input + "\n").encode())
             print("Sent:", user_input)
 
 except Exception as e:
