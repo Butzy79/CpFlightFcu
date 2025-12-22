@@ -9,11 +9,12 @@ The goal is to allow smooth and realistic integration between CPFLIGHT hardware 
 ## Requirements
 
 - Python 3.8 or higher  
-- Local network connection to the PC running MSFS  
+- Local network connection to the PC running MSFS 
 - CPFLIGHT modules connected via USB or serial  
 - Fenix A320 installed  
 - FS2020 or FS2024 properly configured  
 - MobiFlight installed along with its WASM module
+- ***CpFlight FCU VERSION 611***
 
 ## Main Features
 
