@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
+## [1.1.0] - 2025-12-24
+### Added
+- FS process execution check
+
 ## [1.0.6] - 2025-12-22
 ### Added
 - Support display brightness (only work with FW CpFlight 611)

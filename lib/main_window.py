@@ -6,6 +6,7 @@ from typing import Dict
 
 from lib.aircraft_loader import AircraftLoader
 from lib.loop_controller import LoopController
+from lib.sim_fs import SimFS
 
 CONFIG_AIRCRAFT_DIR = "config/aircraft"
 CONFIG_DIR = "config"
@@ -21,6 +22,8 @@ def resource_path(relative_path):
 
 class MainWindow:
     critical_message = None
+    TIMEOUT_CHECK_AIRPLANE = 10000
+    TIMEOUT_CHECK_SIM = 30000
 
     def __init__(self, root, ver, update_available: bool, remote_version=None, settings=None, on_close_callback=None):
         self.root = root
@@ -45,7 +48,6 @@ class MainWindow:
         self.remote_version = remote_version
         self._build_gui()
         self._build_menu()
-
         if self.critical_message:
             self.left_frame.grid_forget()
             self.status_frame.grid_forget()
@@ -66,7 +68,6 @@ class MainWindow:
                 wraplength=370
             )
             self.critical_label.grid(row=0, column=0, sticky="nsew")
-
 
     def _scan_aircraft_files(self):
         return [f for f in os.listdir(CONFIG_AIRCRAFT_DIR) if f.endswith(".json")]
@@ -135,6 +136,15 @@ class MainWindow:
 
     def _toggle_autostart(self):
         self.setting_autostart = self.setting_autostart_obj.get()
+        if not self.setting_autostart and hasattr(self, "status_sim_job"):
+            self.status_bar.config(text="Ready")
+            self.root.after_cancel(self.status_sim_job)
+            self.start_button.config(state="normal")
+            del self.status_sim_job
+        elif self.setting_autostart and not hasattr(self, "status_sim_job"):
+            self.status_bar.config(text="Auto Connect...")
+            self.start_button.config(state="disabled")
+            self._schedule_check_sim()
 
     def _build_gui(self):
         main_frame = ttk.Frame(self.root, padding=10)
@@ -225,13 +235,14 @@ class MainWindow:
             self._on_load()
 
     def _schedule_check_sim(self):
+        self.status_bar.config(text=f"Auto Connect... {"sim running" if SimFS.is_fs_running() else "sim not running."}")
         if self.loop_controller.check_status(self.setting_autostart, self.current_config, self.current_cpflight_config, bool(self.critical_message)):
             self.file_menu.config(state="disabled")
             self.fps_menu.config(state="disabled")
             self.stop_button.config(state="normal")
             self._schedule_status_update()
         if not self.loop_controller.is_sim_running() and not self.critical_message:
-            self.status_sim_job = self.root.after(10000, self._schedule_check_sim)
+            self.status_sim_job = self.root.after(self.TIMEOUT_CHECK_AIRPLANE if SimFS.is_fs_running() else self.TIMEOUT_CHECK_SIM, self._schedule_check_sim)
 
     def _schedule_status_update(self):
         self._update_status_labels()
@@ -267,7 +278,8 @@ class MainWindow:
             self.critical_message = f"CpFlight Json File: {self.aircraft.critical_error}"
             return False
         self.critical_message = None
-        self._schedule_check_sim()
+        if self.setting_autostart:
+            self._schedule_check_sim()
 
         if not self.setting_autostart:
             self.start_button.config(state="normal")
@@ -300,10 +312,11 @@ class MainWindow:
             self.status_bar.config(text="Ready")
             if hasattr(self, "status_sim_job"):
                 self.root.after_cancel(self.status_sim_job)
+                del self.status_sim_job
             self.start_button.config(state="normal")
         if hasattr(self, "status_update_job"):
             self.root.after_cancel(self.status_update_job)
-
+            del self.status_update_job
         self.file_menu.config(state="readonly")
         self.fps_menu.config(state="readonly")
         self.stop_button.config(state="disabled")

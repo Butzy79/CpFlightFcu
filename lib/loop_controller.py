@@ -6,6 +6,7 @@ import select
 from typing import Optional
 
 from lib.aircraft_loader import AircraftLoader
+from lib.sim_fs import SimFS
 from modules.parser_simconnect import SimConnectParser
 from modules.parser_variable_requests import ParserVariableRequests
 
@@ -56,7 +57,7 @@ class LoopController:
         if is_critical_on:
             return False
         self.autostart = autostart
-        if not autostart:
+        if not autostart or not SimFS.is_fs_running():
             return False
         if self.sim_running:
             return True
