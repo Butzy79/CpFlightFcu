@@ -25,6 +25,10 @@ class MainWindow:
     TIMEOUT_CHECK_AIRPLANE = 10000
     TIMEOUT_CHECK_SIM = 30000
 
+    # TODO: ADD FS IS ON loop and MB is on LOOP
+    is_fs_on = False
+    is_mb_on = False
+
     def __init__(self, root, ver, update_available: bool, remote_version=None, settings=None, on_close_callback=None):
         self.root = root
         self.version = ver
