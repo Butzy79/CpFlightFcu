@@ -122,7 +122,6 @@ class MainWindow:
             label="Close",
             command=lambda: self.on_close_callback(self.root, self.settings, self.update_available)
         )
-
         if not self.critical_message:
             # FCU menu
             fcu_menu = tk.Menu(menubar, tearoff=0)
@@ -235,7 +234,8 @@ class MainWindow:
             self._on_load()
 
     def _schedule_check_sim(self):
-        self.status_bar.config(text=f"Auto Connect... {"sim running" if SimFS.is_fs_running() else "sim not running."}")
+        text_display = "sim running" if SimFS.is_fs_running() else "sim not running."
+        self.status_bar.config(text=f"Auto Connect... {text_display}")
         if self.loop_controller.check_status(self.setting_autostart, self.current_config, self.current_cpflight_config, bool(self.critical_message)):
             self.file_menu.config(state="disabled")
             self.fps_menu.config(state="disabled")
