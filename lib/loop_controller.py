@@ -3,6 +3,8 @@ import threading
 import time
 import socket
 import select
+import serial
+
 from typing import Optional
 
 from lib.aircraft_loader import AircraftLoader
@@ -35,6 +37,7 @@ class LoopController:
 
         self.sim_status = False
         self.fcu_status = False
+        self.is_lan_fcu = True
 
         self.pause_loop_until = 0
         self.pause_loop_check_until = 0
@@ -53,9 +56,10 @@ class LoopController:
     def is_sim_ready_to_stop(self):
         return self.ready_to_stop
 
-    def check_status(self, autostart, config, cpflight, is_critical_on) -> bool:
+    def check_status(self, autostart, config, cpflight, is_critical_on, is_lan_fcu) -> bool:
         if is_critical_on:
             return False
+        self.is_lan_fcu = is_lan_fcu
         self.autostart = autostart
         if not autostart or not SimFS.is_fs_running():
             return False
@@ -74,16 +78,17 @@ class LoopController:
         if sim_load:
             self.sim_running = True
             self.pause_loop_check_until = time.time() + 2
-            self.start(config, cpflight)
+            self.start(config, cpflight, self.is_lan_fcu)
             return True
         return False
 
-    def start(self, config, cpflight) -> tuple[bool, Optional[str]]:
+    def start(self, config, cpflight, is_lan_fcu) -> tuple[bool, Optional[str]]:
         if self.running:
             return True, None
 
         self.current_config = config
         self.cpflight = cpflight
+        self.is_lan_fcu = is_lan_fcu
         try:
             self.sm = SimConnectParser()
             self.vr = ParserVariableRequests(self.sm)
@@ -92,9 +97,12 @@ class LoopController:
             return False, str(e)
 
         try:
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.connect((self.cpflight.get('IP'), self.cpflight.get('PORT')))
-            self.sock.setblocking(False)
+            if not self.is_lan_fcu:
+                self.sock = SerialSocketWrapper(self.cpflight.get("USB_PORT"), self.cpflight.get("USB_BAUD"))
+            else:
+                self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.sock.connect((self.cpflight.get('IP'), self.cpflight.get('PORT')))
+                self.sock.setblocking(False)
 
             # turn led on:
             self.sock.sendall((self.cpflight.get("POWER_ON") + "\n").encode())
@@ -109,7 +117,8 @@ class LoopController:
             self.socket_thread.start()
             return True, None
         except Exception as e:
-            return False, f"CpFlight Connection error: {e}"
+            connection_type = "LAN" if self.is_lan_fcu else "USB"
+            return False, f"CpFlight Connection error ({connection_type}): {e}"
 
     def stop(self):
         self.running = False
@@ -209,34 +218,67 @@ class LoopController:
     def _socket_listener_loop(self):
         while self.running and self.sock:
             try:
-                readable, _, _ = select.select([self.sock], [], [], 0.1)
-                if self.sock in readable:
-                    try:
+                data = None
+                if self.is_lan_fcu:
+                    readable, _, _ = select.select([self.sock], [], [], 0.1)
+                    if self.sock in readable:
                         data = self.sock.recv(1024)
                         if not data:
                             self.stop()
                             break
-                        self.fcu_status = True
-                        value_from_fcu = re.sub(r'[\x00-\x1F\x7F]', '', data.decode(errors="ignore")).strip()
-                        if self.fw_compatible is None:
-                            if self.cpflight.get('FW_COMPATIBLE') and self.cpflight.get('fcu', {}).get('fw_value_rx') and value_from_fcu.startswith(self.cpflight.get('fcu', {}).get('fw_value_rx')):
-                                fw_version = value_from_fcu.split(self.cpflight.get('fcu', {}).get('fw_value_rx'))[1]
-                                if fw_version and fw_version == self.cpflight.get('FW_COMPATIBLE', ""):
-                                    self.fw_compatible = True
-                                elif fw_version and fw_version != self.cpflight.get('FW_COMPATIBLE', ""):
-                                    self.fw_compatible = False
-                        what = self.find_matching_block(value_from_fcu)
-                        if self.aircraft.set_opblocker(what, True):
-                            pattern = self.cpflight.get(what).get('rx')
-                            match = re.match(fr"{pattern}", value_from_fcu)
-                            value = match.group(1) if match else None
-                            if value:
-                                method_name = f"set_{what}_aircraft"
-                                getattr(self.aircraft, method_name)(value, self.current_config, self.vr, self.sock, self.cpflight)
-                                self.pause_loop_until = time.time() + 2
-                    except BlockingIOError:
-                        pass
-                    except Exception:
-                        pass
+                else:
+                    # Solo per USB: niente select, polling diretto
+                    data = self.sock.recv(1024)
+
+                if data:
+                    self.fcu_status = True
+                    value_from_fcu = re.sub(r'[\x00-\x1F\x7F]', '', data.decode(errors="ignore")).strip()
+
+                    if self.fw_compatible is None:
+                        if self.cpflight.get('FW_COMPATIBLE') and self.cpflight.get('fcu', {}).get(
+                                'fw_value_rx') and value_from_fcu.startswith(
+                                self.cpflight.get('fcu', {}).get('fw_value_rx')):
+                            fw_version = value_from_fcu.split(self.cpflight.get('fcu', {}).get('fw_value_rx'))[1]
+                            if fw_version and fw_version == self.cpflight.get('FW_COMPATIBLE', ""):
+                                self.fw_compatible = True
+                            elif fw_version and fw_version != self.cpflight.get('FW_COMPATIBLE', ""):
+                                self.fw_compatible = False
+
+                    what = self.find_matching_block(value_from_fcu)
+                    if self.aircraft.set_opblocker(what, True):
+                        pattern = self.cpflight.get(what).get('rx')
+                        match = re.match(fr"{pattern}", value_from_fcu)
+                        value = match.group(1) if match else None
+                        if value:
+                            method_name = f"set_{what}_aircraft"
+                            getattr(self.aircraft, method_name)(value, self.current_config, self.vr, self.sock,
+                                                                self.cpflight)
+                            self.pause_loop_until = time.time() + 2
+
+                time.sleep(0.05)
+
+            except BlockingIOError:
+                pass
             except Exception as e:
-                print(e)
+                print("Listener loop error:", e)
+
+class SerialSocketWrapper:
+    def __init__(self, port, baud=38400, timeout=0.5):
+        self.ser = serial.Serial(port, baud, timeout=timeout)
+
+    def sendall(self, data: bytes):
+        if isinstance(data, str):
+            data = data.encode()
+        self.ser.write(data)
+
+    def recv(self, bufsize: int = 1024) -> bytes:
+        time.sleep(0.05)
+        if self.ser.in_waiting:
+            return self.ser.read(self.ser.in_waiting)
+        return b""
+
+    def shutdown(self, how):
+        pass
+
+    def close(self):
+        self.ser.close()

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
+## [2.0.0] - 2026-03-20
+### Added
+- Support FCU USB
+
 ## [1.1.0] - 2025-12-24
 ### Added
 - FS process execution check

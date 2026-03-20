@@ -25,17 +25,26 @@ class MainWindow:
     TIMEOUT_CHECK_AIRPLANE = 10000
     TIMEOUT_CHECK_SIM = 30000
 
+    # TODO: ADD FS IS ON loop and MB is on LOOP
+    is_fs_on = False
+    is_mb_on = False
+
     def __init__(self, root, ver, update_available: bool, remote_version=None, settings=None, on_close_callback=None):
         self.root = root
         self.version = ver
         self.settings = settings
         self.on_close_callback = on_close_callback
         self.manual_stop = False
+        self.fcu_menu = None
         self.root.title(f"CpFlight Control (CFC) - {ver}")
         root.iconbitmap(resource_path("resources/butzy.ico"))
         self.root.resizable(False, False)
         self.setting_autostart = self.settings.settings.get('autostart', False) if self.settings else False
+        self.is_lan_fcu = self.settings.settings.get('is_lan_fcu', True) if self.settings else True
+
         self.original_setting_autostart = self.setting_autostart
+        self.original_setting_is_lan_fcu = self.is_lan_fcu
+
         self.setting_autostart_obj = self.setting_autostart
 
         self.current_config = None
@@ -46,6 +55,7 @@ class MainWindow:
         self.loop_controller = LoopController(self._get_interval, self.aircraft)
         self.update_available = update_available
         self.remote_version = remote_version
+        self.is_fcu_obj = None
         self._build_gui()
         self._build_menu()
         if self.critical_message:
@@ -122,17 +132,33 @@ class MainWindow:
             label="Close",
             command=lambda: self.on_close_callback(self.root, self.settings, self.update_available)
         )
-
         if not self.critical_message:
             # FCU menu
-            fcu_menu = tk.Menu(menubar, tearoff=0)
-            menubar.add_cascade(label="FCU", menu=fcu_menu)
+            self.fcu_menu = tk.Menu(menubar, tearoff=0)
+            menubar.add_cascade(label="FCU", menu=self.fcu_menu)
+            self.is_fcu_obj = tk.BooleanVar(value=not self.is_lan_fcu)
+            self._rebuild_fcu_menu()
 
-            ## Network info
+    def _rebuild_fcu_menu(self):
+        self.fcu_menu.delete(0, "end")
+        if self.is_lan_fcu:
             ip_info = f"Ip: {self.current_cpflight_config['IP']}"
-            fcu_menu.add_command(label=ip_info, state="disabled")
+            self.fcu_menu.add_command(label=ip_info, state="disabled")
+
             port_info = f"Port: {self.current_cpflight_config['PORT']}"
-            fcu_menu.add_command(label=port_info, state="disabled")
+            self.fcu_menu.add_command(label=port_info, state="disabled")
+
+            self.fcu_menu.add_separator()
+
+        self.fcu_menu.add_checkbutton(
+            label="Usb FCU",
+            variable=self.is_fcu_obj,
+            command=self._toggle_lan_usb_fcu
+        )
+
+    def _toggle_lan_usb_fcu(self):
+        self.is_lan_fcu = not self.is_fcu_obj.get()
+        self._rebuild_fcu_menu()
 
     def _toggle_autostart(self):
         self.setting_autostart = self.setting_autostart_obj.get()
@@ -235,8 +261,9 @@ class MainWindow:
             self._on_load()
 
     def _schedule_check_sim(self):
-        self.status_bar.config(text=f"Auto Connect... {"sim running" if SimFS.is_fs_running() else "sim not running."}")
-        if self.loop_controller.check_status(self.setting_autostart, self.current_config, self.current_cpflight_config, bool(self.critical_message)):
+        text_display = "sim running" if SimFS.is_fs_running() else "sim not running."
+        self.status_bar.config(text=f"Auto Connect... {text_display}")
+        if self.loop_controller.check_status(self.setting_autostart, self.current_config, self.current_cpflight_config, bool(self.critical_message), self.is_lan_fcu):
             self.file_menu.config(state="disabled")
             self.fps_menu.config(state="disabled")
             self.stop_button.config(state="normal")
@@ -290,7 +317,7 @@ class MainWindow:
         if not self.current_config or not self.current_cpflight_config:
             return
 
-        success, msg_err = self.loop_controller.start(self.current_config, self.current_cpflight_config)
+        success, msg_err = self.loop_controller.start(self.current_config, self.current_cpflight_config, self.is_lan_fcu)
         if not success:
             self.status_bar.config(text=msg_err)
             return
@@ -321,6 +348,7 @@ class MainWindow:
         self.fps_menu.config(state="readonly")
         self.stop_button.config(state="disabled")
         return {
+            "is_lan_fcu": self.is_lan_fcu if not self.critical_message else self.original_setting_is_lan_fcu,
             "autostart" : self.setting_autostart if not self.critical_message else self.original_setting_autostart,
             "CpFlight": self.aircraft_files
         }

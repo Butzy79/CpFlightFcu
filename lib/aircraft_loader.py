@@ -3,8 +3,6 @@ import re
 import time
 
 
-#TODO: Missing STD
-
 class AircraftLoader:
     speed = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "mach": False, "time_set": 0.0}
     heading = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "trk": False, "time_set": 0.0}
@@ -61,8 +59,8 @@ class AircraftLoader:
         self.speed["nack"] = not bool(vr.get(f"({aircraft_array.get('speed').get('extra_mach')})"))
         self.heading["trk"] = not bool(vr.get(f"({aircraft_array.get('heading').get('extra_trk')})"))
 
-        self.fcu["display_brightness"] = vr.get(f"({aircraft_array.get("display_bright")})")
-        self.fcu["int_brightness"] = vr.get(f"({aircraft_array.get("int_light")})")
+        self.fcu["display_brightness"] = vr.get(f"({aircraft_array.get('display_bright')})")
+        self.fcu["int_brightness"] = vr.get(f"({aircraft_array.get('int_light')})")
         sock.sendall(cpflight_cmds.get('fcu').get("display_brightness").encode() + bytes([int(self.fcu["display_brightness"] * 10)]) + b"\x00")
         sock.sendall(cpflight_cmds.get('fcu').get("int_brightness").encode() + bytes([int(self.fcu["int_brightness"] * 10)]) + b"\x00")
         # QNH Label EFIS

@@ -9,6 +9,7 @@ DEFAULT_SETTINGS = {
         "height": 265
     },
     "autostart": False,
+    "is_lan_fcu": True
 }
 
 SETTINGS_PATH = "settings.json"
@@ -24,10 +25,13 @@ class SettingsManager:
         except Exception:
             return DEFAULT_SETTINGS.copy()
         data.setdefault("autostart", DEFAULT_SETTINGS.get("autostart"))
+        data.setdefault("is_lan_fcu", DEFAULT_SETTINGS.get("is_lan_fcu"))
         return data
 
     def save_settings(self, extra_params):
         self.settings['autostart'] = extra_params.get("autostart", self.settings['autostart'])
+        self.settings['is_lan_fcu'] = extra_params.get("is_lan_fcu", self.settings['is_lan_fcu'])
+
         with open(SETTINGS_PATH, "w") as f:
             json.dump(self.settings, f, indent=4)
 
