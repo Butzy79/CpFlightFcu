@@ -3,6 +3,8 @@ import threading
 import time
 import socket
 import select
+import serial
+
 from typing import Optional
 
 from lib.aircraft_loader import AircraftLoader
@@ -35,6 +37,7 @@ class LoopController:
 
         self.sim_status = False
         self.fcu_status = False
+        self.is_lan_fcu = True
 
         self.pause_loop_until = 0
         self.pause_loop_check_until = 0
@@ -78,12 +81,13 @@ class LoopController:
             return True
         return False
 
-    def start(self, config, cpflight) -> tuple[bool, Optional[str]]:
+    def start(self, config, cpflight, is_lan_fcu) -> tuple[bool, Optional[str]]:
         if self.running:
             return True, None
 
         self.current_config = config
         self.cpflight = cpflight
+        self.is_lan_fcu = is_lan_fcu
         try:
             self.sm = SimConnectParser()
             self.vr = ParserVariableRequests(self.sm)
@@ -92,7 +96,10 @@ class LoopController:
             return False, str(e)
 
         try:
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if not self.is_lan_fcu:
+                self.sock = SerialSocketWrapper(self.cpflight.get("USB_PORT"), self.cpflight.get("USB_BAUD"))
+            else:
+                self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.connect((self.cpflight.get('IP'), self.cpflight.get('PORT')))
             self.sock.setblocking(False)
 
@@ -109,7 +116,8 @@ class LoopController:
             self.socket_thread.start()
             return True, None
         except Exception as e:
-            return False, f"CpFlight Connection error: {e}"
+            connection_type = "LAN" if self.is_lan_fcu else "USB"
+            return False, f"CpFlight Connection error ({connection_type}): {e}"
 
     def stop(self):
         self.running = False
@@ -240,3 +248,24 @@ class LoopController:
                         pass
             except Exception as e:
                 print(e)
+
+class SerialSocketWrapper:
+    def __init__(self, port, baud=38400, timeout=0.5):
+        self.ser = serial.Serial(port, baud, timeout=timeout)
+
+    def sendall(self, data: bytes):
+        if isinstance(data, str):
+            data = data.encode()
+        self.ser.write(data)
+
+    def recv(self, bufsize: int = 1024) -> bytes:
+        time.sleep(0.05)
+        if self.ser.in_waiting:
+            return self.ser.read(self.ser.in_waiting)
+        return b""
+
+    def shutdown(self, how):
+        pass
+
+    def close(self):
+        self.ser.close()

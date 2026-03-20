@@ -3,8 +3,6 @@ import re
 import time
 
 
-#TODO: Missing STD
-
 class AircraftLoader:
     speed = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "mach": False, "time_set": 0.0}
     heading = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "trk": False, "time_set": 0.0}

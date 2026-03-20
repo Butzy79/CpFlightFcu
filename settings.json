@@ -1,9 +1,10 @@
 {
     "window": {
-        "x": 471,
-        "y": 514,
+        "x": 1090,
+        "y": 507,
         "width": 480,
-        "height": 405
+        "height": 265
     },
-    "autostart": false
+    "autostart": true,
+    "is_lan_fcu": false
 }

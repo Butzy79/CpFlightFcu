@@ -5,3 +5,4 @@ psutil
 
 # requrie to install https://npcap.com/#download for sniffing IPs
 scapi
+pyserial

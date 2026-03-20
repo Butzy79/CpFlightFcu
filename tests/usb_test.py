@@ -7,8 +7,8 @@ config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "con
 with open(config_path, "r") as f:
     config = json.load(f)
 
-USB_PORT = config.get("USB", "COM3")  # example "COM3" 
-USB_BAUD = config.get("BAUD", 115200)  # default baudrate
+USB_PORT = config.get("USB_PORT", "COM3")  # example "COM3"
+USB_BAUD = config.get("USB_BAUD", 38400)  # default baudrate
 
 if not USB_PORT:
     raise ValueError("USB port not found in config/cpflight.json")
