@@ -3,6 +3,16 @@ import json
 import os
 import time
 
+def find_cpflight_port():
+    import serial.tools.list_ports
+    for p in serial.tools.list_ports.comports():
+        CPFLIGHT_VID = 0x0403
+        CPFLIGHT_PID = 0x6001
+        for p in serial.tools.list_ports.comports():
+            if p.vid == CPFLIGHT_VID and p.pid == CPFLIGHT_PID:
+                print(f"found CpFlight on Port: {p.device}")
+        return None
+    return None
 config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "config", "cpflight.json"))
 with open(config_path, "r") as f:
     config = json.load(f)

@@ -263,7 +263,7 @@ class MainWindow:
     def _schedule_check_sim(self):
         text_display = "sim running" if SimFS.is_fs_running() else "sim not running."
         self.status_bar.config(text=f"Auto Connect... {text_display}")
-        if self.loop_controller.check_status(self.setting_autostart, self.current_config, self.current_cpflight_config, bool(self.critical_message)):
+        if self.loop_controller.check_status(self.setting_autostart, self.current_config, self.current_cpflight_config, bool(self.critical_message), self.is_lan_fcu):
             self.file_menu.config(state="disabled")
             self.fps_menu.config(state="disabled")
             self.stop_button.config(state="normal")
