@@ -1,7 +1,7 @@
 {
   "IP": "10.0.10.126",
   "PORT": 4500,
-  "USB_PORT": "COM4",
+  "USB_PORT": "COM3",
   "USB_BAUD": 38400,
   "USB_VID": "0x0403",
   "USB_PID": "0x6001",
