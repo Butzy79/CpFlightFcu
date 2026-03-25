@@ -280,5 +280,11 @@ class SerialSocketWrapper:
     def shutdown(self, how):
         pass
 
+    def connect(self):
+        pass
+
+    def setblocking(self):
+        pass
+
     def close(self):
         self.ser.close()
