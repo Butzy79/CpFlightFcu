@@ -4,6 +4,7 @@ import time
 import socket
 import select
 import serial
+import logging
 
 from typing import Optional
 
@@ -12,7 +13,7 @@ from lib.sim_fs import SimFS
 from modules.parser_simconnect import SimConnectParser
 from modules.parser_variable_requests import ParserVariableRequests
 
-
+logger = logging.getLogger(__name__)
 class LoopController:
     def __init__(self, get_interval_callback, obj_aircraft: AircraftLoader):
         """
@@ -104,6 +105,7 @@ class LoopController:
                 self.sock.connect((self.cpflight.get('IP'), self.cpflight.get('PORT')))
                 self.sock.setblocking(False)
 
+            logger.debug(f'Sock Lan: {self.is_lan_fcu}')
             # turn led on:
             self.sock.sendall((self.cpflight.get("POWER_ON") + "\n").encode())
             # self.sock.sendall((self.cpflight.get("LED_ALL_ON") + "\n").encode())
@@ -196,7 +198,7 @@ class LoopController:
                     self.vr
                 )
                 self.aircraft.set_led_efis_cp( self.current_config, self.cpflight, self.sock, self.vr)
-                self.aircraft.set_led_efis_fo( self.current_config, self.cpflight, self.sock, self.vr)
+                # self.aircraft.set_led_efis_fo( self.current_config, self.cpflight, self.sock, self.vr)
 
                 self.aircraft.set_fcu_brightness(
                     self.current_config.get('fcu'),
@@ -245,12 +247,14 @@ class LoopController:
                                 self.fw_compatible = False
 
                     what = self.find_matching_block(value_from_fcu)
+                    logger.debug(f'What Command: {what} - {value_from_fcu}')
                     if self.aircraft.set_opblocker(what, True):
                         pattern = self.cpflight.get(what).get('rx')
                         match = re.match(fr"{pattern}", value_from_fcu)
                         value = match.group(1) if match else None
                         if value:
                             method_name = f"set_{what}_aircraft"
+                            logger.debug(f'Method: {method_name}')
                             getattr(self.aircraft, method_name)(value, self.current_config, self.vr, self.sock,
                                                                 self.cpflight)
                             self.pause_loop_until = time.time() + 2

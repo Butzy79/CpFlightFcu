@@ -1,5 +1,7 @@
 import os
 import sys
+import logging
+
 import tkinter as tk
 from tkinter import ttk
 from typing import Dict
@@ -11,6 +13,7 @@ from lib.sim_fs import SimFS
 CONFIG_AIRCRAFT_DIR = "config/aircraft"
 CONFIG_DIR = "config"
 
+logger = logging.getLogger(__name__)
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
@@ -41,9 +44,11 @@ class MainWindow:
         self.root.resizable(False, False)
         self.setting_autostart = self.settings.settings.get('autostart', False) if self.settings else False
         self.is_lan_fcu = self.settings.settings.get('is_lan_fcu', True) if self.settings else True
+        self.log_level_var = self.settings.settings.get('log_level', 'CRITICAL') if self.settings else 'CRITICAL'
 
         self.original_setting_autostart = self.setting_autostart
         self.original_setting_is_lan_fcu = self.is_lan_fcu
+        self.original_setting_log_level_var = self.log_level_var
 
         self.setting_autostart_obj = self.setting_autostart
 
@@ -127,6 +132,19 @@ class MainWindow:
             )
             settings_menu.add_separator()
 
+        ## Debug LVL
+        loglevel_menu = tk.Menu(settings_menu, tearoff=0)
+        settings_menu.add_cascade(label="Logger Level", menu=loglevel_menu)
+        self.log_level_obj = tk.StringVar(value=self.log_level_var)
+        for level in ["DEBUG", "CRITICAL", "OFF"]:
+            loglevel_menu.add_radiobutton(
+                label=level,
+                value=level,
+                variable=self.log_level_obj,
+                command=lambda lvl=level: self._set_log_level(lvl)
+            )
+
+        settings_menu.add_separator()
         ## Close
         settings_menu.add_command(
             label="Close",
@@ -155,6 +173,15 @@ class MainWindow:
             variable=self.is_fcu_obj,
             command=self._toggle_lan_usb_fcu
         )
+
+    def _set_log_level(self, level_name):
+        if level_name == "OFF":
+            logging.getLogger().setLevel(logging.CRITICAL + 1)
+        else:
+            level = getattr(logging, level_name)
+            logging.getLogger().setLevel(level)
+        self.log_level_var = level_name
+        logging.info(f"Log level changed to {level_name}")
 
     def _toggle_lan_usb_fcu(self):
         self.is_lan_fcu = not self.is_fcu_obj.get()
@@ -348,6 +375,7 @@ class MainWindow:
         self.fps_menu.config(state="readonly")
         self.stop_button.config(state="disabled")
         return {
+            "log_level": self.log_level_var if not self.critical_message else self.original_setting_log_level_var,
             "is_lan_fcu": self.is_lan_fcu if not self.critical_message else self.original_setting_is_lan_fcu,
             "autostart" : self.setting_autostart if not self.critical_message else self.original_setting_autostart,
             "CpFlight": self.aircraft_files
