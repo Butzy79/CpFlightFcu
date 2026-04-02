@@ -19,6 +19,11 @@ class AircraftLoader:
     led_fo_efis = {"led_fo_fd": False, "led_fo_ls": False, "led_fo_cstr": False, "led_fo_wpt": False, "led_fo_vord": False, "led_fo_ndb": False, "led_fo_arpt": False}
     fcu = {"display_brightness": 100, "int_brightness": 100}
     critical_error = None
+    is_lan_fcu = True
+
+    def set_is_lan_fcu(self, is_lan_fcu):
+        self.is_lan_fcu = is_lan_fcu
+
     def _reset_leds_command_cp(self, led_control:str, new_value:bool, cpfligh)-> str:
         self.led_cp_efis = {
             k: (k == led_control and new_value) if not k.endswith(("_fd", "_ls")) else self.led_cp_efis[k]
@@ -746,7 +751,8 @@ class AircraftLoader:
             logger.critical(f"CP FD EL ({el}): NEW {actual+2}")
         sock.sendall((cpfligh["led_cp_fd"]["led_on" if new_value else "led_off"] + "\n").encode())
         logger.critical(f"CP FD LED status {self.led_cp_efis['led_cp_fd']} -> {new_value}")
-        self.led_cp_efis["led_cp_fd"] = new_value
+        if self.is_lan_fcu:
+            self.led_cp_efis["led_cp_fd"] = new_value
         self.btn_gen["op"] = False
 
     def set_btn_cp_ls_aircraft(self, value: str, config, vr, sock, cpfligh):

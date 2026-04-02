@@ -39,6 +39,7 @@ class LoopController:
         self.sim_status = False
         self.fcu_status = False
         self.is_lan_fcu = True
+        self.aircraft.set_is_lan_fcu(self.is_lan_fcu)
 
         self.pause_loop_until = 0
         self.pause_loop_check_until = 0
@@ -61,6 +62,7 @@ class LoopController:
         if is_critical_on:
             return False
         self.is_lan_fcu = is_lan_fcu
+        self.aircraft.set_is_lan_fcu(self.is_lan_fcu)
         self.autostart = autostart
         if not autostart or not SimFS.is_fs_running():
             return False
@@ -90,6 +92,7 @@ class LoopController:
         self.current_config = config
         self.cpflight = cpflight
         self.is_lan_fcu = is_lan_fcu
+        self.aircraft.set_is_lan_fcu(self.is_lan_fcu)
         try:
             self.sm = SimConnectParser()
             self.vr = ParserVariableRequests(self.sm)
