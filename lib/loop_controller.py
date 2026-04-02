@@ -197,9 +197,11 @@ class LoopController:
                     self.sock,
                     self.vr
                 )
+                logger.debug("Starting SET LED CP")
                 self.aircraft.set_led_efis_cp( self.current_config, self.cpflight, self.sock, self.vr)
-                # self.aircraft.set_led_efis_fo( self.current_config, self.cpflight, self.sock, self.vr)
-
+                logger.debug("Starting SET LED FO")
+                self.aircraft.set_led_efis_fo( self.current_config, self.cpflight, self.sock, self.vr)
+                logger.debug("Starting SET Bright")
                 self.aircraft.set_fcu_brightness(
                     self.current_config.get('fcu'),
                     self.cpflight.get('fcu'),

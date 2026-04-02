@@ -1,6 +1,8 @@
 import json
 import re
 import time
+import logging
+logger = logging.getLogger(__name__)
 
 
 class AircraftLoader:
@@ -154,15 +156,21 @@ class AircraftLoader:
         return True
 
     def set_led_efis_cp(self, aircraft_array: int, cpflight_cmds:dict, sock, vr) -> bool:
+        logger.debug("Starting -> set_led_efis_cp")
         for key in self.led_cp_efis.keys():
+            logger.debug(f"CP Key {key}")
             rx_expr = aircraft_array.get(key, {}).get("rx")
+            logger.debug(f"CP rx_expr {rx_expr}")
             if rx_expr is None:
+                logger.debug(f"CP CONTINUE")
                 continue
             value = bool(vr.get(f"({rx_expr})"))
+            logger.debug(f"CP value {value} against -> {self.led_cp_efis[key]}")
             if self.led_cp_efis[key] != value:
                 self.led_cp_efis[key] = value
                 cmd = cpflight_cmds.get(key, {}).get("led_on" if value else "led_off")
                 if cmd:
+                    logger.debug(f"Set LED {key} CMD CpFlight: {cmd}")
                     sock.sendall((cmd + "\n").encode())
         return True
 
@@ -730,10 +738,14 @@ class AircraftLoader:
 
     def set_btn_cp_fd_aircraft(self, value: str, config, vr, sock, cpfligh):
         new_value = not self.led_cp_efis['led_cp_fd']
+        logger.debug(f"set_btn_cp_fd_aircraft: {new_value}")
         for el in config['btn_cp_fd']['tx']:
             actual = vr.get(f"({el})")
+            logger.debug(f"CP FD EL ({el}): {actual}")
             vr.set(f"{int(actual+2)} (>{el})")
+            logger.debug(f"CP FD EL ({el}): NEW {actual+2}")
         sock.sendall((cpfligh["led_cp_fd"]["led_on" if new_value else "led_off"] + "\n").encode())
+        logger.debug(f"CP FD LED status {self.led_cp_efis['led_cp_fd']} -> {new_value}")
         self.led_cp_efis["led_cp_fd"] = new_value
         self.btn_gen["op"] = False
 

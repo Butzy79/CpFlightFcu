@@ -47,6 +47,7 @@ class MainWindow:
         self.log_level_var = self.settings.settings.get('log_level', 'CRITICAL') if self.settings else 'CRITICAL'
 
         self.original_setting_autostart = self.setting_autostart
+        self._set_log_level(self.log_level_var)
         self.original_setting_is_lan_fcu = self.is_lan_fcu
         self.original_setting_log_level_var = self.log_level_var
 
@@ -61,8 +62,10 @@ class MainWindow:
         self.update_available = update_available
         self.remote_version = remote_version
         self.is_fcu_obj = None
+        logger.debug("Starting Building gui")
         self._build_gui()
         self._build_menu()
+        logger.debug("Gui Build")
         if self.critical_message:
             self.left_frame.grid_forget()
             self.status_frame.grid_forget()
