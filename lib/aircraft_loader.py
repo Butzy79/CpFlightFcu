@@ -749,9 +749,15 @@ class AircraftLoader:
             logger.critical(f"CP FD EL ({el}): {actual}")
             vr.set(f"{int(actual+2)} (>{el})")
             logger.critical(f"CP FD EL ({el}): NEW {actual+2}")
-        if self.is_lan_fcu:
+        if not self.is_lan_fcu:
+            logger.critical("PAUSE")
             time.sleep(2)
+            logger.critical("EXIT PAUSE")
         sock.sendall((cpfligh["led_cp_fd"]["led_on" if new_value else "led_off"] + "\n").encode())
+        if not self.is_lan_fcu:
+            logger.critical("PAUSE 2")
+            time.sleep(2)
+            logger.critical("EXIT PAUSE 2")
         logger.critical(f"CP FD LED status {self.led_cp_efis['led_cp_fd']} -> {new_value} will be {cpfligh['led_cp_fd']['led_on' if new_value else 'led_off']}")
         self.led_cp_efis["led_cp_fd"] = new_value
         self.btn_gen["op"] = False
