@@ -242,6 +242,9 @@ class MainWindow:
         self.stop_button = ttk.Button(self.left_frame, text="STOP", command=self.on_stop, state="disabled")
         self.stop_button.grid(row=4, column=0, pady=5, sticky="we")
 
+        self.start_all_led = ttk.Button(self.left_frame, text="ALL LEDS", command=self.all_leds, state="normal")
+        self.stop_button.grid(row=5, column=0, pady=5, sticky="we")
+
         self.fps_var = tk.StringVar(value="5")
         self.fps_menu = ttk.Combobox(self.left_frame, textvariable=self.fps_var, values=["0.5", "1", "2", "5", "10", "30", "60"], state="readonly", width=5)
 
@@ -356,6 +359,10 @@ class MainWindow:
         self.start_button.config(state="disabled")
         self.stop_button.config(state="normal")
         self._schedule_status_update()
+
+    def all_leds(self):
+        success, msg_err = self.loop_controller.start(self.current_config, self.current_cpflight_config, self.is_lan_fcu)
+        self.stop_button.config(state="normal")
 
     def on_stop(self, manual=True) -> Dict:
         self.loop_controller.stop()

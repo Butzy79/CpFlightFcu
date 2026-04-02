@@ -85,6 +85,46 @@ class LoopController:
             return True
         return False
 
+    def start_leds(self, config, cpflight, is_lan_fcu):
+        self.current_config = config
+        self.cpflight = cpflight
+        self.is_lan_fcu = is_lan_fcu
+        self.aircraft.set_is_lan_fcu(self.is_lan_fcu)
+        if not self.is_lan_fcu:
+            self.sock = SerialSocketWrapper(self.cpflight.get("USB_PORT"), self.cpflight.get("USB_BAUD"))
+        else:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.connect((self.cpflight.get('IP'), self.cpflight.get('PORT')))
+            self.sock.setblocking(False)
+
+        logger.critical(f'Sock Lan: {self.is_lan_fcu}')
+        # turn led on:
+        self.sock.sendall((self.cpflight.get("POWER_ON") + "\n").encode())
+        logger.critical(f'ALL ON: {self.cpflight.get("LED_ALL_ON")}')
+        self.sock.sendall((self.cpflight.get("LED_ALL_ON") + "\n").encode())
+
+        logger.critical(f'led_cp_fd ON: {self.cpflight.get("led_cp_fd").get("led_on")}')
+        self.sock.sendall((self.cpflight.get("led_cp_fd").get("led_on") + "\n").encode())
+
+        logger.critical(f'led_cp_ls ON: {self.cpflight.get("led_cp_ls").get("led_on")}')
+        self.sock.sendall((self.cpflight.get("led_cp_ls").get("led_on") + "\n").encode())
+
+        logger.critical(f'led_cp_cstr ON: {self.cpflight.get("led_cp_cstr").get("led_on")}')
+        self.sock.sendall((self.cpflight.get("led_cp_cstr").get("led_on") + "\n").encode())
+
+        logger.critical(f'led_cp_wpt ON: {self.cpflight.get("led_cp_wpt").get("led_on")}')
+        self.sock.sendall((self.cpflight.get("led_cp_wpt").get("led_on") + "\n").encode())
+
+        logger.critical(f'led_cp_vord ON: {self.cpflight.get("led_cp_vord").get("led_on")}')
+        self.sock.sendall((self.cpflight.get("led_cp_vord").get("led_on") + "\n").encode())
+
+        logger.critical(f'led_cp_ndb ON: {self.cpflight.get("led_cp_ndb").get("led_on")}')
+        self.sock.sendall((self.cpflight.get("led_cp_ndb").get("led_on") + "\n").encode())
+
+        logger.critical(f'led_cp_arpt ON: {self.cpflight.get("led_cp_arpt").get("led_on")}')
+        self.sock.sendall((self.cpflight.get("led_cp_arpt").get("led_on") + "\n").encode())
+
+
     def start(self, config, cpflight, is_lan_fcu) -> tuple[bool, Optional[str]]:
         if self.running:
             return True, None
