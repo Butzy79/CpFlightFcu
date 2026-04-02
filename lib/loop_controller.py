@@ -105,7 +105,7 @@ class LoopController:
                 self.sock.connect((self.cpflight.get('IP'), self.cpflight.get('PORT')))
                 self.sock.setblocking(False)
 
-            logger.debug(f'Sock Lan: {self.is_lan_fcu}')
+            logger.critical(f'Sock Lan: {self.is_lan_fcu}')
             # turn led on:
             self.sock.sendall((self.cpflight.get("POWER_ON") + "\n").encode())
             # self.sock.sendall((self.cpflight.get("LED_ALL_ON") + "\n").encode())
@@ -138,7 +138,7 @@ class LoopController:
                 self.sock.shutdown(socket.SHUT_RDWR)
                 self.sock.close()
             except Exception as e:
-                print(f"CpFlight Connection error: {e}")
+                logger.critical(f"CpFlight Connection error: {e}")
                 pass
             self.sock = None
 
@@ -197,11 +197,11 @@ class LoopController:
                     self.sock,
                     self.vr
                 )
-                logger.debug("Starting SET LED CP")
+                logger.critical("Starting SET LED CP")
                 self.aircraft.set_led_efis_cp( self.current_config, self.cpflight, self.sock, self.vr)
-                logger.debug("Starting SET LED FO")
+                logger.critical("Starting SET LED FO")
                 self.aircraft.set_led_efis_fo( self.current_config, self.cpflight, self.sock, self.vr)
-                logger.debug("Starting SET Bright")
+                logger.critical("Starting SET Bright")
                 self.aircraft.set_fcu_brightness(
                     self.current_config.get('fcu'),
                     self.cpflight.get('fcu'),
@@ -216,7 +216,7 @@ class LoopController:
                 self.sim_status = True
                 time.sleep(interval)
             except Exception as e:
-                print(e)
+                logger.critical(e)
                 time.sleep(1)
 
     def _socket_listener_loop(self):
@@ -224,6 +224,7 @@ class LoopController:
             try:
                 data = None
                 if self.is_lan_fcu:
+                    logger.critical(f'Data IS LAN R: {data}')
                     readable, _, _ = select.select([self.sock], [], [], 0.1)
                     if self.sock in readable:
                         data = self.sock.recv(1024)
@@ -233,12 +234,15 @@ class LoopController:
                 else:
                     # Solo per USB: niente select, polling diretto
                     data = self.sock.recv(1024)
+                    logger.critical(f'Data R: {data}')
 
                 if data:
+                    logger.critical(f'Data FOUND: {data}')
                     self.fcu_status = True
                     value_from_fcu = re.sub(r'[\x00-\x1F\x7F]', '', data.decode(errors="ignore")).strip()
 
                     if self.fw_compatible is None:
+                        logger.critical('FW NOT COMP')
                         if self.cpflight.get('FW_COMPATIBLE') and self.cpflight.get('fcu', {}).get(
                                 'fw_value_rx') and value_from_fcu.startswith(
                                 self.cpflight.get('fcu', {}).get('fw_value_rx')):
@@ -248,15 +252,16 @@ class LoopController:
                             elif fw_version and fw_version != self.cpflight.get('FW_COMPATIBLE', ""):
                                 self.fw_compatible = False
 
+                    logger.critical(f'Trying {value_from_fcu}')
                     what = self.find_matching_block(value_from_fcu)
-                    logger.debug(f'What Command: {what} - {value_from_fcu}')
+                    logger.critical(f'What Command: {what} - {value_from_fcu}')
                     if self.aircraft.set_opblocker(what, True):
                         pattern = self.cpflight.get(what).get('rx')
                         match = re.match(fr"{pattern}", value_from_fcu)
                         value = match.group(1) if match else None
                         if value:
                             method_name = f"set_{what}_aircraft"
-                            logger.debug(f'Method: {method_name}')
+                            logger.critical(f'Method: {method_name}')
                             getattr(self.aircraft, method_name)(value, self.current_config, self.vr, self.sock,
                                                                 self.cpflight)
                             self.pause_loop_until = time.time() + 2
@@ -266,7 +271,7 @@ class LoopController:
             except BlockingIOError:
                 pass
             except Exception as e:
-                print("Listener loop error:", e)
+                logger.critical("Listener loop error:", e)
 
 class SerialSocketWrapper:
     def __init__(self, port, baud=38400, timeout=0.5):

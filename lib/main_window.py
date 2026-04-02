@@ -62,10 +62,10 @@ class MainWindow:
         self.update_available = update_available
         self.remote_version = remote_version
         self.is_fcu_obj = None
-        logger.debug("Starting Building gui")
+        logger.critical("Starting Building gui")
         self._build_gui()
         self._build_menu()
-        logger.debug("Gui Build")
+        logger.critical("Gui Build")
         if self.critical_message:
             self.left_frame.grid_forget()
             self.status_frame.grid_forget()
