@@ -39,12 +39,13 @@ class MainWindow:
         self.on_close_callback = on_close_callback
         self.manual_stop = False
         self.fcu_menu = None
+        self.usb_fcu_index = 0
         self.root.title(f"CpFlight Control (CFC) - {ver}")
         root.iconbitmap(resource_path("resources/butzy.ico"))
         self.root.resizable(False, False)
         self.setting_autostart = self.settings.settings.get('autostart', False) if self.settings else False
         self.is_lan_fcu = self.settings.settings.get('is_lan_fcu', True) if self.settings else True
-        self.log_level_var = self.settings.settings.get('log_level', 'CRITICAL') if self.settings else 'CRITICAL'
+        self.log_level_var = self.settings.settings.get('log_level', 'OFF') if self.settings else 'OFF'
 
         self.original_setting_autostart = self.setting_autostart
         self._set_log_level(self.log_level_var)
@@ -102,15 +103,18 @@ class MainWindow:
 
         if self.loop_controller.fw_compatible is not None:
             if self.loop_controller.fw_compatible:
-                self.firmware_ready_label.config(text="Firmware Compatible", foreground="green")
+                self.firmware_ready_label.config(text=f"Firmware {self.loop_controller.fw_compatible_lbl} Compatible", foreground="green")
             else:
-                self.firmware_ready_label.config(text="Firmware Not Compatible", foreground="red")
+                self.firmware_ready_label.config(text=f"Firmware {self.loop_controller.fw_compatible_lbl} Not Compatible", foreground="red")
+        else:
+            self.firmware_ready_label.config(text=f"Firmware not checked", foreground="blue")
 
+        extra_fcu = "LAN" if self.is_lan_fcu else "USB"
         if self.loop_controller.fcu_status:
             fcu_st = True
-            self.fcu_ready_label.config(text="FCU ready!", foreground="green")
+            self.fcu_ready_label.config(text=f"FCU {extra_fcu} ready!", foreground="green")
         else:
-            self.fcu_ready_label.config(text="FCU NOT ready", foreground="red")
+            self.fcu_ready_label.config(text=f"FCU {extra_fcu} NOT ready", foreground="red")
 
         if fcu_st and sim_st:
             self.status_bar.config(text="Sim connected!")
@@ -180,14 +184,17 @@ class MainWindow:
             self.fcu_menu.add_separator()
 
         self.fcu_menu.add_checkbutton(
-            label="Usb FCU",
+            label=f"Usb FCU {self.current_cpflight_config.get('USB_PORT')}",
             variable=self.is_fcu_obj,
             command=self._toggle_lan_usb_fcu
         )
+        self.usb_fcu_index = self.fcu_menu.index("end")
 
     def _toggle_lan_usb_fcu(self):
+        self.loop_controller.reset_fw_check()
         self.is_lan_fcu = not self.is_fcu_obj.get()
         self._rebuild_fcu_menu()
+        self._update_status_labels()
         if not self._load_cp_flight_json():
             self.critical_message = f"CpFlight Json File: {self.aircraft.critical_error}"
 
@@ -261,9 +268,10 @@ class MainWindow:
         )
         self.aircraft_ready_label.pack(anchor="center", pady=15)
 
+        extra_fcu = "LAN" if self.is_lan_fcu else "USB"
         self.fcu_ready_label = ttk.Label(
             self.status_frame,
-            text="FCU NOT ready",
+            text=f"FCU {extra_fcu} NOT ready",
             foreground="red",
             font=("Helvetica", 18, "bold"),
         )
@@ -376,6 +384,7 @@ class MainWindow:
         self.fps_menu.config(state="disabled")
         self.start_button.config(state="disabled")
         self.stop_button.config(state="normal")
+        self.fcu_menu.entryconfig(self.usb_fcu_index, state="disabled")
         self._schedule_status_update()
 
     def on_stop(self, manual=True) -> Dict:
@@ -398,6 +407,8 @@ class MainWindow:
         self.file_menu.config(state="readonly")
         self.fps_menu.config(state="readonly")
         self.stop_button.config(state="disabled")
+        self.fcu_menu.entryconfig(self.usb_fcu_index, state="normal")
+
         return {
             "log_level": self.log_level_var if not self.critical_message else self.original_setting_log_level_var,
             "is_lan_fcu": self.is_lan_fcu if not self.critical_message else self.original_setting_is_lan_fcu,

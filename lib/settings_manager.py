@@ -10,7 +10,7 @@ DEFAULT_SETTINGS = {
     },
     "autostart": False,
     "is_lan_fcu": True,
-    "log_level": "CRITICAL"
+    "log_level": "OFF"
 }
 
 SETTINGS_PATH = "settings.json"

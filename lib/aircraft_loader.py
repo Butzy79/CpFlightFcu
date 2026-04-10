@@ -205,8 +205,6 @@ class AircraftLoader:
                 self.fcu["int_brightness"] = int_brightness_value
                 msg = cpflight_cmds.get("int_brightness").encode() + bytes([int(int_brightness_value*10)]) + b"\x00"
                 sock.sendall(msg)
-                # TO REMOVE!!!
-                print(f'DISP BRIHT: {self.fcu["int_brightness"]}')
         return True
 
     #next functions need to respect interval timer
@@ -262,13 +260,13 @@ class AircraftLoader:
         else:
             qnh_cp_mode_hpa = bool(vr.get(f'({mode_hpa_var})'))
         if qnh_cp_mode_hpa:
-            qnh_cp_value = float(vr.get(f'({rx_hpa})', 0)) + increment if vr.get(f'({rx_hpa})') else 0
+            qnh_cp_value = float(vr.get(f'({rx_hpa})')) + increment if vr.get(f'({rx_hpa})') else 0
             if qnh_cp_value > limit_hpa[1]:
                 qnh_cp_value = limit_hpa[1]
             if qnh_cp_value < limit_hpa[0]:
                 qnh_cp_value = limit_hpa[0]
         else:
-            qnh_cp_value = float(vr.get(f'({rx_inhg})', 0)) + (increment/100) if vr.get(f'({rx_inhg})') else 0
+            qnh_cp_value = float(vr.get(f'({rx_inhg})')) + (increment/100) if vr.get(f'({rx_inhg})') else 0
             if qnh_cp_value > limit_inhg[1]:
                 qnh_cp_value = limit_inhg[1]
             if qnh_cp_value < limit_inhg[0]:

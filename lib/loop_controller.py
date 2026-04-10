@@ -20,6 +20,8 @@ class LoopController:
         get_interval_callback: function returning the loop interval (float).
         """
         self.fw_compatible = None # None = Not verified, 1 = Compatible, 0 = Not Compatible
+        self.fw_compatible_lbl = None
+
         self.get_interval = get_interval_callback
         self.running = False
         self.sim_running = False
@@ -57,6 +59,10 @@ class LoopController:
 
     def is_sim_ready_to_stop(self):
         return self.ready_to_stop
+
+    def reset_fw_check(self):
+        self.fw_compatible = None
+        self.fw_compatible_lbl = None
 
     def check_status(self, autostart, config, cpflight, is_critical_on, is_lan_fcu) -> bool:
         if is_critical_on:
@@ -144,15 +150,20 @@ class LoopController:
             self.sock = None
 
     def _run_loop(self):
+        logger.debug("Run Loop: INIT")
         self.aircraft.set_initial_values(self.current_config, self.cpflight, self.sock, self.vr)
         while self.running:
             try:
                 if not self.sim_running:
                     self.stop()
                 # Dash and Dot Control need to be here
+                logger.debug("Run Loop: set_dash_fcu")
                 self.aircraft.set_dash_fcu( self.current_config, self.cpflight, self.sock, self.vr)
+                logger.debug("Run Loop: set_dot_fcu")
                 self.aircraft.set_dot_fcu( self.current_config, self.cpflight, self.sock, self.vr)
+                logger.debug("Run Loop: set_type_fcu")
                 self.aircraft.set_type_fcu( self.current_config, self.cpflight, self.sock, self.vr)
+                logger.debug("Run Loop: set_led_fcu")
                 self.aircraft.set_led_fcu( self.current_config, self.cpflight, self.sock, self.vr)
 
                 now = time.time()
@@ -162,52 +173,61 @@ class LoopController:
                 interval = self.get_interval()
                 # Read from SimConnect and send to hardware
 
+                logger.debug("Run Loop: set_speed_fcu")
                 self.aircraft.set_speed_fcu(
                     self.current_config.get('speed'),
                     self.cpflight.get('speed'),
                     self.sock,
                     self.vr
                 )
+                logger.debug("Run Loop: set_heading_fcu")
                 self.aircraft.set_heading_fcu(
                     self.current_config.get('heading'),
                     self.cpflight.get('heading'),
                     self.sock,
                     self.vr
                 )
+                logger.debug("Run Loop: set_altitude_fcu")
                 self.aircraft.set_altitude_fcu(
                     self.current_config.get('altitude'),
                     self.cpflight.get('altitude'),
                     self.sock,
                     self.vr
                 )
+                logger.debug("Run Loop: set_vs_fcu")
                 self.aircraft.set_vs_fcu(
                     self.current_config.get('vs'),
                     self.cpflight.get('vs'),
                     self.sock,
                     self.vr
                 )
+                logger.debug("Run Loop: set_qnh_cp_efis")
                 self.aircraft.set_qnh_cp_efis(
                     self.current_config.get('qnh_cp'),
                     self.cpflight.get('qnh_cp'),
                     self.sock,
                     self.vr
                 )
+                logger.debug("Run Loop: set_qnh_fo_efis")
                 self.aircraft.set_qnh_fo_efis(
                     self.current_config.get('qnh_fo'),
                     self.cpflight.get('qnh_fo'),
                     self.sock,
                     self.vr
                 )
+                logger.debug("Run Loop: set_led_efis_cp")
                 self.aircraft.set_led_efis_cp( self.current_config, self.cpflight, self.sock, self.vr)
+                logger.debug("Run Loop: set_led_efis_fo")
                 self.aircraft.set_led_efis_fo( self.current_config, self.cpflight, self.sock, self.vr)
 
+                logger.debug("Run Loop: set_fcu_brightness")
                 self.aircraft.set_fcu_brightness(
                     self.current_config.get('fcu'),
                     self.cpflight.get('fcu'),
                     self.sock,
                     self.vr
                 )
-
+                logger.debug("Run Loop: set_fcu_backlight")
                 self.aircraft.set_fcu_backlight(
                     self.current_config.get('fcu'),
                     self.cpflight.get('fcu'),
@@ -220,6 +240,7 @@ class LoopController:
                         self.ready_to_stop = True
 
                 self.sim_status = True
+                logger.debug("Run Loop: CONTINUE")
                 time.sleep(interval)
             except Exception as e:
                 logger.critical(f"Loop Controller _run_loop: {e}")
@@ -254,6 +275,7 @@ class LoopController:
                             fw_version = value_from_fcu[len(prefix):]
                             if fw_version:
                                 self.fw_compatible = (fw_version == expected_fw)
+                                self.fw_compatible_lbl = fw_version
 
                     what = self.find_matching_block(value_from_fcu)
                     if self.aircraft.set_opblocker(what, True):

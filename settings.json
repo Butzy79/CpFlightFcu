@@ -6,6 +6,6 @@
         "height": 285
     },
     "autostart": false,
-    "is_lan_fcu": true,
-    "log_level": "CRITICAL"
+    "is_lan_fcu": false,
+    "log_level": "OFF"
 }
