@@ -33,7 +33,7 @@ class ParserVariableRequests:
         self.DATA_STRING_DEFINITION_ID = 0
         self.sm.register_client_data_handler(self.client_data_callback_handler)
         self.initialize_client_data_areas()
-
+        self.is_power_init = False
 
     def add_to_client_data_definition(self, definition_id, offset, size):
         logging.info("add_to_client_data_definition definition_id=%s, offset=%s, size=%s", definition_id, offset, size)
@@ -136,6 +136,8 @@ class ParserVariableRequests:
                 wait_counter = wait_counter + 1
             else:
                 break
+        if variableString == '(L:B_FCU_POWER)' and not sim_var.initialized:
+            self.is_power_init = sim_var.initialized
         if sim_var.float_value is None and sim_var.initialized:
             sim_var.float_value = 0.0
         logging.debug("get %s. wait_counter=%s, Return=%s", variableString, wait_counter, sim_var.float_value)

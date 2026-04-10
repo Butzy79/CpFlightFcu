@@ -111,12 +111,17 @@ class MainWindow:
         extra_fcu = "LAN" if self.is_lan_fcu else "USB"
         if self.loop_controller.fcu_status:
             fcu_st = True
+            if self.usb_fcu_index:
+                self.fcu_menu.entryconfig(self.usb_fcu_index, state="disabled")
             self.fcu_ready_label.config(text=f"FCU {extra_fcu} ready!", foreground="green")
         else:
             self.fcu_ready_label.config(text=f"FCU {extra_fcu} NOT ready", foreground="red")
+            if self.usb_fcu_index:
+                self.fcu_menu.entryconfig(self.usb_fcu_index, state="normal")
 
         if fcu_st and sim_st:
             self.status_bar.config(text="Sim connected!")
+
 
     def _build_menu(self):
         menubar = tk.Menu(self.root)

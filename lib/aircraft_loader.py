@@ -5,12 +5,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 class AircraftLoader:
-    speed = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "mach": False, "time_set": 0.0}
-    heading = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "trk": False, "time_set": 0.0}
+    speed = {"op": False, "value": 110, "init": False, "dash": False, "dot": False, "mach": False, "time_set": 0.0}
+    heading = {"op": False, "value": 359, "init": False, "dash": False, "dot": False, "trk": False, "time_set": 0.0}
     qnh_cp = {"op": False, "value": 1013.0, "init": False}
     qnh_fo = {"op": False, "value": 1013.0, "init": False}
-    altitude = {"op": False, "value": 1000, "init": False, "dot": False, "dash": False, "time_set": 0.0}
-    vs = {"op": False, "value": 0, "init": False, "dash": False, "time_set": 0.0}
+    altitude = {"op": False, "value": 10000, "init": False, "dot": False, "dash": False, "time_set": 0.0}
+    vs = {"op": False, "value": 100, "init": False, "dash": False, "time_set": 0.0}
     btn_gen = {"op": False}
     led_gen = {"op": False}
     led_fcu = {"led_loc": False, "led_ap1": False, "led_ap2": False, "led_athr": False, "led_exped": False, "led_appr": False}
@@ -63,7 +63,7 @@ class AircraftLoader:
         for dot in dots:
             getattr(self, dot)["dot"] = not bool(vr.get(f"({aircraft_array.get(dot).get('extra_dot')})"))
 
-        self.speed["nack"] = not bool(vr.get(f"({aircraft_array.get('speed').get('extra_mach')})"))
+        self.speed["mack"] = not bool(vr.get(f"({aircraft_array.get('speed').get('extra_mach')})"))
         self.heading["trk"] = not bool(vr.get(f"({aircraft_array.get('heading').get('extra_trk')})"))
 
         self.fcu["display_brightness"] = vr.get(f"({aircraft_array.get('display_bright')})")

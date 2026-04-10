@@ -78,14 +78,13 @@ class LoopController:
         if now < self.pause_loop_check_until:
             return False
         self.pause_loop_check_until = now + 2
-        if not self.sm or not self.vr:
+        if not self.sm or not self.vr or not self.vr.is_power_init:
             self.sm = SimConnectParser()
             self.vr = ParserVariableRequests(self.sm)
-        self.vr.clear_sim_variables()
         if not self.vr:
             return False
+        self.vr.clear_sim_variables()
         sim_load = bool(self.vr.get(f"({config.get('fcu',{}).get('power_on')})"))
-        print("sim_load:", sim_load)
         if sim_load:
             self.sim_running = True
             self.pause_loop_check_until = time.time() + 2
@@ -117,11 +116,7 @@ class LoopController:
                 self.sock.connect((self.cpflight.get('IP'), self.cpflight.get('PORT')))
                 self.sock.setblocking(False)
 
-            # turn led on:
-            print("POWEEEER!")
-
             self.sock.sendall((self.cpflight.get("POWER_ON") + "\n").encode())
-            # self.sock.sendall((self.cpflight.get("LED_ALL_ON") + "\n").encode())
 
             self.running = True
             self.sim_running = True
@@ -234,7 +229,6 @@ class LoopController:
                 )
 
                 if self.autostart:
-                    print("loop check pwr: ", self.vr.get(f"({self.current_config.get('fcu', {}).get('power_off')})"))
                     if not bool(self.vr.get(f"({self.current_config.get('fcu', {}).get('power_off')})")):
                         self.ready_to_stop = True
 
