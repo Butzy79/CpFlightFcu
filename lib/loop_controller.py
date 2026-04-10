@@ -208,6 +208,13 @@ class LoopController:
                     self.vr
                 )
 
+                self.aircraft.set_fcu_backlight(
+                    self.current_config.get('fcu'),
+                    self.cpflight.get('fcu'),
+                    self.sock,
+                    self.vr
+                )
+
                 if self.autostart:
                     if not bool(self.vr.get(f"({self.current_config.get('fcu', {}).get('power_off')})")):
                         self.ready_to_stop = True

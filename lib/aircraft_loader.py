@@ -186,12 +186,16 @@ class AircraftLoader:
                     sock.sendall((cmd + "\n").encode())
         return True
 
+    def set_fcu_backlight(self, aircraft_array: int, cpflight_cmds:dict, sock, vr) -> bool:
+        return True
+
     def set_fcu_brightness(self, aircraft_array: int, cpflight_cmds: dict, sock, vr) -> bool:
         display_brightness_var = aircraft_array.get("display_bright")
         int_brightness_var = aircraft_array.get("int_light")
 
         display_brightness_value = vr.get(f"({display_brightness_var})")
         int_brightness_value = vr.get(f"({int_brightness_var})")
+
         if not display_brightness_value is None and display_brightness_value != self.fcu["display_brightness"]:
                 self.fcu["display_brightness"] = display_brightness_value
                 msg = cpflight_cmds.get("display_brightness").encode() + bytes([int(display_brightness_value*10)]) + b"\x00"
@@ -201,6 +205,8 @@ class AircraftLoader:
                 self.fcu["int_brightness"] = int_brightness_value
                 msg = cpflight_cmds.get("int_brightness").encode() + bytes([int(int_brightness_value*10)]) + b"\x00"
                 sock.sendall(msg)
+                # TO REMOVE!!!
+                print(f"DISP BRIHT: {self.fcu["int_brightness"]}")
         return True
 
     #next functions need to respect interval timer
