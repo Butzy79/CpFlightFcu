@@ -188,6 +188,8 @@ class MainWindow:
     def _toggle_lan_usb_fcu(self):
         self.is_lan_fcu = not self.is_fcu_obj.get()
         self._rebuild_fcu_menu()
+        if not self._load_cp_flight_json():
+            self.critical_message = f"CpFlight Json File: {self.aircraft.critical_error}"
 
     def _toggle_autostart(self):
         self.setting_autostart = self.setting_autostart_obj.get()
@@ -315,6 +317,27 @@ class MainWindow:
     def _on_file_change(self, event):
         self.load_button.config(state="normal")
 
+    def _strip_e0_prefix(self, obj):
+        if isinstance(obj, dict):
+            return {k: self._strip_e0_prefix(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [self._strip_e0_prefix(v) for v in obj]
+        if isinstance(obj, str):
+            if obj.startswith("E0"):
+                return obj[2:]
+            return obj
+        return obj
+
+    def _load_cp_flight_json(self):
+        filepathcpflight = os.path.join(CONFIG_DIR, "cpflight.json")
+        self.current_cpflight_config = self.aircraft.load_json_config(filepathcpflight)
+        if not self.current_cpflight_config:
+            self.critical_message = f"CpFlight Json File: {self.aircraft.critical_error}"
+            return False
+        if not self.is_lan_fcu:
+            self.current_cpflight_config = self._strip_e0_prefix(self.current_cpflight_config)
+        return True
+
     def _on_load(self):
         selected = self.file_var.get()
         mapping = {self._format_filename(f): f for f in self.aircraft_files}
@@ -328,9 +351,8 @@ class MainWindow:
         if not self.current_config:
             self.critical_message = f"Aircraft Json File: {self.aircraft.critical_error}"
             return False
-        filepathcpflight = os.path.join(CONFIG_DIR, "cpflight.json")
-        self.current_cpflight_config = self.aircraft.load_json_config(filepathcpflight)
-        if not self.current_cpflight_config:
+
+        if not self._load_cp_flight_json():
             self.critical_message = f"CpFlight Json File: {self.aircraft.critical_error}"
             return False
         self.critical_message = None
