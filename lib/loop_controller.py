@@ -78,12 +78,14 @@ class LoopController:
         if now < self.pause_loop_check_until:
             return False
         self.pause_loop_check_until = now + 2
-        self.sm = SimConnectParser()
-        self.vr = ParserVariableRequests(self.sm)
+        if not self.sm or not self.vr:
+            self.sm = SimConnectParser()
+            self.vr = ParserVariableRequests(self.sm)
         self.vr.clear_sim_variables()
         if not self.vr:
             return False
         sim_load = bool(self.vr.get(f"({config.get('fcu',{}).get('power_on')})"))
+        print("sim_load:", sim_load)
         if sim_load:
             self.sim_running = True
             self.pause_loop_check_until = time.time() + 2
@@ -100,8 +102,9 @@ class LoopController:
         self.is_lan_fcu = is_lan_fcu
         self.aircraft.set_is_lan_fcu(self.is_lan_fcu)
         try:
-            self.sm = SimConnectParser()
-            self.vr = ParserVariableRequests(self.sm)
+            if not self.sm or not self.vr:
+                self.sm = SimConnectParser()
+                self.vr = ParserVariableRequests(self.sm)
             self.vr.clear_sim_variables()
         except Exception as e:
             return False, str(e)
@@ -115,6 +118,8 @@ class LoopController:
                 self.sock.setblocking(False)
 
             # turn led on:
+            print("POWEEEER!")
+
             self.sock.sendall((self.cpflight.get("POWER_ON") + "\n").encode())
             # self.sock.sendall((self.cpflight.get("LED_ALL_ON") + "\n").encode())
 
@@ -227,15 +232,9 @@ class LoopController:
                     self.sock,
                     self.vr
                 )
-                logger.debug("Run Loop: set_fcu_backlight")
-                self.aircraft.set_fcu_backlight(
-                    self.current_config.get('fcu'),
-                    self.cpflight.get('fcu'),
-                    self.sock,
-                    self.vr
-                )
 
                 if self.autostart:
+                    print("loop check pwr: ", self.vr.get(f"({self.current_config.get('fcu', {}).get('power_off')})"))
                     if not bool(self.vr.get(f"({self.current_config.get('fcu', {}).get('power_off')})")):
                         self.ready_to_stop = True
 

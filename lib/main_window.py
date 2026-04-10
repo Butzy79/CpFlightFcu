@@ -28,7 +28,6 @@ class MainWindow:
     TIMEOUT_CHECK_AIRPLANE = 10000
     TIMEOUT_CHECK_SIM = 30000
 
-    # TODO: ADD FS IS ON loop and MB is on LOOP
     is_fs_on = False
     is_mb_on = False
 
@@ -153,7 +152,7 @@ class MainWindow:
 
         ## Close
         settings_menu.add_command(
-            label="Close",
+            label="Save & Close",
             command=lambda: self.on_close_callback(self.root, self.settings, self.update_available)
         )
         if not self.critical_message:

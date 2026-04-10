@@ -186,9 +186,6 @@ class AircraftLoader:
                     sock.sendall((cmd + "\n").encode())
         return True
 
-    def set_fcu_backlight(self, aircraft_array: int, cpflight_cmds:dict, sock, vr) -> bool:
-        return True
-
     def set_fcu_brightness(self, aircraft_array: int, cpflight_cmds: dict, sock, vr) -> bool:
         display_brightness_var = aircraft_array.get("display_bright")
         int_brightness_var = aircraft_array.get("int_light")
@@ -203,7 +200,11 @@ class AircraftLoader:
 
         if not int_brightness_value is None and int_brightness_value != self.fcu["int_brightness"]:
                 self.fcu["int_brightness"] = int_brightness_value
-                msg = cpflight_cmds.get("int_brightness").encode() + bytes([int(int_brightness_value*10)]) + b"\x00"
+                if self.is_lan_fcu:
+                    msg = cpflight_cmds.get("int_brightness").encode() + bytes([int(int_brightness_value*10)]) + b"\x00"
+                else:
+                    msg = cpflight_cmds.get("backlight", {}).get("led_on" if (int_brightness_value * 10) >= int(cpflight_cmds.get("backlight_threshold", 0)) else "led_off")
+                    logger.debug(f"Backlight USB msg: {msg}")
                 sock.sendall(msg)
         return True
 

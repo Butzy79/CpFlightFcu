@@ -123,10 +123,6 @@
   "btn_pull_vs": {
     "rx" : "(K059)"
   },
-  "backlight": {
-    "led_on": "L0198",
-    "led_off": "L1198"
-  },
   "led_ap1": {
     "led_on": "L0132",
     "led_off": "L1132"
@@ -379,6 +375,11 @@
     "fw_value_rx": "KCPFCPFCU320_",
     "fw_value_usb_rx": "CPFCU",
     "display_brightness": "DSPBRG",
-    "int_brightness": "E0BKL"
+    "int_brightness": "E0BKL",
+    "backlight_threshold": 3,
+    "backlight": {
+      "led_on": "E0L0198",
+      "led_off": "E0L1198"
+    }
   }
 }
