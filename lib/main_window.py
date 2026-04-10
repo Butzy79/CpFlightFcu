@@ -242,6 +242,27 @@ class MainWindow:
         self.stop_button = ttk.Button(self.left_frame, text="STOP", command=self.on_stop, state="disabled")
         self.stop_button.grid(row=4, column=0, pady=5, sticky="we")
 
+        self.led_button = ttk.Button(self.left_frame, text="SET CMD", command=self._test_send_fcu, state="disabled")
+        self.led_button.grid(row=5, column=0, pady=(10, 5), sticky="we")
+
+        self.led_text_fcu = tk.StringVar()
+        self.led_textbox_fcu = ttk.Entry(
+            self.left_frame,
+            textvariable=self.led_text_fcu,
+            width=20
+        )
+        self.led_textbox_fcu.grid(row=6, column=0, pady=(5, 10), sticky="we")
+
+        self.led_mode_var = tk.StringVar(value="A")
+        self.radio_frame = ttk.Frame(self.left_frame)
+        self.radio_frame.grid(row=7, column=0, pady=(5, 10), sticky="w")
+
+        ttk.Radiobutton(self.radio_frame, text="Mode A", variable=self.led_mode_var, value="A").pack(anchor="w")
+        ttk.Radiobutton(self.radio_frame, text="Mode B", variable=self.led_mode_var, value="B").pack(anchor="w")
+        ttk.Radiobutton(self.radio_frame, text="Mode C", variable=self.led_mode_var, value="C").pack(anchor="w")
+        ttk.Radiobutton(self.radio_frame, text="Mode D", variable=self.led_mode_var, value="D").pack(anchor="w")
+
+
         self.fps_var = tk.StringVar(value="5")
         self.fps_menu = ttk.Combobox(self.left_frame, textvariable=self.fps_var, values=["0.5", "1", "2", "5", "10", "30", "60"], state="readonly", width=5)
 
@@ -289,6 +310,18 @@ class MainWindow:
         if options:
             self.file_var.set(options[0])
             self._on_load()
+
+    def _test_send_fcu(self):
+        value_read = self.led_text_fcu.get()
+        mode = self.led_mode_var.get()
+        if mode == "A":
+            self.loop_controller.set_tmp_cmd(value_read)
+        elif mode == "B":
+            self.loop_controller.set_tmp_cmd_no_encode(value_read)
+        elif mode == "C":
+            self.loop_controller.set_tmp_cmd_not_eof(value_read)
+        elif mode == "D":
+            self.loop_controller.set_tmp_cmd_not_eof_no_encode(value_read)
 
     def _schedule_check_sim(self):
         text_display = "sim running" if SimFS.is_fs_running() else "sim not running."
@@ -355,6 +388,7 @@ class MainWindow:
         self.fps_menu.config(state="disabled")
         self.start_button.config(state="disabled")
         self.stop_button.config(state="normal")
+        self.led_button.config(state="normal")
         self._schedule_status_update()
 
     def on_stop(self, manual=True) -> Dict:
@@ -377,6 +411,7 @@ class MainWindow:
         self.file_menu.config(state="readonly")
         self.fps_menu.config(state="readonly")
         self.stop_button.config(state="disabled")
+        self.led_button.config(state="disabled")
         return {
             "log_level": self.log_level_var if not self.critical_message else self.original_setting_log_level_var,
             "is_lan_fcu": self.is_lan_fcu if not self.critical_message else self.original_setting_is_lan_fcu,

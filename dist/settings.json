@@ -1,11 +1,11 @@
 {
     "window": {
-        "x": 100,
-        "y": 100,
+        "x": 555,
+        "y": 462,
         "width": 480,
-        "height": 265
+        "height": 465
     },
-  "autostart": true,
-  "is_lan_fcu": true,
-  "log_level": "CRITICAL"
+    "autostart": false,
+    "is_lan_fcu": true,
+    "log_level": "CRITICAL"
 }

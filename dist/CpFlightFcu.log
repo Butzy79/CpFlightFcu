@@ -1,0 +1,204 @@
+2026-04-10 15:54:34,015 [CRITICAL] Starting Building gui
+2026-04-10 15:54:34,033 [CRITICAL] Gui Build
+2026-04-10 15:56:00,457 [CRITICAL] Sock Lan: True
+2026-04-10 15:56:06,025 [CRITICAL] Data FOUND: b'KCPF\x00CPFCU320_PRO611\x00'
+2026-04-10 15:56:06,026 [CRITICAL] FW NOT COMP
+2026-04-10 15:56:06,026 [CRITICAL] Trying KCPFCPFCU320_PRO611
+2026-04-10 15:56:06,031 [CRITICAL] What Command: None - KCPFCPFCU320_PRO611
+2026-04-10 15:56:06,561 [CRITICAL] Data FOUND: b'MOD485EFI1EFI2\x00'
+2026-04-10 15:56:06,561 [CRITICAL] Trying MOD485EFI1EFI2
+2026-04-10 15:56:06,562 [CRITICAL] What Command: None - MOD485EFI1EFI2
+2026-04-10 15:56:06,833 [CRITICAL] Data FOUND: b'CHIAVE0091124\x00'
+2026-04-10 15:56:06,833 [CRITICAL] Trying CHIAVE0091124
+2026-04-10 15:56:06,833 [CRITICAL] What Command: None - CHIAVE0091124
+2026-04-10 15:56:07,108 [CRITICAL] Data FOUND: b'V01 000\x00'
+2026-04-10 15:56:07,108 [CRITICAL] Trying V01 000
+2026-04-10 15:56:07,109 [CRITICAL] What Command: None - V01 000
+2026-04-10 15:56:07,162 [CRITICAL] Data FOUND: b'K063\x00'
+2026-04-10 15:56:07,162 [CRITICAL] Trying K063
+2026-04-10 15:56:07,162 [CRITICAL] What Command: btn_cp_hPa - K063
+2026-04-10 15:56:07,162 [CRITICAL] Method: set_btn_cp_hPa_aircraft
+2026-04-10 15:56:08,246 [CRITICAL] Data FOUND: b'K163\x00M004\x00M014\x00S001\x00K172\x00K074\x00K175\x00K071\x00'
+2026-04-10 15:56:08,246 [CRITICAL] Trying K163M004M014S001K172K074K175K071
+2026-04-10 15:56:08,246 [CRITICAL] What Command: btn_fo_hPa - K163M004M014S001K172K074K175K071
+2026-04-10 15:56:08,246 [CRITICAL] Method: set_btn_fo_hPa_aircraft
+2026-04-10 15:56:14,957 [CRITICAL] Data FOUND: b'INT1000\x00'
+2026-04-10 15:56:14,957 [CRITICAL] Trying INT1000
+2026-04-10 15:56:14,957 [CRITICAL] What Command: btn_int1000 - INT1000
+2026-04-10 15:56:14,957 [CRITICAL] Method: set_btn_int1000_aircraft
+2026-04-10 15:56:23,719 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:56:33,001 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:56:42,243 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:56:51,495 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:57:00,761 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:57:10,022 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:57:19,302 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:57:28,568 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:57:37,854 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:57:47,110 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:57:48,346 [CRITICAL] CMD ENCODE SENT 
+2026-04-10 15:57:56,374 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:57:57,638 [CRITICAL] CMD ENCODE SENT E0L0149
+2026-04-10 15:57:59,843 [CRITICAL] CMD ENCODE SENT E0L0149
+2026-04-10 15:58:00,334 [CRITICAL] CMD ENCODE SENT E0L0149
+2026-04-10 15:58:00,559 [CRITICAL] CMD ENCODE SENT E0L0149
+2026-04-10 15:58:01,056 [CRITICAL] CMD ENCODE SENT E0L0149
+2026-04-10 15:58:01,266 [CRITICAL] CMD ENCODE SENT E0L0149
+2026-04-10 15:58:01,435 [CRITICAL] CMD ENCODE SENT E0L0149
+2026-04-10 15:58:01,622 [CRITICAL] CMD ENCODE SENT E0L0149
+2026-04-10 15:58:05,633 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:58:05,640 [CRITICAL] CMD NOT ENCODE SENT E0L0149
+2026-04-10 15:58:10,981 [CRITICAL] CMD NOT ENCODE SENT E0L0149
+2026-04-10 15:58:14,915 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:58:16,313 [CRITICAL] CMD not end eof SENT E0L0149
+2026-04-10 15:58:17,848 [CRITICAL] CMD NOT ENCODE and not end eof SENT E0L0149
+2026-04-10 15:58:24,170 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:58:33,432 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:58:42,681 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:58:51,935 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:59:00,990 [CRITICAL] CMD NOT ENCODE and not end eof SENT E0L2149
+2026-04-10 15:59:01,198 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:59:04,087 [CRITICAL] CMD ENCODE SENT E0L2149
+2026-04-10 15:59:10,453 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:59:19,738 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:59:29,013 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:59:38,265 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:59:47,537 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 15:59:56,813 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:00:06,086 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:00:15,372 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:00:23,685 [CRITICAL] CMD ENCODE SENT E0L2195
+2026-04-10 16:00:24,642 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:00:33,920 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:00:37,084 [CRITICAL] CMD ENCODE SENT E0L2195
+2026-04-10 16:00:43,179 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:00:52,442 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:00:59,737 [CRITICAL] CMD ENCODE SENT L0132
+2026-04-10 16:01:01,696 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:01:10,969 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:01:20,238 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:01:29,504 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:01:38,765 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:01:46,303 [CRITICAL] CMD ENCODE SENT E0V111000
+2026-04-10 16:01:48,044 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:01:57,314 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:02:06,584 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:02:15,861 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:02:25,145 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:02:34,412 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:02:43,664 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:02:52,929 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:03:02,188 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:03:08,001 [CRITICAL] CMD ENCODE SENT V05123
+2026-04-10 16:03:10,852 [CRITICAL] CMD ENCODE SENT V05123
+2026-04-10 16:03:11,450 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:03:20,708 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:03:23,794 [CRITICAL] CMD ENCODE SENT V05123
+2026-04-10 16:03:24,863 [CRITICAL] CMD ENCODE SENT V05123
+2026-04-10 16:03:25,123 [CRITICAL] CMD ENCODE SENT V05123
+2026-04-10 16:03:25,326 [CRITICAL] CMD ENCODE SENT V05123
+2026-04-10 16:03:25,513 [CRITICAL] CMD ENCODE SENT V05123
+2026-04-10 16:03:25,715 [CRITICAL] CMD ENCODE SENT V05123
+2026-04-10 16:03:25,909 [CRITICAL] CMD ENCODE SENT V05123
+2026-04-10 16:03:29,978 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:03:39,232 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:03:45,387 [CRITICAL] CMD ENCODE SENT V02 123
+2026-04-10 16:03:48,484 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:03:57,764 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:04:07,034 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:04:16,314 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:04:25,579 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:04:32,496 [CRITICAL] CMD ENCODE SENT E0L0195
+2026-04-10 16:04:34,850 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:04:40,518 [CRITICAL] CMD ENCODE SENT E0L2 195
+2026-04-10 16:04:44,101 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:04:45,899 [CRITICAL] CMD ENCODE SENT E0L1195
+2026-04-10 16:04:53,360 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:05:02,622 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:05:03,522 [CRITICAL] CMD ENCODE SENT E0L 0195
+2026-04-10 16:05:10,373 [CRITICAL] CMD ENCODE SENT E0L0 195
+2026-04-10 16:05:11,871 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:05:21,133 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:05:30,386 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:05:39,645 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:05:45,595 [CRITICAL] CMD ENCODE SENT E1L0193
+2026-04-10 16:05:47,214 [CRITICAL] CMD ENCODE SENT E1L0193
+2026-04-10 16:05:47,762 [CRITICAL] CMD ENCODE SENT E1L0193
+2026-04-10 16:05:48,037 [CRITICAL] CMD ENCODE SENT E1L0193
+2026-04-10 16:05:48,228 [CRITICAL] CMD ENCODE SENT E1L0193
+2026-04-10 16:05:48,415 [CRITICAL] CMD ENCODE SENT E1L0193
+2026-04-10 16:05:48,621 [CRITICAL] CMD ENCODE SENT E1L0193
+2026-04-10 16:05:48,793 [CRITICAL] CMD ENCODE SENT E1L0193
+2026-04-10 16:05:48,916 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:05:48,983 [CRITICAL] CMD ENCODE SENT E1L0193
+2026-04-10 16:05:49,199 [CRITICAL] CMD ENCODE SENT E1L0193
+2026-04-10 16:05:49,398 [CRITICAL] CMD ENCODE SENT E1L0193
+2026-04-10 16:05:49,640 [CRITICAL] CMD ENCODE SENT E1L0193
+2026-04-10 16:05:58,181 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:06:07,473 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:06:15,326 [CRITICAL] CMD ENCODE SENT E0L0193
+2026-04-10 16:06:16,743 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:06:20,942 [CRITICAL] CMD ENCODE SENT E1L0193
+2026-04-10 16:06:26,023 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:06:35,297 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:06:44,559 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:06:45,867 [CRITICAL] CMD ENCODE SENT E0L2193
+2026-04-10 16:06:53,819 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:06:56,665 [CRITICAL] CMD ENCODE SENT E0L3193
+2026-04-10 16:07:03,084 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:07:12,343 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:07:21,621 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:07:30,884 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:07:40,145 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:07:49,403 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:07:51,589 [CRITICAL] CMD ENCODE SENT L0193
+2026-04-10 16:07:58,672 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:08:07,929 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:08:17,219 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:08:26,480 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:08:35,754 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:08:45,014 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:08:54,273 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:09:03,529 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:09:11,266 [CRITICAL] CMD ENCODE SENT L0128
+2026-04-10 16:09:12,784 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:09:22,049 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:09:24,372 [CRITICAL] CMD ENCODE SENT L0160
+2026-04-10 16:09:31,322 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:09:40,608 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:09:49,870 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:09:51,128 [CRITICAL] CMD ENCODE SENT L1128
+2026-04-10 16:09:59,141 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:10:08,417 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:10:17,693 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:10:20,862 [CRITICAL] CMD ENCODE SENT L0129
+2026-04-10 16:10:26,968 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:10:36,239 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:10:45,511 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:10:54,779 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:11:02,746 [CRITICAL] CMD ENCODE SENT L1161
+2026-04-10 16:11:04,025 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:11:13,290 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:11:20,653 [CRITICAL] Data FOUND: b'K061\x00'
+2026-04-10 16:11:20,653 [CRITICAL] Trying K061
+2026-04-10 16:11:20,653 [CRITICAL] What Command: btn_hdgtrk - K061
+2026-04-10 16:11:20,654 [CRITICAL] Method: set_btn_hdgtrk_aircraft
+2026-04-10 16:11:22,344 [CRITICAL] Data FOUND: b'K061\x00'
+2026-04-10 16:11:22,344 [CRITICAL] Trying K061
+2026-04-10 16:11:22,344 [CRITICAL] What Command: btn_hdgtrk - K061
+2026-04-10 16:11:22,344 [CRITICAL] Method: set_btn_hdgtrk_aircraft
+2026-04-10 16:11:22,555 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:11:22,862 [CRITICAL] Data FOUND: b'K061\x00'
+2026-04-10 16:11:22,862 [CRITICAL] Trying K061
+2026-04-10 16:11:22,862 [CRITICAL] What Command: btn_hdgtrk - K061
+2026-04-10 16:11:22,862 [CRITICAL] Method: set_btn_hdgtrk_aircraft
+2026-04-10 16:11:31,830 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:11:41,088 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:11:50,368 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:11:59,633 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:12:08,892 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:12:18,195 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:12:27,485 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:12:36,755 [CRITICAL] int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2026-04-10 16:12:40,757 [CRITICAL] CMD ENCODE SENT E0L2195
+2026-04-10 16:12:48,048 [CRITICAL] 'NoneType' object has no attribute 'get'

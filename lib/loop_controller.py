@@ -262,12 +262,27 @@ class LoopController:
                 logger.critical(e)
                 time.sleep(1)
 
+    def set_tmp_cmd(self, command):
+        logger.critical(f"CMD ENCODE SENT {command}")
+        self.sock.sendall(f"{command}\n".encode())
+
+    def set_tmp_cmd_no_encode(self, command):
+        logger.critical(f"CMD NOT ENCODE SENT {command}")
+        self.sock.sendall(f"{command}\n")
+
+    def set_tmp_cmd_not_eof(self, command):
+        logger.critical(f"CMD not end eof SENT {command}")
+        self.sock.sendall(command.encode())
+
+    def set_tmp_cmd_not_eof_no_encode(self, command):
+        logger.critical(f"CMD NOT ENCODE and not end eof SENT {command}")
+        self.sock.sendall(command)
+
     def _socket_listener_loop(self):
         while self.running and self.sock:
             try:
                 data = None
                 if self.is_lan_fcu:
-                    logger.critical(f'Data IS LAN R: {data}')
                     readable, _, _ = select.select([self.sock], [], [], 0.1)
                     if self.sock in readable:
                         data = self.sock.recv(1024)

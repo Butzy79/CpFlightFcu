@@ -262,13 +262,13 @@ class AircraftLoader:
         else:
             qnh_cp_mode_hpa = bool(vr.get(f'({mode_hpa_var})'))
         if qnh_cp_mode_hpa:
-            qnh_cp_value = float(vr.get(f'({rx_hpa})')) + increment
+            qnh_cp_value = float(vr.get(f'({rx_hpa})', 0)) + increment if vr.get(f'({rx_hpa})') else 0
             if qnh_cp_value > limit_hpa[1]:
                 qnh_cp_value = limit_hpa[1]
             if qnh_cp_value < limit_hpa[0]:
                 qnh_cp_value = limit_hpa[0]
         else:
-            qnh_cp_value = float(vr.get(f'({rx_inhg})')) + (increment/100)
+            qnh_cp_value = float(vr.get(f'({rx_inhg})', 0)) + (increment/100) if vr.get(f'({rx_inhg})') else 0
             if qnh_cp_value > limit_inhg[1]:
                 qnh_cp_value = limit_inhg[1]
             if qnh_cp_value < limit_inhg[0]:
@@ -549,7 +549,8 @@ class AircraftLoader:
         cl_val = int(re.sub(r'\D', '', value))
         for el in config['qnh_cp']['tx']:
             current = vr.get(f"({el})")
-            vr.set(f"{int(current + cl_val)} (>{el})")
+            if current:
+                vr.set(f"{int(current + cl_val)} (>{el})")
         qnh_cp_mode_hpa, qnh_cp_value, cmd_send = self._get_value_qhn_to_unit(
             vr,
             config['qnh_cp']['mode_hpa'],
@@ -747,8 +748,9 @@ class AircraftLoader:
         for el in config['btn_cp_fd']['tx']:
             actual = vr.get(f"({el})")
             logger.critical(f"CP FD EL ({el}): {actual}")
-            vr.set(f"{int(actual+2)} (>{el})")
-            logger.critical(f"CP FD EL ({el}): NEW {actual+2}")
+            if actual:
+                vr.set(f"{int(actual+2)} (>{el})")
+                logger.critical(f"CP FD EL ({el}): NEW {actual+2}")
         if not self.is_lan_fcu:
             logger.critical("PAUSE")
             time.sleep(2)
