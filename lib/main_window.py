@@ -1,5 +1,7 @@
 import os
 import sys
+import logging
+
 import tkinter as tk
 from tkinter import ttk
 from typing import Dict
@@ -11,6 +13,7 @@ from lib.sim_fs import SimFS
 CONFIG_AIRCRAFT_DIR = "config/aircraft"
 CONFIG_DIR = "config"
 
+logger = logging.getLogger(__name__)
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
@@ -25,7 +28,6 @@ class MainWindow:
     TIMEOUT_CHECK_AIRPLANE = 10000
     TIMEOUT_CHECK_SIM = 30000
 
-    # TODO: ADD FS IS ON loop and MB is on LOOP
     is_fs_on = False
     is_mb_on = False
 
@@ -36,14 +38,18 @@ class MainWindow:
         self.on_close_callback = on_close_callback
         self.manual_stop = False
         self.fcu_menu = None
+        self.usb_fcu_index = 0
         self.root.title(f"CpFlight Control (CFC) - {ver}")
         root.iconbitmap(resource_path("resources/butzy.ico"))
         self.root.resizable(False, False)
         self.setting_autostart = self.settings.settings.get('autostart', False) if self.settings else False
         self.is_lan_fcu = self.settings.settings.get('is_lan_fcu', True) if self.settings else True
+        self.log_level_var = self.settings.settings.get('log_level', 'OFF') if self.settings else 'OFF'
 
         self.original_setting_autostart = self.setting_autostart
+        self._set_log_level(self.log_level_var)
         self.original_setting_is_lan_fcu = self.is_lan_fcu
+        self.original_setting_log_level_var = self.log_level_var
 
         self.setting_autostart_obj = self.setting_autostart
 
@@ -96,18 +102,26 @@ class MainWindow:
 
         if self.loop_controller.fw_compatible is not None:
             if self.loop_controller.fw_compatible:
-                self.firmware_ready_label.config(text="Firmware Compatible", foreground="green")
+                self.firmware_ready_label.config(text=f"Firmware {self.loop_controller.fw_compatible_lbl} Compatible", foreground="green")
             else:
-                self.firmware_ready_label.config(text="Firmware Not Compatible", foreground="red")
+                self.firmware_ready_label.config(text=f"Firmware {self.loop_controller.fw_compatible_lbl} Not Compatible", foreground="red")
+        else:
+            self.firmware_ready_label.config(text=f"Firmware not checked", foreground="blue")
 
+        extra_fcu = "LAN" if self.is_lan_fcu else "USB"
         if self.loop_controller.fcu_status:
             fcu_st = True
-            self.fcu_ready_label.config(text="FCU ready!", foreground="green")
+            if self.usb_fcu_index:
+                self.fcu_menu.entryconfig(self.usb_fcu_index, state="disabled")
+            self.fcu_ready_label.config(text=f"FCU {extra_fcu} ready!", foreground="green")
         else:
-            self.fcu_ready_label.config(text="FCU NOT ready", foreground="red")
+            self.fcu_ready_label.config(text=f"FCU {extra_fcu} NOT ready", foreground="red")
+            if self.usb_fcu_index:
+                self.fcu_menu.entryconfig(self.usb_fcu_index, state="normal")
 
         if fcu_st and sim_st:
             self.status_bar.config(text="Sim connected!")
+
 
     def _build_menu(self):
         menubar = tk.Menu(self.root)
@@ -127,9 +141,23 @@ class MainWindow:
             )
             settings_menu.add_separator()
 
+        ## Debug LVL
+        loglevel_menu = tk.Menu(settings_menu, tearoff=0)
+        settings_menu.add_cascade(label="Logger Level", menu=loglevel_menu)
+        self.log_level_obj = tk.StringVar(value=self.log_level_var)
+        for level in ["DEBUG", "CRITICAL", "OFF"]:
+            loglevel_menu.add_radiobutton(
+                label=level,
+                value=level,
+                variable=self.log_level_obj,
+                command=lambda lvl=level: self._set_log_level(lvl)
+            )
+
+        settings_menu.add_separator()
+
         ## Close
         settings_menu.add_command(
-            label="Close",
+            label="Save & Close",
             command=lambda: self.on_close_callback(self.root, self.settings, self.update_available)
         )
         if not self.critical_message:
@@ -138,6 +166,15 @@ class MainWindow:
             menubar.add_cascade(label="FCU", menu=self.fcu_menu)
             self.is_fcu_obj = tk.BooleanVar(value=not self.is_lan_fcu)
             self._rebuild_fcu_menu()
+
+    def _set_log_level(self, level_name):
+        if level_name == "OFF":
+            logging.getLogger().setLevel(logging.CRITICAL + 1)
+        else:
+            level = getattr(logging, level_name)
+            logging.getLogger().setLevel(level)
+        self.log_level_var = level_name
+        logging.info(f"Log level changed to {level_name}")
 
     def _rebuild_fcu_menu(self):
         self.fcu_menu.delete(0, "end")
@@ -151,14 +188,19 @@ class MainWindow:
             self.fcu_menu.add_separator()
 
         self.fcu_menu.add_checkbutton(
-            label="Usb FCU",
+            label=f"Usb FCU {self.current_cpflight_config.get('USB_PORT')}",
             variable=self.is_fcu_obj,
             command=self._toggle_lan_usb_fcu
         )
+        self.usb_fcu_index = self.fcu_menu.index("end")
 
     def _toggle_lan_usb_fcu(self):
+        self.loop_controller.reset_fw_check()
         self.is_lan_fcu = not self.is_fcu_obj.get()
         self._rebuild_fcu_menu()
+        self._update_status_labels()
+        if not self._load_cp_flight_json():
+            self.critical_message = f"CpFlight Json File: {self.aircraft.critical_error}"
 
     def _toggle_autostart(self):
         self.setting_autostart = self.setting_autostart_obj.get()
@@ -230,9 +272,10 @@ class MainWindow:
         )
         self.aircraft_ready_label.pack(anchor="center", pady=15)
 
+        extra_fcu = "LAN" if self.is_lan_fcu else "USB"
         self.fcu_ready_label = ttk.Label(
             self.status_frame,
-            text="FCU NOT ready",
+            text=f"FCU {extra_fcu} NOT ready",
             foreground="red",
             font=("Helvetica", 18, "bold"),
         )
@@ -286,6 +329,27 @@ class MainWindow:
     def _on_file_change(self, event):
         self.load_button.config(state="normal")
 
+    def _strip_e0_prefix(self, obj):
+        if isinstance(obj, dict):
+            return {k: self._strip_e0_prefix(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [self._strip_e0_prefix(v) for v in obj]
+        if isinstance(obj, str):
+            if obj.startswith("E0"):
+                return obj[2:]
+            return obj
+        return obj
+
+    def _load_cp_flight_json(self):
+        filepathcpflight = os.path.join(CONFIG_DIR, "cpflight.json")
+        self.current_cpflight_config = self.aircraft.load_json_config(filepathcpflight)
+        if not self.current_cpflight_config:
+            self.critical_message = f"CpFlight Json File: {self.aircraft.critical_error}"
+            return False
+        if not self.is_lan_fcu:
+            self.current_cpflight_config = self._strip_e0_prefix(self.current_cpflight_config)
+        return True
+
     def _on_load(self):
         selected = self.file_var.get()
         mapping = {self._format_filename(f): f for f in self.aircraft_files}
@@ -299,9 +363,8 @@ class MainWindow:
         if not self.current_config:
             self.critical_message = f"Aircraft Json File: {self.aircraft.critical_error}"
             return False
-        filepathcpflight = os.path.join(CONFIG_DIR, "cpflight.json")
-        self.current_cpflight_config = self.aircraft.load_json_config(filepathcpflight)
-        if not self.current_cpflight_config:
+
+        if not self._load_cp_flight_json():
             self.critical_message = f"CpFlight Json File: {self.aircraft.critical_error}"
             return False
         self.critical_message = None
@@ -325,6 +388,7 @@ class MainWindow:
         self.fps_menu.config(state="disabled")
         self.start_button.config(state="disabled")
         self.stop_button.config(state="normal")
+        self.fcu_menu.entryconfig(self.usb_fcu_index, state="disabled")
         self._schedule_status_update()
 
     def on_stop(self, manual=True) -> Dict:
@@ -347,7 +411,10 @@ class MainWindow:
         self.file_menu.config(state="readonly")
         self.fps_menu.config(state="readonly")
         self.stop_button.config(state="disabled")
+        self.fcu_menu.entryconfig(self.usb_fcu_index, state="normal")
+
         return {
+            "log_level": self.log_level_var if not self.critical_message else self.original_setting_log_level_var,
             "is_lan_fcu": self.is_lan_fcu if not self.critical_message else self.original_setting_is_lan_fcu,
             "autostart" : self.setting_autostart if not self.critical_message else self.original_setting_autostart,
             "CpFlight": self.aircraft_files

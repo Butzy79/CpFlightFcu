@@ -9,7 +9,8 @@ import logging
 
 logging.basicConfig(
     level=logging.CRITICAL,
-    format='%(asctime)s [%(levelname)s] %(message)s'
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    filename='CpFlightFcu.log', encoding='utf-8'
 )
 
 def check_update_api():

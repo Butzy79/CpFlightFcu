@@ -4,6 +4,7 @@ import time
 import socket
 import select
 import serial
+import logging
 
 from typing import Optional
 
@@ -12,13 +13,15 @@ from lib.sim_fs import SimFS
 from modules.parser_simconnect import SimConnectParser
 from modules.parser_variable_requests import ParserVariableRequests
 
-
+logger = logging.getLogger(__name__)
 class LoopController:
     def __init__(self, get_interval_callback, obj_aircraft: AircraftLoader):
         """
         get_interval_callback: function returning the loop interval (float).
         """
         self.fw_compatible = None # None = Not verified, 1 = Compatible, 0 = Not Compatible
+        self.fw_compatible_lbl = None
+
         self.get_interval = get_interval_callback
         self.running = False
         self.sim_running = False
@@ -38,6 +41,7 @@ class LoopController:
         self.sim_status = False
         self.fcu_status = False
         self.is_lan_fcu = True
+        self.aircraft.set_is_lan_fcu(self.is_lan_fcu)
 
         self.pause_loop_until = 0
         self.pause_loop_check_until = 0
@@ -56,10 +60,15 @@ class LoopController:
     def is_sim_ready_to_stop(self):
         return self.ready_to_stop
 
+    def reset_fw_check(self):
+        self.fw_compatible = None
+        self.fw_compatible_lbl = None
+
     def check_status(self, autostart, config, cpflight, is_critical_on, is_lan_fcu) -> bool:
         if is_critical_on:
             return False
         self.is_lan_fcu = is_lan_fcu
+        self.aircraft.set_is_lan_fcu(self.is_lan_fcu)
         self.autostart = autostart
         if not autostart or not SimFS.is_fs_running():
             return False
@@ -69,11 +78,12 @@ class LoopController:
         if now < self.pause_loop_check_until:
             return False
         self.pause_loop_check_until = now + 2
-        self.sm = SimConnectParser()
-        self.vr = ParserVariableRequests(self.sm)
-        self.vr.clear_sim_variables()
+        if not self.sm or not self.vr or not self.vr.is_power_init:
+            self.sm = SimConnectParser()
+            self.vr = ParserVariableRequests(self.sm)
         if not self.vr:
             return False
+        self.vr.clear_sim_variables()
         sim_load = bool(self.vr.get(f"({config.get('fcu',{}).get('power_on')})"))
         if sim_load:
             self.sim_running = True
@@ -89,9 +99,11 @@ class LoopController:
         self.current_config = config
         self.cpflight = cpflight
         self.is_lan_fcu = is_lan_fcu
+        self.aircraft.set_is_lan_fcu(self.is_lan_fcu)
         try:
-            self.sm = SimConnectParser()
-            self.vr = ParserVariableRequests(self.sm)
+            if not self.sm or not self.vr:
+                self.sm = SimConnectParser()
+                self.vr = ParserVariableRequests(self.sm)
             self.vr.clear_sim_variables()
         except Exception as e:
             return False, str(e)
@@ -104,9 +116,7 @@ class LoopController:
                 self.sock.connect((self.cpflight.get('IP'), self.cpflight.get('PORT')))
                 self.sock.setblocking(False)
 
-            # turn led on:
             self.sock.sendall((self.cpflight.get("POWER_ON") + "\n").encode())
-            # self.sock.sendall((self.cpflight.get("LED_ALL_ON") + "\n").encode())
 
             self.running = True
             self.sim_running = True
@@ -136,20 +146,24 @@ class LoopController:
                 self.sock.shutdown(socket.SHUT_RDWR)
                 self.sock.close()
             except Exception as e:
-                print(f"CpFlight Connection error: {e}")
-                pass
+                logger.critical(f"CpFlight Connection error: {e}")
             self.sock = None
 
     def _run_loop(self):
+        logger.debug("Run Loop: INIT")
         self.aircraft.set_initial_values(self.current_config, self.cpflight, self.sock, self.vr)
         while self.running:
             try:
                 if not self.sim_running:
                     self.stop()
                 # Dash and Dot Control need to be here
+                logger.debug("Run Loop: set_dash_fcu")
                 self.aircraft.set_dash_fcu( self.current_config, self.cpflight, self.sock, self.vr)
+                logger.debug("Run Loop: set_dot_fcu")
                 self.aircraft.set_dot_fcu( self.current_config, self.cpflight, self.sock, self.vr)
+                logger.debug("Run Loop: set_type_fcu")
                 self.aircraft.set_type_fcu( self.current_config, self.cpflight, self.sock, self.vr)
+                logger.debug("Run Loop: set_led_fcu")
                 self.aircraft.set_led_fcu( self.current_config, self.cpflight, self.sock, self.vr)
 
                 now = time.time()
@@ -159,45 +173,54 @@ class LoopController:
                 interval = self.get_interval()
                 # Read from SimConnect and send to hardware
 
+                logger.debug("Run Loop: set_speed_fcu")
                 self.aircraft.set_speed_fcu(
                     self.current_config.get('speed'),
                     self.cpflight.get('speed'),
                     self.sock,
                     self.vr
                 )
+                logger.debug("Run Loop: set_heading_fcu")
                 self.aircraft.set_heading_fcu(
                     self.current_config.get('heading'),
                     self.cpflight.get('heading'),
                     self.sock,
                     self.vr
                 )
+                logger.debug("Run Loop: set_altitude_fcu")
                 self.aircraft.set_altitude_fcu(
                     self.current_config.get('altitude'),
                     self.cpflight.get('altitude'),
                     self.sock,
                     self.vr
                 )
+                logger.debug("Run Loop: set_vs_fcu")
                 self.aircraft.set_vs_fcu(
                     self.current_config.get('vs'),
                     self.cpflight.get('vs'),
                     self.sock,
                     self.vr
                 )
+                logger.debug("Run Loop: set_qnh_cp_efis")
                 self.aircraft.set_qnh_cp_efis(
                     self.current_config.get('qnh_cp'),
                     self.cpflight.get('qnh_cp'),
                     self.sock,
                     self.vr
                 )
+                logger.debug("Run Loop: set_qnh_fo_efis")
                 self.aircraft.set_qnh_fo_efis(
                     self.current_config.get('qnh_fo'),
                     self.cpflight.get('qnh_fo'),
                     self.sock,
                     self.vr
                 )
+                logger.debug("Run Loop: set_led_efis_cp")
                 self.aircraft.set_led_efis_cp( self.current_config, self.cpflight, self.sock, self.vr)
+                logger.debug("Run Loop: set_led_efis_fo")
                 self.aircraft.set_led_efis_fo( self.current_config, self.cpflight, self.sock, self.vr)
 
+                logger.debug("Run Loop: set_fcu_brightness")
                 self.aircraft.set_fcu_brightness(
                     self.current_config.get('fcu'),
                     self.cpflight.get('fcu'),
@@ -210,9 +233,10 @@ class LoopController:
                         self.ready_to_stop = True
 
                 self.sim_status = True
+                logger.debug("Run Loop: CONTINUE")
                 time.sleep(interval)
             except Exception as e:
-                print(e)
+                logger.critical(f"Loop Controller _run_loop: {e}")
                 time.sleep(1)
 
     def _socket_listener_loop(self):
@@ -235,14 +259,16 @@ class LoopController:
                     value_from_fcu = re.sub(r'[\x00-\x1F\x7F]', '', data.decode(errors="ignore")).strip()
 
                     if self.fw_compatible is None:
-                        if self.cpflight.get('FW_COMPATIBLE') and self.cpflight.get('fcu', {}).get(
-                                'fw_value_rx') and value_from_fcu.startswith(
-                                self.cpflight.get('fcu', {}).get('fw_value_rx')):
-                            fw_version = value_from_fcu.split(self.cpflight.get('fcu', {}).get('fw_value_rx'))[1]
-                            if fw_version and fw_version == self.cpflight.get('FW_COMPATIBLE', ""):
-                                self.fw_compatible = True
-                            elif fw_version and fw_version != self.cpflight.get('FW_COMPATIBLE', ""):
-                                self.fw_compatible = False
+                        key = 'FW_COMPATIBLE' if self.is_lan_fcu else 'USB_FW_COMPATIBLE'
+                        prefix_key = 'fw_value_rx' if self.is_lan_fcu else 'fw_value_usb_rx'
+                        expected_fw = self.cpflight.get(key)
+                        prefix = self.cpflight.get('fcu', {}).get(prefix_key)
+
+                        if expected_fw and prefix and value_from_fcu.startswith(prefix):
+                            fw_version = value_from_fcu[len(prefix):]
+                            if fw_version:
+                                self.fw_compatible = (fw_version == expected_fw)
+                                self.fw_compatible_lbl = fw_version
 
                     what = self.find_matching_block(value_from_fcu)
                     if self.aircraft.set_opblocker(what, True):
@@ -260,7 +286,8 @@ class LoopController:
             except BlockingIOError:
                 pass
             except Exception as e:
-                print("Listener loop error:", e)
+                logger.critical(f"Loop Controller _socker_listener_loop: {e}")
+
 
 class SerialSocketWrapper:
     def __init__(self, port, baud=38400, timeout=0.5):

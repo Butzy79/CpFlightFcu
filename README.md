@@ -23,23 +23,48 @@ It provides realistic, real-time synchronization between CPFLIGHT hardware and t
 
 # Usage
 
-1. For Users Who Just Want to **Use the Software**
----------------------------------------------------
-1. Download the latest release from GitHub:
-   https://github.com/Butzy79/CpFlightFcu/releases
-2. Download `CpFlight_Control_CFC_xxx.zip` (xxx = version) and **extract it** to a folder.
-3. Edit the file `config/cpflight.json` with your IP address and port. Default port is 4500.
-   
-Example:
-```json
-   {
-       ...
-       "IP": "10.2.0.2",
-       "PORT": 4500,
-       ...
-   }
-```
-4. Run the executable `CpFlight_Controller.exe`.
+## 1. For Users Who Just Want to **Use the Software**
+
+1. Download the latest release from GitHub:  
+   [https://github.com/Butzy79/CpFlightFcu/releases](https://github.com/Butzy79/CpFlightFcu/releases)
+
+2. Download `CpFlight_Control_CFC_xxx.zip` (where `xxx` is the version) and **extract it** to a folder.
+
+3. Edit the configuration file `config/cpflight.json`:
+
+   - **For LAN (network) connection**: set your IP address and port (default port is 4500):
+
+     ```json
+     {
+         ...
+         "IP": "10.2.0.2",
+         "PORT": 4500,
+         ...
+     }
+     ```
+
+   - **For USB connection**: set the correct COM port, for example:
+
+     ```json
+     {
+         ...
+         "USB_PORT": "COM3",
+         ...
+     }
+     ```
+
+   > **Important notes for USB users:**
+   > - In the program, under the **FCU** menu, select **USB FCU**.
+
+   > **Auto Connection warning:**  
+   > The **Auto Connection** option under **Settings** can cause issues. Make sure it is **not checked**.  
+   > If problems persist, report them via GitHub Issues and include the error details.  
+   > The Auto Connect feature is designed to automatically start the FCU when the A320 batteries are powered on and stop it when batteries are turned off. The Start buttons are disabled when Auto Connect is enabled.
+
+4. Run the executable:
+   ```text
+   CpFlight_Controller.exe
+   ```
 
 ***No need to install Python or compile anything.***
 
