@@ -206,7 +206,7 @@ class AircraftLoader:
                 msg = cpflight_cmds.get("int_brightness").encode() + bytes([int(int_brightness_value*10)]) + b"\x00"
                 sock.sendall(msg)
                 # TO REMOVE!!!
-                print(f"DISP BRIHT: {self.fcu["int_brightness"]}")
+                print(f'DISP BRIHT: {self.fcu["int_brightness"]}')
         return True
 
     #next functions need to respect interval timer
