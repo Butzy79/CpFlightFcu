@@ -548,8 +548,7 @@ class AircraftLoader:
         cl_val = int(re.sub(r'\D', '', value))
         for el in config['qnh_cp']['tx']:
             current = vr.get(f"({el})")
-            if current:
-                vr.set(f"{int(current + cl_val)} (>{el})")
+            vr.set(f"{int(current + cl_val)} (>{el})")
         qnh_cp_mode_hpa, qnh_cp_value, cmd_send = self._get_value_qhn_to_unit(
             vr,
             config['qnh_cp']['mode_hpa'],
@@ -743,11 +742,10 @@ class AircraftLoader:
         self.btn_gen["op"] = False
 
     def set_btn_cp_fd_aircraft(self, value: str, config, vr, sock, cpfligh):
-        new_value = not self.led_cp_efis['led_cp_fd']
+        new_value = not self.led_fo_efis['led_cp_fd']
         for el in config['btn_cp_fd']['tx']:
             actual = vr.get(f"({el})")
-            if actual:
-                vr.set(f"{int(actual+2)} (>{el})")
+            vr.set(f"{int(actual+2)} (>{el})")
         sock.sendall((cpfligh["led_cp_fd"]["led_on" if new_value else "led_off"] + "\n").encode())
         self.led_cp_efis["led_cp_fd"] = new_value
         self.btn_gen["op"] = False

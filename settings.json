@@ -5,7 +5,7 @@
         "width": 480,
         "height": 285
     },
-    "autostart": true,
+    "autostart": false,
     "is_lan_fcu": true,
     "log_level": "OFF"
 }
