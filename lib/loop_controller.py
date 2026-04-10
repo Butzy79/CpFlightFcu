@@ -4,6 +4,7 @@ import time
 import socket
 import select
 import serial
+import logging
 
 from typing import Optional
 
@@ -12,7 +13,7 @@ from lib.sim_fs import SimFS
 from modules.parser_simconnect import SimConnectParser
 from modules.parser_variable_requests import ParserVariableRequests
 
-
+logger = logging.getLogger(__name__)
 class LoopController:
     def __init__(self, get_interval_callback, obj_aircraft: AircraftLoader):
         """
@@ -38,6 +39,7 @@ class LoopController:
         self.sim_status = False
         self.fcu_status = False
         self.is_lan_fcu = True
+        self.aircraft.set_is_lan_fcu(self.is_lan_fcu)
 
         self.pause_loop_until = 0
         self.pause_loop_check_until = 0
@@ -60,6 +62,7 @@ class LoopController:
         if is_critical_on:
             return False
         self.is_lan_fcu = is_lan_fcu
+        self.aircraft.set_is_lan_fcu(self.is_lan_fcu)
         self.autostart = autostart
         if not autostart or not SimFS.is_fs_running():
             return False
@@ -89,6 +92,7 @@ class LoopController:
         self.current_config = config
         self.cpflight = cpflight
         self.is_lan_fcu = is_lan_fcu
+        self.aircraft.set_is_lan_fcu(self.is_lan_fcu)
         try:
             self.sm = SimConnectParser()
             self.vr = ParserVariableRequests(self.sm)
@@ -136,8 +140,7 @@ class LoopController:
                 self.sock.shutdown(socket.SHUT_RDWR)
                 self.sock.close()
             except Exception as e:
-                print(f"CpFlight Connection error: {e}")
-                pass
+                logger.critical(f"CpFlight Connection error: {e}")
             self.sock = None
 
     def _run_loop(self):
@@ -212,7 +215,7 @@ class LoopController:
                 self.sim_status = True
                 time.sleep(interval)
             except Exception as e:
-                print(e)
+                logger.critical(f"Loop Controller _run_loop: {e}")
                 time.sleep(1)
 
     def _socket_listener_loop(self):
@@ -235,14 +238,15 @@ class LoopController:
                     value_from_fcu = re.sub(r'[\x00-\x1F\x7F]', '', data.decode(errors="ignore")).strip()
 
                     if self.fw_compatible is None:
-                        if self.cpflight.get('FW_COMPATIBLE') and self.cpflight.get('fcu', {}).get(
-                                'fw_value_rx') and value_from_fcu.startswith(
-                                self.cpflight.get('fcu', {}).get('fw_value_rx')):
-                            fw_version = value_from_fcu.split(self.cpflight.get('fcu', {}).get('fw_value_rx'))[1]
-                            if fw_version and fw_version == self.cpflight.get('FW_COMPATIBLE', ""):
-                                self.fw_compatible = True
-                            elif fw_version and fw_version != self.cpflight.get('FW_COMPATIBLE', ""):
-                                self.fw_compatible = False
+                        key = 'FW_COMPATIBLE' if self.is_lan_fcu else 'USB_FW_COMPATIBLE'
+                        prefix_key = 'fw_value_rx' if self.is_lan_fcu else 'fw_value_usb_rx'
+                        expected_fw = self.cpflight.get(key)
+                        prefix = self.cpflight.get('fcu', {}).get(prefix_key)
+
+                        if expected_fw and prefix and value_from_fcu.startswith(prefix):
+                            fw_version = value_from_fcu[len(prefix):]
+                            if fw_version:
+                                self.fw_compatible = (fw_version == expected_fw)
 
                     what = self.find_matching_block(value_from_fcu)
                     if self.aircraft.set_opblocker(what, True):
@@ -260,7 +264,8 @@ class LoopController:
             except BlockingIOError:
                 pass
             except Exception as e:
-                print("Listener loop error:", e)
+                logger.critical(f"Loop Controller _socker_listener_loop: {e}")
+
 
 class SerialSocketWrapper:
     def __init__(self, port, baud=38400, timeout=0.5):

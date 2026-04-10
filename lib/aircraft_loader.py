@@ -1,7 +1,8 @@
 import json
 import re
 import time
-
+import logging
+logger = logging.getLogger(__name__)
 
 class AircraftLoader:
     speed = {"op": False, "value": 100, "init": False, "dash": False, "dot": False, "mach": False, "time_set": 0.0}
@@ -17,6 +18,8 @@ class AircraftLoader:
     led_fo_efis = {"led_fo_fd": False, "led_fo_ls": False, "led_fo_cstr": False, "led_fo_wpt": False, "led_fo_vord": False, "led_fo_ndb": False, "led_fo_arpt": False}
     fcu = {"display_brightness": 100, "int_brightness": 100}
     critical_error = None
+    is_lan_fcu = True
+
     def _reset_leds_command_cp(self, led_control:str, new_value:bool, cpfligh)-> str:
         self.led_cp_efis = {
             k: (k == led_control and new_value) if not k.endswith(("_fd", "_ls")) else self.led_cp_efis[k]
@@ -38,7 +41,11 @@ class AircraftLoader:
                 return json.load(f)
         except Exception as e:
             self.critical_error = e
+            logger.critical(f"Aircraft Loader load_json_config: {e}")
         return None
+
+    def set_is_lan_fcu(self, is_lan_fcu):
+        self.is_lan_fcu = is_lan_fcu
 
     def set_initial_values(self, aircraft_array: int, cpflight_cmds:dict, sock, vr):
         self.led_fcu = {k: not bool(vr.get(f"({v.get('rx')})")) for k, v in aircraft_array.items() if
@@ -249,13 +256,13 @@ class AircraftLoader:
         else:
             qnh_cp_mode_hpa = bool(vr.get(f'({mode_hpa_var})'))
         if qnh_cp_mode_hpa:
-            qnh_cp_value = float(vr.get(f'({rx_hpa})')) + increment
+            qnh_cp_value = float(vr.get(f'({rx_hpa})', 0)) + increment if vr.get(f'({rx_hpa})') else 0
             if qnh_cp_value > limit_hpa[1]:
                 qnh_cp_value = limit_hpa[1]
             if qnh_cp_value < limit_hpa[0]:
                 qnh_cp_value = limit_hpa[0]
         else:
-            qnh_cp_value = float(vr.get(f'({rx_inhg})')) + (increment/100)
+            qnh_cp_value = float(vr.get(f'({rx_inhg})', 0)) + (increment/100) if vr.get(f'({rx_inhg})') else 0
             if qnh_cp_value > limit_inhg[1]:
                 qnh_cp_value = limit_inhg[1]
             if qnh_cp_value < limit_inhg[0]:
@@ -536,7 +543,8 @@ class AircraftLoader:
         cl_val = int(re.sub(r'\D', '', value))
         for el in config['qnh_cp']['tx']:
             current = vr.get(f"({el})")
-            vr.set(f"{int(current + cl_val)} (>{el})")
+            if current:
+                vr.set(f"{int(current + cl_val)} (>{el})")
         qnh_cp_mode_hpa, qnh_cp_value, cmd_send = self._get_value_qhn_to_unit(
             vr,
             config['qnh_cp']['mode_hpa'],
@@ -556,7 +564,8 @@ class AircraftLoader:
         cl_val = int(re.sub(r'\D', '', value))
         for el in config['qnh_cp']['tx']:
             current = vr.get(f"({el})")
-            vr.set(f"{int(current - cl_val)} (>{el})")
+            if current:
+                vr.set(f"{int(current - cl_val)} (>{el})")
         qnh_cp_mode_hpa, qnh_cp_value, cmd_send = self._get_value_qhn_to_unit(
             vr,
             config['qnh_cp']['mode_hpa'],
@@ -732,7 +741,8 @@ class AircraftLoader:
         new_value = not self.led_cp_efis['led_cp_fd']
         for el in config['btn_cp_fd']['tx']:
             actual = vr.get(f"({el})")
-            vr.set(f"{int(actual+2)} (>{el})")
+            if actual:
+                vr.set(f"{int(actual+2)} (>{el})")
         sock.sendall((cpfligh["led_cp_fd"]["led_on" if new_value else "led_off"] + "\n").encode())
         self.led_cp_efis["led_cp_fd"] = new_value
         self.btn_gen["op"] = False

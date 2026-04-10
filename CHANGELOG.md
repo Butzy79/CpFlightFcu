@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
+
+## [2.1.0] - 2026-04-10
+### Added
+- CpFLight Specific Json mod: E0 to be removed and FW check on USB_FW_COMPATIBLE
+- Log File
+- Backlight Management
+
 ## [2.0.0] - 2026-03-20
 ### Added
 - Support FCU USB
