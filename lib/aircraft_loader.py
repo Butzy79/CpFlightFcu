@@ -568,8 +568,7 @@ class AircraftLoader:
         cl_val = int(re.sub(r'\D', '', value))
         for el in config['qnh_cp']['tx']:
             current = vr.get(f"({el})")
-            if current:
-                vr.set(f"{int(current - cl_val)} (>{el})")
+            vr.set(f"{int(current - cl_val)} (>{el})")
         qnh_cp_mode_hpa, qnh_cp_value, cmd_send = self._get_value_qhn_to_unit(
             vr,
             config['qnh_cp']['mode_hpa'],
