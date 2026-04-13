@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.1.2] - 2026-04-13
+### Fix
+- QNH Usb FO issue < 1022
+
 ## [2.1.1] - 2026-04-10
 ### Added
 - CpFLight Specific Json mod: E0 to be removed and FW check on USB_FW_COMPATIBLE
