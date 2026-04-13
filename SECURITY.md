@@ -56,7 +56,7 @@ This project includes:
 
 Firmware compatibility is defined by the developer and shipped with each official release in `config/cpflight.json`.
 
-These values MUST NOT be modified by users.
+> These values MUST NOT be modified by users.
 
 Only official releases from the maintainer may change firmware compatibility settings.
 
